@@ -10,6 +10,7 @@
   "home": {
     "title": "reverseshell",
     "tagline": "Générateur de reverse shell côté client pour les tests de sécurité autorisés. Générez one-liners, listeners, variantes obfusquées et étapes d'upgrade dans le navigateur.",
+    "client_side_note": "100 % côté client. Conçu uniquement pour les tests de sécurité autorisés.",
     "cta_launch": "Lancer le générateur",
     "cta_collections": "Voir les collections",
     "cta_legal": "Usage légal",
@@ -23,7 +24,12 @@
     "feature_collections_desc": "Chargez des presets ou sauvegardez vos configurations avec import/export JSON."
   },
   "footer": {
-    "disclaimer": "Réservé aux tests de sécurité autorisés.",
+    "tagline": "Tests de sécurité autorisés uniquement. Tout le traitement se fait dans votre navigateur.",
+    "blog": "Blog",
     "legal": "Légal"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Notes et mises à jour pour les workflows de tests de sécurité autorisés."
   }
 }

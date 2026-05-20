@@ -37,10 +37,10 @@ export function HomePage() {
   ];
 
   return (
-    <main className="flex-1 px-4 py-10 sm:px-6">
-      <div className="mx-auto max-w-5xl space-y-10">
+    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-24 text-center">
+      <div className="w-full max-w-5xl space-y-10">
         <section className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">
+          <h1 className="font-mono text-6xl font-bold tracking-tight sm:text-7xl lg:text-8xl">
             <span className="text-primary">reverse</span>shell
           </h1>
           <p className="mx-auto max-w-2xl text-muted-foreground">{t("tagline")}</p>
@@ -75,10 +75,9 @@ export function HomePage() {
           ))}
         </section>
 
-        <p className="text-center text-xs text-muted-foreground">
-          <Link href={`${base}/legal`} className="underline hover:text-foreground">
-            {t("cta_legal")}
-          </Link>
+        <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <Wand2 className="h-3.5 w-3.5" />
+          {t("client_side_note")}
         </p>
       </div>
     </main>
