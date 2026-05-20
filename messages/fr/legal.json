@@ -1,0 +1,20 @@
+{
+  "title": "Usage légal",
+  "disclaimer": {
+    "title": "Avertissement",
+    "body": "reverseshell est fourni à des fins éducatives, de tests de sécurité autorisés, de bug bounty, de CTF et de recherche uniquement. Vous devez disposer d'une autorisation écrite explicite avant de tester un système que vous ne possédez pas."
+  },
+  "acceptableUse": {
+    "title": "Politique d'utilisation acceptable",
+    "items": [
+      "Utilisez reverseshell uniquement sur des systèmes que vous possédez ou pour lesquels vous avez une autorisation explicite.",
+      "N'utilisez pas les commandes générées pour des attaques malveillantes ou un accès non autorisé.",
+      "Vous êtes seul responsable du respect des lois applicables.",
+      "reverseshell n'exécute pas les payloads et n'ouvre pas de callbacks — vous contrôlez leur usage."
+    ]
+  },
+  "privacy": {
+    "title": "Confidentialité",
+    "body": "La génération et les collections sont stockées localement dans votre navigateur. Aucune donnée n'est envoyée à nos serveurs."
+  }
+}

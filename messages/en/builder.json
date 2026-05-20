@@ -1,0 +1,133 @@
+{
+  "title": "Reverse Shell Builder",
+  "subtitle": "Generate one-liners, apply obfuscation, and save reusable configs.",
+  "payload_label": "Payload",
+  "lhost_label": "LHOST",
+  "lhost_bind_hint": "Not used for bind shells. Connect inbound to the target on LPORT.",
+  "lhost_staged_hint": "HTTP server address that hosts your stage file (rs.sh).",
+  "lhost_http_hint": "HTTP callback server address for HoaxShell-style polling.",
+  "lport_label": "LPORT",
+  "http_port_label": "HTTP port",
+  "lport_bind_hint": "Port opened on the target. Connect with nc TARGET_IP LPORT.",
+  "shell_label": "Shell",
+  "obfuscation_label": "Obfuscation",
+  "mode_reverse": "Reverse TCP callback",
+  "mode_bind": "Bind shell (inbound connection)",
+  "mode_staged": "Staged payload (HTTP fetch)",
+  "mode_http": "HTTP callback polling",
+  "save_button": "Save",
+  "export_card_button": "Export Card",
+  "copy_command_button": "Copy Command",
+  "generated_command_title": "Generated Command",
+  "raw_command_title": "Raw Command",
+  "stage_file_title": "Stage file",
+  "stage_file_hint": "Host this file on your HTTP server, then run the staged command on the target.",
+  "stage_template_label": "Second-stage payload",
+  "stage_serve_title": "Serve the stage file",
+  "http_server_title": "HTTP callback server",
+  "http_server_hint": "Download and run the included Python callback server. It serves commands on GET and accepts target output on POST.",
+  "invalid_input": "Fix invalid input to generate a command.",
+  "invalid_save": "Fix invalid input before saving.",
+  "invalid_export": "Fix invalid input before exporting.",
+  "validation_error": "LHOST and shell may only contain safe host/path characters.",
+  "obfuscation_note": "Obfuscation is applied locally in the browser and never sends the payload anywhere.",
+  "obfuscation_compat_note": "Only modes compatible with the selected payload are shown.",
+  "copied": "Copied to clipboard",
+  "saved": "Collection saved",
+  "exported_card": "Engagement card exported",
+  "obfuscation_none": "None - Plain command",
+  "obfuscation_url": "URL encode - HTTP parameter safe",
+  "obfuscation_bash_base64": "Bash base64 - Decode then pipe to shell",
+  "obfuscation_bash_ifs": "Bash ${IFS} - Replace spaces",
+  "obfuscation_bash_rev": "Bash rev - Reverse string wrapper",
+  "obfuscation_ps_enc": "PowerShell -Enc - UTF-16LE base64",
+  "obfuscation_ps_concat": "PowerShell concat - String chunking",
+  "obfuscation_python_chr": "Python chr() - Character code rebuild",
+  "lhost_placeholder": "10.10.14.3",
+  "download_stage_button": "Download rs.sh",
+  "download_server_button": "Download server",
+  "http_server_command_title": "Run callback server",
+  "card_title": "Reverse Shell Engagement Card",
+  "card_generated": "Generated",
+  "card_configuration": "Configuration",
+  "card_command": "Command",
+  "card_raw_command": "Raw Command",
+  "card_listener": "Recommended Listener",
+  "card_notes": "Notes",
+  "card_authorized_only": "Use only in explicitly authorized environments.",
+  "card_template": "Template",
+  "card_platform": "Platform",
+  "card_bind_port": "Bind port (target listens)",
+  "card_type": "Type",
+  "card_bind_connect_listener": "Bind shell connect",
+  "card_http_command_server": "HTTP command server",
+  "card_tcp_listener": "TCP listener",
+  "obfuscation_notes": {
+    "none": "No obfuscation applied.",
+    "url": "URL-encoded output for HTTP parameter or form contexts.",
+    "bash-base64": "Base64 wrapper decoded locally before execution.",
+    "bash-ifs": "Spaces replaced with ${IFS} for shell argument filtering.",
+    "bash-rev": "Command is stored reversed and reconstructed with rev.",
+    "powershell-encoded": "PowerShell -EncodedCommand uses UTF-16LE base64.",
+    "powershell-concat": "PowerShell command split into concatenated string chunks.",
+    "python-chr": "Command reconstructed from character codes before execution."
+  },
+  "templates": {
+    "bash-dev-tcp": {
+      "name": "Bash /dev/tcp",
+      "description": "Classic Bash TCP redirection one-liner."
+    },
+    "bash-fd-196": {
+      "name": "Bash FD 196",
+      "description": "Bash reverse shell using an explicit file descriptor."
+    },
+    "nc-mkfifo": {
+      "name": "Netcat mkfifo",
+      "description": "Works with netcat builds that do not expose -e."
+    },
+    "nc-e": {
+      "name": "Netcat -e",
+      "description": "Shortest netcat variant when -e is available."
+    },
+    "python3-socket": {
+      "name": "Python 3 socket",
+      "description": "Python reverse shell with stdio duplicated to the socket."
+    },
+    "php-proc-open": {
+      "name": "PHP proc_open",
+      "description": "PHP one-liner for web RCE contexts."
+    },
+    "perl-socket": {
+      "name": "Perl socket",
+      "description": "Perl reverse shell using Socket from the standard library."
+    },
+    "ruby-socket": {
+      "name": "Ruby socket",
+      "description": "Ruby reverse shell using TCPSocket."
+    },
+    "socat-pty": {
+      "name": "Socat PTY",
+      "description": "Socat reverse shell that starts with a PTY-friendly process."
+    },
+    "powershell-tcp-client": {
+      "name": "PowerShell TCPClient",
+      "description": "PowerShell reverse shell with an interactive command loop."
+    },
+    "powershell-hoaxshell-style": {
+      "name": "PowerShell HoaxShell-style",
+      "description": "HTTP polling PowerShell callback inspired by HoaxShell workflows."
+    },
+    "bash-curl-staged": {
+      "name": "Bash curl staged",
+      "description": "Fetches a second-stage script from your HTTP server and pipes it to the shell."
+    },
+    "nc-bind-e": {
+      "name": "Netcat bind -e",
+      "description": "Bind shell for labs where inbound access to the target is available."
+    },
+    "python3-bind": {
+      "name": "Python 3 bind shell",
+      "description": "Python bind shell that listens on the target instead of calling back."
+    }
+  }
+}

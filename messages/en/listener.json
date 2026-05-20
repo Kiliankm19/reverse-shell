@@ -1,0 +1,36 @@
+{
+  "title": "Listener Builder",
+  "subtitle": "Prepare netcat, rlwrap, ncat, socat, and Metasploit handlers.",
+  "settings_title": "Listener settings",
+  "lhost_label": "LHOST / bind host",
+  "lport_label": "LPORT",
+  "lhost_hint": "LHOST is only used by handlers that need to advertise a callback address, such as Metasploit. Basic listeners bind on all interfaces.",
+  "copy_listener": "Copy listener",
+  "copied": "Copied to clipboard",
+  "templates": {
+    "nc": {
+      "name": "Netcat",
+      "description": "Simple TCP listener."
+    },
+    "rlwrap-nc": {
+      "name": "rlwrap + netcat",
+      "description": "Adds readline history and line editing to netcat."
+    },
+    "ncat-ssl": {
+      "name": "Ncat SSL",
+      "description": "TLS listener for custom SSL-capable payloads."
+    },
+    "socat-tty": {
+      "name": "Socat TTY",
+      "description": "Listener configured for a stronger interactive TTY."
+    },
+    "bind-connect": {
+      "name": "Bind shell connect",
+      "description": "Connect to a bind shell already listening on the target."
+    },
+    "msfconsole": {
+      "name": "Metasploit Bash handler",
+      "description": "Bash reverse shell handler; match payload options before use."
+    }
+  }
+}

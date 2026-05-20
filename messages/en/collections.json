@@ -1,0 +1,113 @@
+{
+  "title": "Collections",
+  "subtitle": "Ready-to-use presets and your saved reverse shell configurations.",
+  "presets_title": "Ready-to-use reverse shells",
+  "presets_hint": "Load a preset into the builder, adapt LHOST/LPORT, and save your own copy.",
+  "saved_title": "Saved Collections",
+  "empty": "No saved collections yet. Generate a reverse shell and save it.",
+  "save_copy": "Save copy",
+  "save_dialog_title": "Save collection",
+  "save_dialog_label": "Collection name",
+  "load_button": "Load",
+  "delete_button": "Delete",
+  "confirm_delete": "Confirm?",
+  "export_button": "Export JSON",
+  "import_button": "Import JSON",
+  "import_error_size": "Import file is too large.",
+  "import_failed": "Import failed.",
+  "loading": "Loading...",
+  "cancel": "Cancel",
+  "name_placeholder": "Lab callback",
+  "preset_saved": "Preset saved",
+  "import_success": "Imported {count} collections.",
+  "bind_badge": "bind:{port}",
+  "obfuscation": {
+    "none": "No obfuscation",
+    "url": "URL encoded",
+    "bash-base64": "Bash base64",
+    "bash-ifs": "Bash ${IFS}",
+    "bash-rev": "Bash rev",
+    "powershell-encoded": "PowerShell -Enc",
+    "powershell-concat": "PowerShell concat",
+    "python-chr": "Python chr()"
+  },
+  "tags": {
+    "linux": "linux",
+    "bash": "bash",
+    "classic": "classic",
+    "nc": "netcat",
+    "fallback": "fallback",
+    "multi": "multi",
+    "python": "python",
+    "php": "php",
+    "perl": "perl",
+    "ruby": "ruby",
+    "web-rce": "web RCE",
+    "obfuscation": "obfuscation",
+    "windows": "windows",
+    "powershell": "powershell",
+    "socat": "socat",
+    "tty": "TTY",
+    "http": "HTTP",
+    "staged": "staged",
+    "bind": "bind"
+  },
+  "presets": {
+    "linux-bash-dev-tcp": {
+      "name": "Linux Bash /dev/tcp",
+      "description": "Classic Bash reverse shell for Linux targets where Bash supports /dev/tcp."
+    },
+    "linux-nc-mkfifo": {
+      "name": "Linux netcat mkfifo",
+      "description": "Portable netcat fallback for builds without the -e option."
+    },
+    "web-rce-python3": {
+      "name": "Web RCE Python 3",
+      "description": "Python reverse shell suited for command injection and web RCE contexts."
+    },
+    "web-rce-php": {
+      "name": "Web RCE PHP",
+      "description": "PHP proc_open payload for environments where PHP execution is available."
+    },
+    "linux-bash-obfuscated": {
+      "name": "Obfuscated Bash base64",
+      "description": "Bash payload wrapped in base64 decode for filter-sensitive shells."
+    },
+    "linux-bash-no-spaces": {
+      "name": "Bash no-space ${IFS}",
+      "description": "Bash payload with spaces replaced by ${IFS} for simple space filters."
+    },
+    "windows-powershell-encoded": {
+      "name": "Windows PowerShell encoded",
+      "description": "PowerShell TCPClient payload encoded as UTF-16LE base64 for -EncodedCommand."
+    },
+    "linux-socat-pty": {
+      "name": "Linux socat PTY",
+      "description": "Socat payload that starts closer to an interactive TTY from the first callback."
+    },
+    "windows-hoaxshell-style": {
+      "name": "Windows HoaxShell-style",
+      "description": "HTTP polling PowerShell callback for lab environments where raw TCP egress is blocked."
+    },
+    "linux-curl-staged": {
+      "name": "Linux curl staged",
+      "description": "Fetch a prepared rs.sh second-stage script from your HTTP server."
+    },
+    "web-rce-perl": {
+      "name": "Web RCE Perl",
+      "description": "Perl reverse shell for targets with Perl and outbound TCP access."
+    },
+    "web-rce-ruby": {
+      "name": "Web RCE Ruby",
+      "description": "Ruby TCPSocket payload for targets where Ruby is available."
+    },
+    "multi-nc-bind-e": {
+      "name": "Bind shell netcat -e",
+      "description": "Bind shell preset for isolated labs where the operator connects inbound."
+    },
+    "multi-python3-bind": {
+      "name": "Bind shell Python 3",
+      "description": "Python bind shell fallback when netcat -e is unavailable."
+    }
+  }
+}

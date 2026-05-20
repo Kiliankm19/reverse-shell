@@ -1,0 +1,28 @@
+{
+  "title": "Shell Upgrade",
+  "subtitle": "Turn a basic callback into a more stable interactive TTY.",
+  "context_title": "Upgrade context",
+  "shell_label": "Preferred shell",
+  "attacker_host_label": "Attacker IP / host",
+  "port_label": "Upgrade port",
+  "copy_steps": "Copy steps",
+  "copied": "Copied to clipboard",
+  "recipes": {
+    "python-pty": {
+      "name": "Python PTY upgrade",
+      "description": "The most common upgrade path when Python is present."
+    },
+    "script-tty": {
+      "name": "script fallback",
+      "description": "Useful on hosts without Python but with util-linux script."
+    },
+    "socat-upgrade": {
+      "name": "Socat full TTY",
+      "description": "Best terminal behavior when socat exists on both ends."
+    },
+    "windows-conpty": {
+      "name": "Windows ConPTY note",
+      "description": "Upgrade guidance for modern Windows shells."
+    }
+  }
+}

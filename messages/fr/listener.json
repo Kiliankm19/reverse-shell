@@ -1,0 +1,36 @@
+{
+  "title": "Générateur de listener",
+  "subtitle": "Préparez netcat, rlwrap, ncat, socat et des handlers Metasploit.",
+  "settings_title": "Paramètres listener",
+  "lhost_label": "LHOST / hôte bind",
+  "lport_label": "LPORT",
+  "lhost_hint": "LHOST est uniquement utilisé par les handlers qui doivent annoncer une adresse de callback, comme Metasploit. Les listeners simples écoutent sur toutes les interfaces.",
+  "copy_listener": "Copier le listener",
+  "copied": "Copié dans le presse-papiers",
+  "templates": {
+    "nc": {
+      "name": "Netcat",
+      "description": "Listener TCP simple."
+    },
+    "rlwrap-nc": {
+      "name": "rlwrap + netcat",
+      "description": "Ajoute historique et édition de ligne à netcat."
+    },
+    "ncat-ssl": {
+      "name": "Ncat SSL",
+      "description": "Listener TLS pour payloads personnalisés compatibles SSL."
+    },
+    "socat-tty": {
+      "name": "Socat TTY",
+      "description": "Listener configuré pour une TTY interactive plus stable."
+    },
+    "bind-connect": {
+      "name": "Connexion bind shell",
+      "description": "Se connecter à un bind shell déjà en écoute sur la cible."
+    },
+    "msfconsole": {
+      "name": "Handler Metasploit Bash",
+      "description": "Handler reverse Bash ; adaptez les options au payload utilisé."
+    }
+  }
+}

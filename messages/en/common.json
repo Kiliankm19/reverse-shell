@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "builder": "Builder",
+    "listener": "Listener",
+    "upgrade": "Upgrade",
+    "collections": "Collections",
+    "legal": "Legal",
+    "toggle_theme": "Toggle theme"
+  },
+  "home": {
+    "title": "reverseshell",
+    "tagline": "Client-side reverse shell generator for authorized security testing. Generate one-liners, listeners, obfuscation variants, and shell upgrade steps entirely in your browser.",
+    "cta_launch": "Launch Builder",
+    "cta_collections": "Browse Collections",
+    "cta_legal": "Legal & Acceptable Use",
+    "feature_payloads_title": "Reverse, bind, staged, and HTTP callbacks",
+    "feature_payloads_desc": "Bash, netcat, Python, PHP, PowerShell, socat, bind shells, curl staged payloads, and HoaxShell-style HTTP polling.",
+    "feature_encoders_title": "Obfuscation helpers",
+    "feature_encoders_desc": "Base64 wrappers, ${IFS}, reversed strings, PowerShell encoding, chunking, URL encoding, and chr() rebuilds.",
+    "feature_formats_title": "Listener, upgrade, and engagement card",
+    "feature_formats_desc": "Generate handlers, copy shell upgrade recipes, and export a markdown engagement card for your lab notes.",
+    "feature_collections_title": "Ready-to-use collections",
+    "feature_collections_desc": "Load curated presets or save your own configurations with JSON import and export."
+  },
+  "footer": {
+    "disclaimer": "For authorized security testing only.",
+    "legal": "Legal"
+  }
+}
