@@ -30,6 +30,15 @@
   },
   "blog": {
     "title": "Blog",
-    "description": "Notes et mises à jour pour les workflows de tests de sécurité autorisés."
+    "description": "Notes et mises à jour pour les workflows de tests de sécurité autorisés.",
+    "intro": "Guides courts et notes de version pour les labos. Toute la génération reste locale dans votre navigateur.",
+    "posts": {
+      "welcome": {
+        "title": "Bienvenue sur reverseshell",
+        "date": "Mai 2026",
+        "excerpt": "Utiliser le builder, la page listener et l'export carte d'engagement en environnement autorisé.",
+        "body": "Commencez par la page d'accueil pour voir les fonctionnalités, puis ouvrez le builder pour choisir un modèle, définir LHOST/LPORT et copier ou exporter les commandes. Utilisez la page listener pour les handlers, les collections pour les préréglages, et l'export carte d'engagement pour archiver la configuration en markdown."
+      }
+    }
   }
 }

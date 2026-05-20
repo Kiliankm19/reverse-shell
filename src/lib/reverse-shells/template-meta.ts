@@ -1,5 +1,36 @@
 import { getTemplate, reverseShellTemplates } from "./catalog";
-import type { PayloadConnectionMode, ReverseShellTemplate } from "./types";
+import type {
+  ListenerTemplate,
+  PayloadConnectionMode,
+  ReverseShellTemplate,
+} from "./types";
+
+/** Per-template listener recommendations (see listener page for full catalog). */
+export const RECOMMENDED_LISTENER_BY_TEMPLATE: Partial<
+  Record<string, ListenerTemplate["id"]>
+> = {
+  "nc-e": "nc",
+  "nc-mkfifo": "nc",
+  "bash-dev-tcp": "rlwrap-nc",
+  "bash-fd-196": "rlwrap-nc",
+  "python3-socket": "rlwrap-nc",
+  "php-proc-open": "rlwrap-nc",
+  "perl-socket": "rlwrap-nc",
+  "ruby-socket": "rlwrap-nc",
+  "powershell-tcp-client": "nc",
+  "bash-curl-staged": "rlwrap-nc",
+  "nc-bind-e": "bind-connect",
+  "python3-bind": "bind-connect",
+  "socat-pty": "socat-tty",
+};
+
+export function getRecommendedListenerId(
+  templateId: string,
+): ListenerTemplate["id"] | "hoax-http" {
+  if (templateId.includes("bind")) return "bind-connect";
+  if (templateId === "powershell-hoaxshell-style") return "hoax-http";
+  return RECOMMENDED_LISTENER_BY_TEMPLATE[templateId] ?? "rlwrap-nc";
+}
 
 export function getConnectionMode(
   template: ReverseShellTemplate,

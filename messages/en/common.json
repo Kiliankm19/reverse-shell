@@ -30,6 +30,15 @@
   },
   "blog": {
     "title": "Blog",
-    "description": "Notes and updates for authorized security testing workflows."
+    "description": "Notes and updates for authorized security testing workflows.",
+    "intro": "Short guides and release notes for lab workflows. All generation still runs locally in your browser.",
+    "posts": {
+      "welcome": {
+        "title": "Welcome to reverseshell",
+        "date": "May 2026",
+        "excerpt": "How to use the builder, listener page, and engagement card export in authorized labs.",
+        "body": "Start from the home page to review capabilities, then open the builder to pick a template, set LHOST/LPORT, and copy or export commands. Use the listener page for handler one-liners, collections for presets, and the engagement card export to capture configuration and notes in markdown."
+      }
+    }
   }
 }

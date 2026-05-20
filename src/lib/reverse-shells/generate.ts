@@ -73,7 +73,7 @@ export function obfuscateCommand(
     case "python-chr": {
       const chars = [...command].map((char) => char.charCodeAt(0)).join(",");
       return {
-        command: `python3 -c 'import os;os.system("".join(map(chr,[${chars}])))'`,
+        command: `python3 -c 'exec(bytes([${chars}]).decode())'`,
         notes: ["Command reconstructed from character codes before execution."],
       };
     }

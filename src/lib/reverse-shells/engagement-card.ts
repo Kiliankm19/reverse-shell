@@ -7,7 +7,10 @@ import {
   stageFileName,
   stageServeCommand,
 } from "./stage-file";
-import { getConnectionModeById } from "./template-meta";
+import {
+  getConnectionModeById,
+  getRecommendedListenerId,
+} from "./template-meta";
 import type { GeneratedReverseShell, ReverseShellConfig } from "./types";
 
 interface ListenerRecommendation {
@@ -19,35 +22,28 @@ function listenerForConfig(
   config: ReverseShellConfig,
   labels: EngagementCardLabels,
 ): ListenerRecommendation {
-  if (config.templateId.includes("bind")) {
-    return {
-      label: labels.bindConnectListener,
-      command: `nc -nv TARGET_IP ${config.lport}`,
-    };
-  }
+  const recommendedId = getRecommendedListenerId(config.templateId);
 
-  if (config.templateId === "powershell-hoaxshell-style") {
+  if (recommendedId === "hoax-http") {
     return {
       label: labels.httpCommandServer,
       command: hoaxShellServerCommand(config),
     };
   }
 
-  if (config.templateId === "powershell-tcp-client") {
+  if (recommendedId === "bind-connect") {
     return {
-      label: labels.tcpListener,
-      command: listenerTemplates[0].command(config.lport, config.lhost),
+      label: labels.bindConnectListener,
+      command: `nc -nv TARGET_IP ${config.lport}`,
     };
   }
 
-  const listener =
-    config.templateId === "socat-pty"
-      ? listenerTemplates.find((item) => item.id === "socat-tty")
-      : listenerTemplates.find((item) => item.id === "rlwrap-nc");
+  const listener = listenerTemplates.find((item) => item.id === recommendedId);
+  const fallback = listenerTemplates.find((item) => item.id === "rlwrap-nc")!;
 
   return {
-    label: listener?.name ?? "Netcat",
-    command: (listener ?? listenerTemplates[0]).command(config.lport, config.lhost),
+    label: labels.listenerName ?? listener?.name ?? fallback.name,
+    command: (listener ?? fallback).command(config.lport, config.lhost),
   };
 }
 
@@ -75,6 +71,7 @@ interface EngagementCardLabels {
   bindConnectListener: string;
   httpCommandServer: string;
   tcpListener: string;
+  listenerName?: string;
 }
 
 const defaultLabels: EngagementCardLabels = {
@@ -108,7 +105,9 @@ export function createEngagementCard(
   generated: GeneratedReverseShell,
   labels: EngagementCardLabels = defaultLabels,
   stageTemplateId = "bash-dev-tcp",
+  exportNotes?: string[],
 ): string {
+  const notes = exportNotes ?? generated.notes;
   const template = getTemplate(config.templateId);
   const listener = listenerForConfig(config, labels);
   const mode = getConnectionModeById(config.templateId);
@@ -192,7 +191,7 @@ export function createEngagementCard(
     "",
     `## ${labels.notes}`,
     "",
-    ...generated.notes.map((note) => `- ${note}`),
+    ...notes.map((note) => `- ${note}`),
     `- ${labels.authorizedOnly}`,
     "",
   ].join("\n");

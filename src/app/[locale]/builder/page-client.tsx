@@ -32,6 +32,7 @@ import {
   hoaxShellServerFileName,
   compatibleObfuscationModes,
   getConnectionModeById,
+  getRecommendedListenerId,
   getTemplate,
   reverseShellTemplates,
   safeParseReverseShellConfig,
@@ -99,6 +100,7 @@ function downloadText(filename: string, content: string, type = "text/plain") {
 
 export function BuilderPageClient() {
   const t = useTranslations("builder");
+  const tListener = useTranslations("listener");
   const [config, setConfig] = useState<ReverseShellConfig>(() => {
     if (typeof window === "undefined") return defaultConfig();
     return readActiveConfig() ?? defaultConfig();
@@ -175,31 +177,47 @@ export function BuilderPageClient() {
       toast.error(t("invalid_export"));
       return;
     }
-    const card = createEngagementCard(safeConfig, generated, {
-      title: t("card_title"),
-      generated: t("card_generated"),
-      configuration: t("card_configuration"),
-      command: t("card_command"),
-      rawCommand: t("card_raw_command"),
-      listener: t("card_listener"),
-      stageFile: t("stage_file_title"),
-      httpServer: t("http_server_title"),
-      notes: t("card_notes"),
-      authorizedOnly: t("card_authorized_only"),
-      template: t("card_template"),
-      platform: t("card_platform"),
-      bindPort: t("card_bind_port"),
-      lhost: t("lhost_label"),
-      lport: t("lport_label"),
-      shell: t("shell_label"),
-      obfuscation: t("obfuscation_label"),
-      type: t("card_type"),
-      stageServeCommand: t("stage_serve_title"),
-      hoaxServerCommand: t("http_server_command_title"),
-      bindConnectListener: t("card_bind_connect_listener"),
-      httpCommandServer: t("card_http_command_server"),
-      tcpListener: t("card_tcp_listener"),
-    }, stageTemplateId);
+    const listenerId = getRecommendedListenerId(safeConfig.templateId);
+    const listenerLabel =
+      listenerId === "hoax-http"
+        ? t("card_http_command_server")
+        : tListener(`templates.${listenerId}.name`);
+    const exportNotes = [
+      t(`templates.${safeConfig.templateId}.description`),
+      t(`obfuscation_notes.${safeConfig.obfuscation}`),
+    ];
+    const card = createEngagementCard(
+      safeConfig,
+      generated,
+      {
+        title: t("card_title"),
+        generated: t("card_generated"),
+        configuration: t("card_configuration"),
+        command: t("card_command"),
+        rawCommand: t("card_raw_command"),
+        listener: t("card_listener"),
+        stageFile: t("stage_file_title"),
+        httpServer: t("http_server_title"),
+        notes: t("card_notes"),
+        authorizedOnly: t("card_authorized_only"),
+        template: t("card_template"),
+        platform: t("card_platform"),
+        bindPort: t("card_bind_port"),
+        lhost: t("lhost_label"),
+        lport: t("lport_label"),
+        shell: t("shell_label"),
+        obfuscation: t("obfuscation_label"),
+        type: t("card_type"),
+        stageServeCommand: t("stage_serve_title"),
+        hoaxServerCommand: t("http_server_command_title"),
+        bindConnectListener: t("card_bind_connect_listener"),
+        httpCommandServer: t("card_http_command_server"),
+        tcpListener: t("card_tcp_listener"),
+        listenerName: listenerLabel,
+      },
+      stageTemplateId,
+      exportNotes,
+    );
     downloadText(
       `reverseshell-${safeConfig.templateId}-${safeConfig.lhost}-${safeConfig.lport}.md`,
       card,

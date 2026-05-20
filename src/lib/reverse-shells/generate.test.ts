@@ -33,4 +33,17 @@ describe("obfuscateCommand", () => {
     );
     expect(command).toMatch(/^powershell -NoP -NonI -W Hidden -Enc /);
   });
+
+  it("python-chr rebuilds commands with embedded quotes", () => {
+    const payload = 'python3 -c "import socket"';
+    const { command } = obfuscateCommand(payload, "python-chr", "/bin/bash");
+    expect(command).toMatch(/^python3 -c 'exec\(bytes\(\[/);
+    const result = generateReverseShell({
+      ...baseConfig,
+      templateId: "python3-socket",
+      obfuscation: "python-chr",
+    });
+    expect(result.command).toMatch(/^python3 -c 'exec\(bytes\(\[/);
+    expect(result.command).not.toContain('os.system("');
+  });
 });
