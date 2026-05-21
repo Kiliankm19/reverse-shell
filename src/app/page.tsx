@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { BuilderPageClient } from "./page-client";
 
-export default function RootPage() {
-  redirect("/en/reverseshell");
+export default function HomePage() {
+  return <BuilderPageClient />;
 }

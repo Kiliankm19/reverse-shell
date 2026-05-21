@@ -17,7 +17,7 @@
     "feature_payloads_title": "Reverse, bind, staged, and HTTP callbacks",
     "feature_payloads_desc": "Bash, netcat, Python, PHP, PowerShell, socat, bind shells, curl staged payloads, and HoaxShell-style HTTP polling.",
     "feature_encoders_title": "Obfuscation helpers",
-    "feature_encoders_desc": "Base64 wrappers, ${IFS}, reversed strings, PowerShell encoding, chunking, URL encoding, and chr() rebuilds.",
+    "feature_encoders_desc": "Base64 wrappers, '${IFS}', reversed strings, PowerShell encoding, chunking, URL encoding, and chr() rebuilds.",
     "feature_formats_title": "Listener, upgrade, and engagement card",
     "feature_formats_desc": "Generate handlers, copy shell upgrade recipes, and export a markdown engagement card for your lab notes.",
     "feature_collections_title": "Ready-to-use collections",
@@ -37,7 +37,7 @@
         "title": "Welcome to reverseshell",
         "date": "May 2026",
         "excerpt": "How to use the builder, listener page, and engagement card export in authorized labs.",
-        "body": "Start from the home page to review capabilities, then open the builder to pick a template, set LHOST/LPORT, and copy or export commands. Use the listener page for handler one-liners, collections for presets, and the engagement card export to capture configuration and notes in markdown."
+        "body": "Open the home page builder to pick a template, set LHOST/LPORT, and copy or export commands. Use the listener page for handler one-liners, collections for presets, and the engagement card export to capture configuration and notes in markdown."
       }
     }
   }

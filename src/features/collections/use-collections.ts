@@ -6,8 +6,10 @@ import {
   loadAllCollections,
   saveCollection,
   deleteCollection,
+  deleteAllCollections,
   exportCollectionsJson,
   importCollectionsJson,
+  previewCollectionsJson,
 } from "./collections-db";
 
 export function useCollections() {
@@ -31,6 +33,11 @@ export function useCollections() {
     setCollections((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
+  const clear = useCallback(async () => {
+    await deleteAllCollections();
+    setCollections([]);
+  }, []);
+
   const exportJson = useCallback(() => {
     return exportCollectionsJson(collections);
   }, [collections]);
@@ -41,5 +48,18 @@ export function useCollections() {
     return imported;
   }, []);
 
-  return { collections, loading, save, remove, exportJson, importJson };
+  const previewJson = useCallback((json: string) => {
+    return previewCollectionsJson(json);
+  }, []);
+
+  return {
+    collections,
+    loading,
+    save,
+    remove,
+    clear,
+    exportJson,
+    importJson,
+    previewJson,
+  };
 }

@@ -8,7 +8,12 @@ import type {
 import { normalizeReverseShellConfig } from "./validation";
 
 function utf8Base64(value: string): string {
-  return btoa(unescape(encodeURIComponent(value)));
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
 }
 
 function utf16LeBase64(value: string): string {

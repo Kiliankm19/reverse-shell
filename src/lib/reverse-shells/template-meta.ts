@@ -14,6 +14,10 @@ export const RECOMMENDED_LISTENER_BY_TEMPLATE: Partial<
   "bash-dev-tcp": "rlwrap-nc",
   "bash-fd-196": "rlwrap-nc",
   "python3-socket": "rlwrap-nc",
+  "nodejs-child-process": "rlwrap-nc",
+  "java-runtime": "rlwrap-nc",
+  "awk-tcp": "rlwrap-nc",
+  "lua-socket": "rlwrap-nc",
   "php-proc-open": "rlwrap-nc",
   "perl-socket": "rlwrap-nc",
   "ruby-socket": "rlwrap-nc",
@@ -22,6 +26,9 @@ export const RECOMMENDED_LISTENER_BY_TEMPLATE: Partial<
   "nc-bind-e": "bind-connect",
   "python3-bind": "bind-connect",
   "socat-pty": "socat-tty",
+  "openssl-fifo": "openssl-server",
+  "busybox-nc-e": "nc",
+  "telnet-mkfifo": "nc",
 };
 
 export function getRecommendedListenerId(
@@ -41,7 +48,9 @@ export function getConnectionMode(
   return "reverse";
 }
 
-export function getConnectionModeById(templateId: string): PayloadConnectionMode {
+export function getConnectionModeById(
+  templateId: string,
+): PayloadConnectionMode {
   return getConnectionMode(getTemplate(templateId));
 }
 
@@ -63,7 +72,7 @@ export function supportsHttpServerNotes(mode: PayloadConnectionMode): boolean {
 
 export function usesShellInput(templateId: string): boolean {
   const template = getTemplate(templateId);
-  return !["powershell", "ruby"].includes(template.family);
+  return !["powershell", "ruby", "lua", "awk"].includes(template.family);
 }
 
 export const templateCount = reverseShellTemplates.length;

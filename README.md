@@ -6,11 +6,12 @@ Client-side reverse shell generator for authorized security testing and lab work
 
 ## Features
 
-- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Socat, and PowerShell.
+- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Node.js, Java, Lua, awk, OpenSSL, Telnet, Socat, and PowerShell.
 - Obfuscation helpers missing from many generators: URL encoding, Bash base64 wrappers, `${IFS}` spacing, reversed Bash reconstruction, PowerShell `-EncodedCommand`, PowerShell string chunking, and Python `chr()` rebuilds.
-- Listener builder for netcat, rlwrap, ncat SSL, socat TTY, and Metasploit multi/handler.
+- Search and filters for payload family and platform.
+- Listener builder for netcat, rlwrap, ncat SSL, OpenSSL `s_server`, socat TTY, and Metasploit multi/handler.
 - Shell upgrade recipes for Python PTY, `script`, socat, and Windows-oriented notes.
-- Ready-to-use reverse shell collections, including bind, staged, and HoaxShell-style presets, plus browser-side saved collections with JSON import/export via IndexedDB.
+- Ready-to-use reverse shell collections, including bind, staged, and HoaxShell-style presets, plus browser-side saved collections with JSON import/export preview via IndexedDB.
 - Markdown engagement card export with LHOST, LPORT, generated command, raw command, and recommended listener.
 - Dark Tailwind/shadcn UI in the same family as `shellcodes` and `xsspayloads`.
 
@@ -21,24 +22,39 @@ pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000/en/builder`.
+Open `http://localhost:3000` for the reverse shell builder.
+
+## Routes
+
+| Route           | Page                             |
+| --------------- | -------------------------------- |
+| `/`             | Reverse shell builder (home)     |
+| `/builder`      | Redirects to `/` (legacy path)   |
+| `/reverseshell` | Marketing landing page           |
+| `/listener`     | Listener command generator       |
+| `/upgrade`      | Shell upgrade recipes            |
+| `/collections`  | Presets and saved configurations |
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | Start the Next.js dev server. |
-| `pnpm build` | Build the production app. |
-| `pnpm lint` | Run ESLint. |
-| `pnpm typecheck` | Run TypeScript checks. |
-| `pnpm format` | Format the project. |
+| Command          | Description                                                             |
+| ---------------- | ----------------------------------------------------------------------- |
+| `pnpm dev`       | Start the Next.js dev server.                                           |
+| `pnpm build`     | Build the production app.                                               |
+| `pnpm lint`      | Run ESLint.                                                             |
+| `pnpm typecheck` | Run TypeScript checks.                                                  |
+| `pnpm test`      | Run Vitest unit tests.                                                  |
+| `pnpm test:e2e`  | Run Playwright end-to-end tests (`pnpm exec playwright install` first). |
+| `pnpm format`    | Format the project.                                                     |
 
 ## Project Structure
 
 ```text
 reverseshell/
-├── src/app/[locale]/
-│   ├── builder/       # reverse shell generator
+├── src/app/
+│   ├── page.tsx       # reverse shell builder (home)
+│   ├── builder/       # redirect to /
+│   ├── reverseshell/  # marketing landing
 │   ├── listener/      # listener command generator
 │   ├── upgrade/       # shell upgrade recipes
 │   └── collections/   # saved configs
@@ -47,7 +63,8 @@ reverseshell/
 │   ├── catalog.ts     # payload/listener/upgrade catalogs
 │   ├── generate.ts    # rendering and obfuscation engine
 │   └── types.ts
-└── messages/          # next-intl message bundles
+├── tests/e2e/         # Playwright smoke tests
+└── messages/en/       # English UI copy
 ```
 
 ## Security Notes
@@ -55,8 +72,10 @@ reverseshell/
 - All generation happens locally in the browser.
 - No generated command is executed by the app.
 - Collections are stored in IndexedDB and can be exported/imported as JSON.
+- JSON imports are schema-validated and previewed before being written.
 - Inputs are bounded before storage/import to reduce accidental oversized payloads.
 - Script CSP is nonce-based via middleware; inline scripts are not allowed without the per-request nonce.
+- No analytics or third-party telemetry is configured by default.
 
 ## License
 

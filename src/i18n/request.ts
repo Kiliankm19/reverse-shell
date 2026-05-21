@@ -1,25 +1,18 @@
 import { getRequestConfig } from "next-intl/server";
-import { hasLocale } from "next-intl";
-import { routing } from "./routing";
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  const requested = await requestLocale;
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
-
+export default getRequestConfig(async () => {
   const [common, builder, collections, listener, upgrade, legal] =
     await Promise.all([
-      import(`../../messages/${locale}/common.json`),
-      import(`../../messages/${locale}/builder.json`),
-      import(`../../messages/${locale}/collections.json`),
-      import(`../../messages/${locale}/listener.json`),
-      import(`../../messages/${locale}/upgrade.json`),
-      import(`../../messages/${locale}/legal.json`),
+      import("../../messages/en/common.json"),
+      import("../../messages/en/builder.json"),
+      import("../../messages/en/collections.json"),
+      import("../../messages/en/listener.json"),
+      import("../../messages/en/upgrade.json"),
+      import("../../messages/en/legal.json"),
     ]);
 
   return {
-    locale,
+    locale: "en",
     messages: {
       ...common.default,
       builder: builder.default,

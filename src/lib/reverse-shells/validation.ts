@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { reverseShellTemplates } from "./catalog";
 import { safeObfuscationForTemplate } from "./obfuscation";
+import { getConnectionModeById, usesShellInput } from "./template-meta";
 import type { ReverseShellConfig } from "./types";
 
 const TEMPLATE_IDS = reverseShellTemplates.map((template) => template.id);
@@ -23,7 +24,8 @@ const safeHostSchema = z
   .min(1)
   .max(253)
   .regex(/^[A-Za-z0-9.:[\]_-]+$/, {
-    message: "Use an IP address, hostname, or domain without shell metacharacters.",
+    message:
+      "Use an IP address, hostname, or domain without shell metacharacters.",
   });
 
 const safeShellSchema = z
@@ -40,7 +42,9 @@ export function normalizeHost(value: unknown, fallback = "127.0.0.1"): string {
 }
 
 export function normalizePort(value: unknown, fallback = 4444): number {
-  return z.coerce.number().int().min(1).max(65535).safeParse(value).data ?? fallback;
+  return (
+    z.coerce.number().int().min(1).max(65535).safeParse(value).data ?? fallback
+  );
 }
 
 export function normalizeShell(value: unknown, fallback = "/bin/sh"): string {
@@ -87,3 +91,40 @@ export function safeParseReverseShellConfig(
   return result.success ? result.data : null;
 }
 
+export type ConfigFieldKey = "lhost" | "lport" | "httpPort" | "shell";
+
+export function getConfigFieldErrors(
+  value: unknown,
+  templateId: string,
+): Partial<Record<ConfigFieldKey, true>> {
+  if (!value || typeof value !== "object") {
+    return { lhost: true, lport: true, shell: true };
+  }
+
+  const raw = value as Partial<ReverseShellConfig>;
+  const errors: Partial<Record<ConfigFieldKey, true>> = {};
+  const portSchema = z.coerce.number().int().min(1).max(65535);
+
+  if (!portSchema.safeParse(raw.lport).success) {
+    errors.lport = true;
+  }
+
+  if (getConnectionModeById(templateId) === "staged") {
+    if (!portSchema.safeParse(raw.httpPort).success) {
+      errors.httpPort = true;
+    }
+  }
+
+  if (!safeHostSchema.safeParse(raw.lhost).success) {
+    errors.lhost = true;
+  }
+
+  if (
+    usesShellInput(templateId) &&
+    !safeShellSchema.safeParse(raw.shell).success
+  ) {
+    errors.shell = true;
+  }
+
+  return errors;
+}

@@ -12,7 +12,7 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: "pnpm build && pnpm start -p 3010",
-    url: "http://127.0.0.1:3010/en/builder",
+    url: "http://127.0.0.1:3010/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

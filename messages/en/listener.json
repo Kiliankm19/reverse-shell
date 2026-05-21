@@ -31,6 +31,10 @@
     "msfconsole": {
       "name": "Metasploit Bash handler",
       "description": "Bash reverse shell handler; match payload options before use."
+    },
+    "openssl-server": {
+      "name": "OpenSSL s_server",
+      "description": "Temporary TLS listener for openssl s_client payloads."
     }
   }
 }

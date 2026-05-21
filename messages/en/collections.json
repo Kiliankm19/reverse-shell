@@ -13,6 +13,10 @@
   "confirm_delete": "Confirm?",
   "export_button": "Export JSON",
   "import_button": "Import JSON",
+  "clear_button": "Clear saved",
+  "confirm_clear": "Clear all?",
+  "confirm_import": "Confirm import",
+  "import_preview": "Import preview: {count} valid collections found. Confirm to save them locally.",
   "import_error_size": "Import file is too large.",
   "import_failed": "Import failed.",
   "loading": "Loading...",
@@ -25,7 +29,7 @@
     "none": "No obfuscation",
     "url": "URL encoded",
     "bash-base64": "Bash base64",
-    "bash-ifs": "Bash ${IFS}",
+    "bash-ifs": "Bash '${IFS}'",
     "bash-rev": "Bash rev",
     "powershell-encoded": "PowerShell -Enc",
     "powershell-concat": "PowerShell concat",
@@ -50,7 +54,11 @@
     "tty": "TTY",
     "http": "HTTP",
     "staged": "staged",
-    "bind": "bind"
+    "bind": "bind",
+    "node": "node",
+    "openssl": "openssl",
+    "tls": "TLS",
+    "busybox": "busybox"
   },
   "presets": {
     "linux-bash-dev-tcp": {
@@ -74,8 +82,8 @@
       "description": "Bash payload wrapped in base64 decode for filter-sensitive shells."
     },
     "linux-bash-no-spaces": {
-      "name": "Bash no-space ${IFS}",
-      "description": "Bash payload with spaces replaced by ${IFS} for simple space filters."
+      "name": "Bash no-space '${IFS}'",
+      "description": "Bash payload with spaces replaced by '${IFS}' for simple space filters."
     },
     "windows-powershell-encoded": {
       "name": "Windows PowerShell encoded",
@@ -108,6 +116,18 @@
     "multi-python3-bind": {
       "name": "Bind shell Python 3",
       "description": "Python bind shell fallback when netcat -e is unavailable."
+    },
+    "web-rce-nodejs": {
+      "name": "Web RCE Node.js",
+      "description": "Node.js reverse shell for targets with server-side JavaScript execution."
+    },
+    "linux-openssl-fifo": {
+      "name": "Linux OpenSSL FIFO",
+      "description": "TLS callback using openssl s_client and a named pipe."
+    },
+    "linux-busybox-nc": {
+      "name": "Linux BusyBox nc",
+      "description": "Compact BusyBox netcat payload for minimal Linux environments."
     }
   }
 }

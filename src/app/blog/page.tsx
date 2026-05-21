@@ -1,15 +1,9 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const POST_IDS = ["welcome"] as const;
 
-export default async function BlogPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+export default async function BlogPage() {
   const t = await getTranslations("blog");
 
   return (
@@ -25,7 +19,9 @@ export default async function BlogPage({
           {POST_IDS.map((id) => (
             <Card key={id}>
               <CardHeader>
-                <CardTitle className="text-xl">{t(`posts.${id}.title`)}</CardTitle>
+                <CardTitle className="text-xl">
+                  {t(`posts.${id}.title`)}
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   {t(`posts.${id}.date`)}
                 </p>

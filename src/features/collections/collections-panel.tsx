@@ -1,11 +1,14 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useCollections } from "./use-collections";
-import { builtinCollections, type BuiltinCollection } from "./builtin-collections";
+import {
+  builtinCollections,
+  type BuiltinCollection,
+} from "./builtin-collections";
 import type { SavedCollection } from "./types";
 import { saveActiveConfig } from "@/features/builder/store";
 import { Badge } from "@/components/ui/badge";
@@ -67,20 +70,30 @@ function DeleteButton({
 
 export function CollectionsPanel() {
   const t = useTranslations("collections");
-  const { collections, loading, save, remove, exportJson, importJson } =
-    useCollections();
+  const {
+    collections,
+    loading,
+    save,
+    remove,
+    clear,
+    exportJson,
+    importJson,
+    previewJson,
+  } = useCollections();
   const router = useRouter();
-  const params = useParams<{ locale?: string }>();
-  const locale = params.locale ?? "en";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [pendingImport, setPendingImport] = useState<{
+    text: string;
+    count: number;
+  } | null>(null);
 
   const handleLoad = useCallback(
     (col: Pick<SavedCollection, "config">) => {
       saveActiveConfig(col.config);
-      router.push(`/${locale}/builder`);
+      router.push("/");
     },
-    [locale, router],
+    [router],
   );
 
   const handleSaveBuiltin = useCallback(
@@ -120,17 +133,31 @@ export function CollectionsPanel() {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result as string;
-        importJson(text)
-          .then((imported) => toast.success(t("import_success", { count: imported.length })))
-          .catch(() => {
-            setImportError(t("import_failed"));
-          });
+        try {
+          const preview = previewJson(text);
+          setPendingImport({ text, count: preview.length });
+        } catch {
+          setImportError(t("import_failed"));
+        }
       };
       reader.readAsText(file);
       event.target.value = "";
     },
-    [importJson, t],
+    [previewJson, t],
   );
+
+  const handleConfirmImport = useCallback(() => {
+    if (!pendingImport) return;
+    importJson(pendingImport.text)
+      .then((imported) => {
+        toast.success(t("import_success", { count: imported.length }));
+        setPendingImport(null);
+      })
+      .catch(() => {
+        setImportError(t("import_failed"));
+        setPendingImport(null);
+      });
+  }, [importJson, pendingImport, t]);
 
   return (
     <div className="space-y-6">
@@ -220,6 +247,11 @@ export function CollectionsPanel() {
             <Upload className="h-3.5 w-3.5" />
             {t("import_button")}
           </Button>
+          <DeleteButton
+            label={t("clear_button")}
+            confirmLabel={t("confirm_clear")}
+            onDelete={() => void clear()}
+          />
           <input
             ref={fileInputRef}
             type="file"
@@ -233,6 +265,26 @@ export function CollectionsPanel() {
       {importError && (
         <div className="rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {importError}
+        </div>
+      )}
+
+      {pendingImport && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-card px-4 py-3 text-sm">
+          <p className="text-muted-foreground">
+            {t("import_preview", { count: pendingImport.count })}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPendingImport(null)}
+            >
+              {t("cancel")}
+            </Button>
+            <Button size="sm" onClick={handleConfirmImport}>
+              {t("confirm_import")}
+            </Button>
+          </div>
         </div>
       )}
 
@@ -252,7 +304,10 @@ export function CollectionsPanel() {
                   <Badge variant="outline" className="w-fit font-mono text-xs">
                     {col.config.templateId}
                   </Badge>
-                  <Badge variant="secondary" className="w-fit font-mono text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="w-fit font-mono text-xs"
+                  >
                     {getConnectionModeById(col.config.templateId) === "bind"
                       ? t("bind_badge", { port: col.config.lport })
                       : `${col.config.lhost}:${col.config.lport}`}
@@ -267,7 +322,7 @@ export function CollectionsPanel() {
                 />
                 <p className="text-xs text-muted-foreground">
                   {t(obfuscationLabelKey(col.config.obfuscation))} ·{" "}
-                  {formatDate(col.createdAt, locale)}
+                  {formatDate(col.createdAt, "en")}
                 </p>
                 <div className="flex gap-2">
                   <Button

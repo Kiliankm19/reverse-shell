@@ -35,6 +35,7 @@ import {
   getRecommendedListenerId,
   getTemplate,
   reverseShellTemplates,
+  getConfigFieldErrors,
   safeParseReverseShellConfig,
   safeObfuscationForTemplate,
   stageFileName,
@@ -47,7 +48,9 @@ import {
   usesShellInput,
   type ObfuscationMode,
   type PayloadConnectionMode,
+  type Platform,
   type ReverseShellConfig,
+  type ShellFamily,
 } from "@/lib/reverse-shells";
 
 const obfuscationKeys: Array<{
@@ -70,6 +73,32 @@ const obfuscationKeys: Array<{
   { value: "powershell-encoded", labelKey: "obfuscation_ps_enc" },
   { value: "powershell-concat", labelKey: "obfuscation_ps_concat" },
   { value: "python-chr", labelKey: "obfuscation_python_chr" },
+];
+
+const PLATFORM_FILTERS: Array<"all" | Platform> = [
+  "all",
+  "linux",
+  "windows",
+  "multi",
+];
+const FAMILY_FILTERS: Array<"all" | ShellFamily> = [
+  "all",
+  "bash",
+  "nc",
+  "python",
+  "php",
+  "perl",
+  "ruby",
+  "node",
+  "java",
+  "lua",
+  "awk",
+  "openssl",
+  "telnet",
+  "socat",
+  "powershell",
+  "staged",
+  "bind",
 ];
 
 function modeLabel(
@@ -106,9 +135,21 @@ export function BuilderPageClient() {
     return readActiveConfig() ?? defaultConfig();
   });
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [stageTemplateId, setStageTemplateId] = useState(defaultStageTemplateId);
+  const [stageTemplateId, setStageTemplateId] = useState(
+    defaultStageTemplateId,
+  );
+  const [payloadQuery, setPayloadQuery] = useState("");
+  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>("all");
+  const [familyFilter, setFamilyFilter] = useState<"all" | ShellFamily>("all");
 
-  const safeConfig = useMemo(() => safeParseReverseShellConfig(config), [config]);
+  const fieldErrors = useMemo(
+    () => getConfigFieldErrors(config, config.templateId),
+    [config],
+  );
+  const safeConfig = useMemo(
+    () => safeParseReverseShellConfig(config),
+    [config],
+  );
   const generated = useMemo(
     () => (safeConfig ? generateReverseShell(safeConfig) : null),
     [safeConfig],
@@ -139,6 +180,33 @@ export function BuilderPageClient() {
   const showLhost = usesCallbackHost(connectionMode);
   const bindMode = usesBindPortOnly(connectionMode);
   const showShell = usesShellInput(config.templateId);
+  const filteredTemplates = useMemo(() => {
+    const query = payloadQuery.trim().toLowerCase();
+
+    return reverseShellTemplates.filter((template) => {
+      const matchesPlatform =
+        platformFilter === "all" || template.platform === platformFilter;
+      const matchesFamily =
+        familyFilter === "all" || template.family === familyFilter;
+      const translatedName = t(`templates.${template.id}.name`);
+      const translatedDescription = t(`templates.${template.id}.description`);
+      const haystack = [
+        template.id,
+        template.name,
+        template.family,
+        template.platform,
+        template.description,
+        translatedName,
+        translatedDescription,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        matchesPlatform && matchesFamily && (!query || haystack.includes(query))
+      );
+    });
+  }, [familyFilter, payloadQuery, platformFilter, t]);
 
   function patchConfig(patch: Partial<ReverseShellConfig>) {
     setConfig((current) => ({ ...current, ...patch }));
@@ -285,13 +353,74 @@ export function BuilderPageClient() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <RadioTower className="h-4 w-4 text-primary" /> {t("payload_label")}
+                  <RadioTower className="h-4 w-4 text-primary" />{" "}
+                  {t("payload_label")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2 md:col-span-2">
-                    <Label>{t("payload_label")}</Label>
+                    <Label>{t("payload_search_label")}</Label>
+                    <Input
+                      value={payloadQuery}
+                      onChange={(event) => setPayloadQuery(event.target.value)}
+                      placeholder={t("payload_search_placeholder")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t("platform_filter_label")}</Label>
+                    <Select
+                      value={platformFilter}
+                      onValueChange={(value) =>
+                        setPlatformFilter(value as "all" | Platform)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PLATFORM_FILTERS.map((platform) => (
+                          <SelectItem key={platform} value={platform}>
+                            {platform === "all"
+                              ? t("filter_all")
+                              : t(`platforms.${platform}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t("family_filter_label")}</Label>
+                    <Select
+                      value={familyFilter}
+                      onValueChange={(value) =>
+                        setFamilyFilter(value as "all" | ShellFamily)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FAMILY_FILTERS.map((family) => (
+                          <SelectItem key={family} value={family}>
+                            {family === "all"
+                              ? t("filter_all")
+                              : t(`families.${family}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label>{t("payload_label")}</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {t("payload_result_count", {
+                          count: filteredTemplates.length,
+                          total: reverseShellTemplates.length,
+                        })}
+                      </span>
+                    </div>
                     <Select
                       value={config.templateId}
                       onValueChange={handleTemplateChange}
@@ -300,13 +429,18 @@ export function BuilderPageClient() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {reverseShellTemplates.map((template) => (
+                        {filteredTemplates.map((template) => (
                           <SelectItem key={template.id} value={template.id}>
                             {t(`templates.${template.id}.name`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
+                    {filteredTemplates.length === 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        {t("payload_no_results")}
+                      </p>
+                    )}
                     <Badge variant="outline" className="font-mono text-xs">
                       {modeLabel(t, connectionMode)}
                     </Badge>
@@ -316,9 +450,17 @@ export function BuilderPageClient() {
                       <Label>{t("shell_label")}</Label>
                       <Input
                         value={config.shell}
-                        onChange={(event) => patchConfig({ shell: event.target.value })}
+                        onChange={(event) =>
+                          patchConfig({ shell: event.target.value })
+                        }
                         placeholder={selectedTemplate.defaultShell}
+                        aria-invalid={!!fieldErrors.shell}
                       />
+                      {fieldErrors.shell && (
+                        <p className="text-xs text-destructive">
+                          {t("validation_field_shell")}
+                        </p>
+                      )}
                     </div>
                   )}
                   {showLhost && (
@@ -326,9 +468,17 @@ export function BuilderPageClient() {
                       <Label>{t("lhost_label")}</Label>
                       <Input
                         value={config.lhost}
-                        onChange={(event) => patchConfig({ lhost: event.target.value })}
+                        onChange={(event) =>
+                          patchConfig({ lhost: event.target.value })
+                        }
                         placeholder={t("lhost_placeholder")}
+                        aria-invalid={!!fieldErrors.lhost}
                       />
+                      {fieldErrors.lhost && (
+                        <p className="text-xs text-destructive">
+                          {t("validation_field_lhost")}
+                        </p>
+                      )}
                     </div>
                   )}
                   <div className="space-y-2">
@@ -341,7 +491,13 @@ export function BuilderPageClient() {
                       onChange={(event) =>
                         patchConfig({ lport: Number(event.target.value) || 1 })
                       }
+                      aria-invalid={!!fieldErrors.lport}
                     />
+                    {fieldErrors.lport && (
+                      <p className="text-xs text-destructive">
+                        {t("validation_field_lport")}
+                      </p>
+                    )}
                   </div>
                   {connectionMode === "staged" && (
                     <div className="space-y-2">
@@ -352,9 +508,17 @@ export function BuilderPageClient() {
                         max={65535}
                         value={config.httpPort ?? 8000}
                         onChange={(event) =>
-                          patchConfig({ httpPort: Number(event.target.value) || 1 })
+                          patchConfig({
+                            httpPort: Number(event.target.value) || 1,
+                          })
                         }
+                        aria-invalid={!!fieldErrors.httpPort}
                       />
+                      {fieldErrors.httpPort && (
+                        <p className="text-xs text-destructive">
+                          {t("validation_field_http_port")}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -371,7 +535,7 @@ export function BuilderPageClient() {
                   {lhostHint && <p>{lhostHint}</p>}
                   {bindMode && <p>{t("lport_bind_hint")}</p>}
                 </div>
-                {!safeConfig && (
+                {!safeConfig && Object.keys(fieldErrors).length > 0 && (
                   <div className="rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     {t("validation_error")}
                   </div>
@@ -382,7 +546,8 @@ export function BuilderPageClient() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Wand2 className="h-4 w-4 text-primary" /> {t("obfuscation_label")}
+                  <Wand2 className="h-4 w-4 text-primary" />{" "}
+                  {t("obfuscation_label")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -397,12 +562,14 @@ export function BuilderPageClient() {
                   </SelectTrigger>
                   <SelectContent>
                     {obfuscationKeys
-                      .filter((option) => compatibleOptions.includes(option.value))
+                      .filter((option) =>
+                        compatibleOptions.includes(option.value),
+                      )
                       .map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {t(option.labelKey)}
-                      </SelectItem>
-                    ))}
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(option.labelKey)}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
@@ -417,13 +584,20 @@ export function BuilderPageClient() {
             {stageScript && safeConfig && (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t("stage_file_title")}</CardTitle>
+                  <CardTitle className="text-base">
+                    {t("stage_file_title")}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">{t("stage_file_hint")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("stage_file_hint")}
+                  </p>
                   <div className="space-y-2">
                     <Label>{t("stage_template_label")}</Label>
-                    <Select value={stageTemplateId} onValueChange={setStageTemplateId}>
+                    <Select
+                      value={stageTemplateId}
+                      onValueChange={setStageTemplateId}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -481,63 +655,75 @@ export function BuilderPageClient() {
               </Card>
             )}
 
-            {supportsHttpServerNotes(connectionMode) && safeConfig && hoaxServerScript && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{t("http_server_title")}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">{t("http_server_hint")}</p>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {hoaxShellServerFileName()} · {t("http_server_command_title")}
-                  </p>
-                  <Textarea
-                    value={hoaxServerScript}
-                    readOnly
-                    className="min-h-48 font-mono text-xs"
-                  />
-                  <Textarea
-                    value={hoaxServerCommand}
-                    readOnly
-                    className="min-h-16 font-mono text-xs"
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1 gap-2"
-                      onClick={() => void copy(hoaxServerScript)}
-                    >
-                      <Copy className="h-4 w-4" />
-                      {hoaxShellServerFileName()}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 gap-2"
-                      onClick={() =>
-                        downloadText(hoaxShellServerFileName(), hoaxServerScript)
-                      }
-                    >
-                      <Download className="h-4 w-4" />
-                      {t("download_server_button")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 gap-2"
-                      onClick={() => void copy(hoaxServerCommand)}
-                    >
-                      <Copy className="h-4 w-4" />
+            {supportsHttpServerNotes(connectionMode) &&
+              safeConfig &&
+              hoaxServerScript && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">
+                      {t("http_server_title")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      {t("http_server_hint")}
+                    </p>
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {hoaxShellServerFileName()} ·{" "}
                       {t("http_server_command_title")}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                    </p>
+                    <Textarea
+                      value={hoaxServerScript}
+                      readOnly
+                      className="min-h-48 font-mono text-xs"
+                    />
+                    <Textarea
+                      value={hoaxServerCommand}
+                      readOnly
+                      className="min-h-16 font-mono text-xs"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1 gap-2"
+                        onClick={() => void copy(hoaxServerScript)}
+                      >
+                        <Copy className="h-4 w-4" />
+                        {hoaxShellServerFileName()}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1 gap-2"
+                        onClick={() =>
+                          downloadText(
+                            hoaxShellServerFileName(),
+                            hoaxServerScript,
+                          )
+                        }
+                      >
+                        <Download className="h-4 w-4" />
+                        {t("download_server_button")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="flex-1 gap-2"
+                        onClick={() => void copy(hoaxServerCommand)}
+                      >
+                        <Copy className="h-4 w-4" />
+                        {t("http_server_command_title")}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
           </div>
 
           <div className="space-y-6">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">{t("generated_command_title")}</CardTitle>
+                <CardTitle className="text-base">
+                  {t("generated_command_title")}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Textarea
@@ -559,7 +745,9 @@ export function BuilderPageClient() {
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">{t("raw_command_title")}</CardTitle>
+                <CardTitle className="text-base">
+                  {t("raw_command_title")}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Textarea
@@ -573,7 +761,12 @@ export function BuilderPageClient() {
                       <li>
                         - {t(`templates.${generated.template.id}.description`)}
                       </li>
-                      <li>- {t(`obfuscation_notes.${safeConfig?.obfuscation ?? "none"}`)}</li>
+                      <li>
+                        -{" "}
+                        {t(
+                          `obfuscation_notes.${safeConfig?.obfuscation ?? "none"}`,
+                        )}
+                      </li>
                     </>
                   )}
                 </ul>

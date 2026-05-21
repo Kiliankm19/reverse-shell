@@ -1,13 +1,7 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { CollectionsPanel } from "@/features/collections/collections-panel";
 
-export default async function CollectionsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+export default async function CollectionsPage() {
   const t = await getTranslations("collections");
 
   return (

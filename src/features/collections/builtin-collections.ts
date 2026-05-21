@@ -213,5 +213,43 @@ export const builtinCollections: BuiltinCollection[] = [
       obfuscation: "none",
     },
   ),
+  preset(
+    "web-rce-nodejs",
+    "Web RCE Node.js",
+    "Node.js reverse shell for targets with server-side JavaScript execution.",
+    ["multi", "node", "web-rce"],
+    {
+      templateId: "nodejs-child-process",
+      lhost: "10.10.14.3",
+      lport: 4444,
+      shell: "/bin/sh",
+      obfuscation: "url",
+    },
+  ),
+  preset(
+    "linux-openssl-fifo",
+    "Linux OpenSSL FIFO",
+    "TLS callback using openssl s_client and a named pipe.",
+    ["linux", "openssl", "tls"],
+    {
+      templateId: "openssl-fifo",
+      lhost: "10.10.14.3",
+      lport: 443,
+      shell: "/bin/sh",
+      obfuscation: "none",
+    },
+  ),
+  preset(
+    "linux-busybox-nc",
+    "Linux BusyBox nc",
+    "Compact BusyBox netcat payload for minimal Linux environments.",
+    ["linux", "nc", "busybox"],
+    {
+      templateId: "busybox-nc-e",
+      lhost: "10.10.14.3",
+      lport: 4444,
+      shell: "/bin/sh",
+      obfuscation: "none",
+    },
+  ),
 ];
-

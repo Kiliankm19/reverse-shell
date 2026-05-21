@@ -1,8 +1,5 @@
-import createIntlMiddleware from "next-intl/middleware";
 import { NextRequest } from "next/server";
-import { routing } from "./i18n/routing";
-
-const intlMiddleware = createIntlMiddleware(routing);
+import { NextResponse } from "next/server";
 
 function createNonce(): string {
   const bytes = new Uint8Array(16);
@@ -42,16 +39,17 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
 
-  const intlRequest = new NextRequest(request.url, {
-    headers: requestHeaders,
-    method: request.method,
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
   });
-
-  const response = intlMiddleware(intlRequest);
   response.headers.set("Content-Security-Policy", csp);
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+  ],
 };

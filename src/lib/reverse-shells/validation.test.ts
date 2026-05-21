@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getConfigFieldErrors,
   normalizeHost,
   normalizePort,
   normalizeShell,
@@ -50,5 +51,37 @@ describe("safeParseReverseShellConfig", () => {
       obfuscation: "none",
     });
     expect(config?.templateId).toBe("bash-dev-tcp");
+  });
+});
+
+describe("getConfigFieldErrors", () => {
+  it("flags invalid lhost and shell", () => {
+    const errors = getConfigFieldErrors(
+      {
+        templateId: "bash-dev-tcp",
+        lhost: "bad host",
+        lport: 4444,
+        shell: "/bin/sh -i",
+        obfuscation: "none",
+      },
+      "bash-dev-tcp",
+    );
+    expect(errors.lhost).toBe(true);
+    expect(errors.shell).toBe(true);
+  });
+
+  it("flags invalid staged http port", () => {
+    const errors = getConfigFieldErrors(
+      {
+        templateId: "bash-curl-staged",
+        lhost: "10.0.0.1",
+        lport: 4444,
+        httpPort: 0,
+        shell: "/bin/bash",
+        obfuscation: "none",
+      },
+      "bash-curl-staged",
+    );
+    expect(errors.httpPort).toBe(true);
   });
 });

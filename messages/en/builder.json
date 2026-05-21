@@ -2,6 +2,13 @@
   "title": "Reverse Shell Builder",
   "subtitle": "Generate one-liners, apply obfuscation, and save reusable configs.",
   "payload_label": "Payload",
+  "payload_search_label": "Search payloads",
+  "payload_search_placeholder": "Search by language, platform, or technique...",
+  "payload_result_count": "{count} of {total} payloads",
+  "payload_no_results": "No payloads match the current filters.",
+  "platform_filter_label": "Platform",
+  "family_filter_label": "Family",
+  "filter_all": "All",
   "lhost_label": "LHOST",
   "lhost_bind_hint": "Not used for bind shells. Connect inbound to the target on LPORT.",
   "lhost_staged_hint": "HTTP server address that hosts your stage file (rs.sh).",
@@ -29,7 +36,11 @@
   "invalid_input": "Fix invalid input to generate a command.",
   "invalid_save": "Fix invalid input before saving.",
   "invalid_export": "Fix invalid input before exporting.",
-  "validation_error": "LHOST and shell may only contain safe host/path characters.",
+  "validation_error": "Fix the highlighted fields to generate a command.",
+  "validation_field_lhost": "Use an IP address or hostname without shell metacharacters.",
+  "validation_field_shell": "Use a shell path without spaces or shell metacharacters.",
+  "validation_field_lport": "Port must be between 1 and 65535.",
+  "validation_field_http_port": "HTTP port must be between 1 and 65535.",
   "obfuscation_note": "Obfuscation is applied locally in the browser and never sends the payload anywhere.",
   "obfuscation_compat_note": "Only modes compatible with the selected payload are shown.",
   "copied": "Copied to clipboard",
@@ -38,7 +49,7 @@
   "obfuscation_none": "None - Plain command",
   "obfuscation_url": "URL encode - HTTP parameter safe",
   "obfuscation_bash_base64": "Bash base64 - Decode then pipe to shell",
-  "obfuscation_bash_ifs": "Bash ${IFS} - Replace spaces",
+  "obfuscation_bash_ifs": "Bash '${IFS}' - Replace spaces",
   "obfuscation_bash_rev": "Bash rev - Reverse string wrapper",
   "obfuscation_ps_enc": "PowerShell -Enc - UTF-16LE base64",
   "obfuscation_ps_concat": "PowerShell concat - String chunking",
@@ -66,11 +77,34 @@
     "none": "No obfuscation applied.",
     "url": "URL-encoded output for HTTP parameter or form contexts.",
     "bash-base64": "Base64 wrapper decoded locally before execution.",
-    "bash-ifs": "Spaces replaced with ${IFS} for shell argument filtering.",
+    "bash-ifs": "Spaces replaced with '${IFS}' for shell argument filtering.",
     "bash-rev": "Command is stored reversed and reconstructed with rev.",
     "powershell-encoded": "PowerShell -EncodedCommand uses UTF-16LE base64.",
     "powershell-concat": "PowerShell command split into concatenated string chunks.",
     "python-chr": "Command reconstructed from character codes before execution."
+  },
+  "platforms": {
+    "linux": "Linux",
+    "windows": "Windows",
+    "multi": "Multi-platform"
+  },
+  "families": {
+    "bash": "Bash",
+    "nc": "Netcat",
+    "python": "Python",
+    "php": "PHP",
+    "perl": "Perl",
+    "ruby": "Ruby",
+    "node": "Node.js",
+    "java": "Java",
+    "lua": "Lua",
+    "awk": "awk",
+    "openssl": "OpenSSL",
+    "telnet": "Telnet",
+    "socat": "Socat",
+    "powershell": "PowerShell",
+    "staged": "Staged",
+    "bind": "Bind"
   },
   "templates": {
     "bash-dev-tcp": {
@@ -93,6 +127,22 @@
       "name": "Python 3 socket",
       "description": "Python reverse shell with stdio duplicated to the socket."
     },
+    "nodejs-child-process": {
+      "name": "Node.js child_process",
+      "description": "Node.js reverse shell using net and child_process."
+    },
+    "java-runtime": {
+      "name": "Java Runtime",
+      "description": "Java reverse shell using Runtime exec and socket streams."
+    },
+    "awk-tcp": {
+      "name": "awk TCP",
+      "description": "awk reverse shell for systems with /inet/tcp support."
+    },
+    "lua-socket": {
+      "name": "LuaSocket",
+      "description": "Lua reverse shell using the LuaSocket module."
+    },
     "php-proc-open": {
       "name": "PHP proc_open",
       "description": "PHP one-liner for web RCE contexts."
@@ -108,6 +158,18 @@
     "socat-pty": {
       "name": "Socat PTY",
       "description": "Socat reverse shell that starts with a PTY-friendly process."
+    },
+    "openssl-fifo": {
+      "name": "OpenSSL FIFO",
+      "description": "TLS reverse shell using openssl s_client and a named pipe."
+    },
+    "busybox-nc-e": {
+      "name": "BusyBox nc -e",
+      "description": "BusyBox netcat reverse shell for compact Linux environments."
+    },
+    "telnet-mkfifo": {
+      "name": "Telnet mkfifo",
+      "description": "Telnet reverse shell fallback using a named pipe."
     },
     "powershell-tcp-client": {
       "name": "PowerShell TCPClient",
