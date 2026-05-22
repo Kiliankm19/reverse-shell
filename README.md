@@ -6,14 +6,15 @@ Client-side reverse shell generator for authorized security testing and lab work
 
 ## Features
 
-- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Node.js, Java, Go, Lua, awk, OpenSSL, Telnet, Socat, and PowerShell.
-- Builder persists your last config in localStorage and syncs shareable `?template=&lhost=&lport=` URLs.
-- Inline recommended listener command with links to the listener and TTY upgrade pages.
+- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Node.js, Java, Go, Lua, awk, OpenSSL, Telnet, Socat, Zsh, msfvenom, and PowerShell.
+- Builder persists your last config in localStorage and syncs shareable `?template=&lhost=&lport=&shell=&obfuscation=` URLs.
+- Searchable payload picker with platform/family filters and inline recommended listener commands.
 - Obfuscation helpers missing from many generators: URL encoding, Bash base64 wrappers, `${IFS}` spacing, reversed Bash reconstruction, PowerShell `-EncodedCommand`, PowerShell string chunking, and Python `chr()` rebuilds.
-- Search and filters for payload family and platform.
-- Listener builder for netcat, rlwrap, ncat SSL, OpenSSL `s_server`, socat TTY, and Metasploit multi/handler.
+- Reverse, bind, staged HTTP fetch, and HoaxShell-style HTTP callback workflows.
+- Listener builder for netcat, rlwrap, ncat SSL, OpenSSL `s_server`, socat TTY, bind-shell connect, and a Metasploit `cmd/unix/reverse_bash` handler.
 - Shell upgrade recipes for Python PTY, `script`, socat, and Windows-oriented notes.
-- Ready-to-use reverse shell collections, including bind, staged, and HoaxShell-style presets, plus browser-side saved collections with JSON import/export preview via IndexedDB.
+- Ready-to-use reverse shell collections, including bind, staged, and HoaxShell-style presets, plus browser-side saved collections with search, rename, clear, and JSON import/export preview via IndexedDB.
+- Versioned collection exports use `{ "schemaVersion": 1, "collections": [...] }`; imports also accept the legacy array form and reassign duplicate IDs.
 - Markdown engagement card export with LHOST, LPORT, generated command, raw command, and recommended listener.
 - Dark Tailwind/shadcn UI in the same family as `shellcodes` and `xsspayloads`.
 
@@ -36,6 +37,8 @@ Open `http://localhost:3002` for the reverse shell builder (dev server uses port
 | `/listener`     | Listener command generator       |
 | `/upgrade`      | Shell upgrade recipes            |
 | `/collections`  | Presets and saved configurations |
+| `/blog`         | Notes and release updates        |
+| `/legal`        | Legal information                |
 
 ## Scripts
 
@@ -59,13 +62,18 @@ reverseshell/
 │   ├── reverseshell/  # marketing landing
 │   ├── listener/      # listener command generator
 │   ├── upgrade/       # shell upgrade recipes
-│   └── collections/   # saved configs
-├── src/features/      # client panels and feature UI
+│   ├── collections/   # saved configs
+│   ├── blog/          # notes and release updates
+│   └── legal/         # legal information
+├── src/features/
+│   ├── builder/       # builder hook, cards, picker, and share/persist helpers
+│   ├── collections/   # IndexedDB collections, presets, import/export UI
+│   └── listener/      # listener generator UI
 ├── src/lib/reverse-shells/
 │   ├── catalog.ts     # payload/listener/upgrade catalogs
 │   ├── generate.ts    # rendering and obfuscation engine
 │   └── types.ts
-├── tests/e2e/         # Playwright smoke tests
+├── tests/e2e/         # Playwright tests for builder, collections, and landing
 └── messages/en/       # English UI copy
 ```
 
@@ -73,8 +81,9 @@ reverseshell/
 
 - All generation happens locally in the browser.
 - No generated command is executed by the app.
-- Collections are stored in IndexedDB and can be exported/imported as JSON.
+- Collections are stored in IndexedDB and can be exported/imported as versioned JSON.
 - JSON imports are schema-validated and previewed before being written.
+- Duplicate collection IDs in imports are reassigned locally instead of overwriting existing entries.
 - Inputs are bounded before storage/import to reduce accidental oversized payloads.
 - Script CSP is nonce-based via middleware; inline scripts are not allowed without the per-request nonce.
 - No analytics or third-party telemetry is configured by default.
