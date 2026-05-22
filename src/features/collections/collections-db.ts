@@ -7,7 +7,14 @@ import {
   reverseShellConfigSchema,
 } from "@/lib/reverse-shells";
 
+export const COLLECTIONS_SCHEMA_VERSION = 1;
+
 const KEY = (id: string) => `reverseshell:col:${id}`;
+
+export type CollectionsImportResult = {
+  imported: number;
+  skippedDuplicates: number;
+};
 
 const savedCollectionSchema = z
   .object({
@@ -71,7 +78,21 @@ export async function deleteAllCollections(): Promise<void> {
 }
 
 export function exportCollectionsJson(cols: SavedCollection[]): string {
-  return JSON.stringify(cols, null, 2);
+  return JSON.stringify(
+    { schemaVersion: COLLECTIONS_SCHEMA_VERSION, collections: cols },
+    null,
+    2,
+  );
+}
+
+export async function renameCollection(
+  id: string,
+  name: string,
+): Promise<void> {
+  const all = await loadAllCollections();
+  const found = all.find((col) => col.id === id);
+  if (!found) return;
+  await saveCollection({ ...found, name });
 }
 
 export function previewCollectionsJson(json: string): SavedCollection[] {
@@ -81,16 +102,19 @@ export function previewCollectionsJson(json: string): SavedCollection[] {
 
 export async function importCollectionsJson(
   json: string,
-): Promise<SavedCollection[]> {
+): Promise<CollectionsImportResult> {
   const cols = previewCollectionsJson(json);
   const existingIds = new Set(
     (await loadAllCollections()).map((col) => col.id),
   );
+  let skippedDuplicates = 0;
 
   for (const col of cols) {
-    const id = existingIds.has(col.id) ? crypto.randomUUID() : col.id;
+    const duplicate = existingIds.has(col.id);
+    const id = duplicate ? crypto.randomUUID() : col.id;
+    if (duplicate) skippedDuplicates += 1;
     existingIds.add(id);
     await saveCollection({ ...col, id });
   }
-  return cols;
+  return { imported: cols.length, skippedDuplicates };
 }

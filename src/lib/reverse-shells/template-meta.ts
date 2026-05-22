@@ -22,6 +22,11 @@ export const RECOMMENDED_LISTENER_BY_TEMPLATE: Partial<
   "perl-socket": "rlwrap-nc",
   "ruby-socket": "rlwrap-nc",
   "powershell-tcp-client": "nc",
+  "powershell-iex": "nc",
+  "powershell-downloadstring": "rlwrap-nc",
+  "zsh-dev-tcp": "rlwrap-nc",
+  "golang-tcp": "rlwrap-nc",
+  "msfvenom-bash": "rlwrap-nc",
   "bash-curl-staged": "rlwrap-nc",
   "nc-bind-e": "bind-connect",
   "python3-bind": "bind-connect",
@@ -72,7 +77,7 @@ export function supportsHttpServerNotes(mode: PayloadConnectionMode): boolean {
 
 export function usesShellInput(templateId: string): boolean {
   const template = getTemplate(templateId);
-  return !["powershell", "ruby", "lua", "awk"].includes(template.family);
+  return !["powershell", "ruby", "lua", "awk", "go"].includes(template.family);
 }
 
 export const templateCount = reverseShellTemplates.length;

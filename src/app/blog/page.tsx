@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const POST_IDS = ["welcome"] as const;
+const POST_IDS = ["builder-update", "welcome"] as const;
 
 export default async function BlogPage() {
   const t = await getTranslations("blog");

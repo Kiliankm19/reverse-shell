@@ -6,7 +6,9 @@ Client-side reverse shell generator for authorized security testing and lab work
 
 ## Features
 
-- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Node.js, Java, Lua, awk, OpenSSL, Telnet, Socat, and PowerShell.
+- Reverse shell builder for Bash, Netcat, Python, PHP, Perl, Ruby, Node.js, Java, Go, Lua, awk, OpenSSL, Telnet, Socat, and PowerShell.
+- Builder persists your last config in localStorage and syncs shareable `?template=&lhost=&lport=` URLs.
+- Inline recommended listener command with links to the listener and TTY upgrade pages.
 - Obfuscation helpers missing from many generators: URL encoding, Bash base64 wrappers, `${IFS}` spacing, reversed Bash reconstruction, PowerShell `-EncodedCommand`, PowerShell string chunking, and Python `chr()` rebuilds.
 - Search and filters for payload family and platform.
 - Listener builder for netcat, rlwrap, ncat SSL, OpenSSL `s_server`, socat TTY, and Metasploit multi/handler.
@@ -22,7 +24,7 @@ pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000` for the reverse shell builder.
+Open `http://localhost:3002` for the reverse shell builder (dev server uses port 3002 by default).
 
 ## Routes
 

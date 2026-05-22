@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -15,7 +15,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Bookmark, Download, FolderOpen, Trash2, Upload } from "lucide-react";
+import {
+  Bookmark,
+  Download,
+  FolderOpen,
+  Pencil,
+  Trash2,
+  Upload,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MAX_COLLECTION_IMPORT_BYTES } from "@/lib/security";
 import {
   getConnectionModeById,
@@ -74,6 +83,7 @@ export function CollectionsPanel() {
     collections,
     loading,
     save,
+    rename,
     remove,
     clear,
     exportJson,
@@ -87,6 +97,26 @@ export function CollectionsPanel() {
     text: string;
     count: number;
   } | null>(null);
+  const [presetQuery, setPresetQuery] = useState("");
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+
+  const filteredPresets = useMemo(() => {
+    const needle = presetQuery.trim().toLowerCase();
+    if (!needle) return builtinCollections;
+    return builtinCollections.filter((collection) => {
+      const haystack = [
+        collection.id,
+        collection.config.templateId,
+        t(`presets.${collection.id}.name`),
+        t(`presets.${collection.id}.description`),
+        ...collection.tags.map((tag) => t(`tags.${tag}`)),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(needle);
+    });
+  }, [presetQuery, t]);
 
   const handleLoad = useCallback(
     (col: Pick<SavedCollection, "config">) => {
@@ -149,8 +179,17 @@ export function CollectionsPanel() {
   const handleConfirmImport = useCallback(() => {
     if (!pendingImport) return;
     importJson(pendingImport.text)
-      .then((imported) => {
-        toast.success(t("import_success", { count: imported.length }));
+      .then((result) => {
+        if (result.skippedDuplicates > 0) {
+          toast.success(
+            t("import_success_duplicates", {
+              count: result.imported,
+              duplicates: result.skippedDuplicates,
+            }),
+          );
+        } else {
+          toast.success(t("import_success", { count: result.imported }));
+        }
         setPendingImport(null);
       })
       .catch(() => {
@@ -169,8 +208,16 @@ export function CollectionsPanel() {
           </div>
           <p className="text-sm text-muted-foreground">{t("presets_hint")}</p>
         </div>
+        <div className="max-w-md space-y-2">
+          <Label>{t("preset_search_label")}</Label>
+          <Input
+            value={presetQuery}
+            onChange={(event) => setPresetQuery(event.target.value)}
+            placeholder={t("preset_search_placeholder")}
+          />
+        </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {builtinCollections.map((collection) => (
+          {filteredPresets.map((collection) => (
             <Card key={collection.id} className="flex flex-col">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold">
@@ -299,7 +346,37 @@ export function CollectionsPanel() {
           {collections.map((col) => (
             <Card key={col.id} className="flex flex-col">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold">{col.name}</CardTitle>
+                {renamingId === col.id ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                      value={renameValue}
+                      onChange={(event) => setRenameValue(event.target.value)}
+                      className="h-8 max-w-xs text-sm"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        void rename(col.id, renameValue).then(() => {
+                          toast.success(t("renamed"));
+                          setRenamingId(null);
+                        });
+                      }}
+                    >
+                      {t("rename_save")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setRenamingId(null)}
+                    >
+                      {t("rename_cancel")}
+                    </Button>
+                  </div>
+                ) : (
+                  <CardTitle className="text-sm font-bold">
+                    {col.name}
+                  </CardTitle>
+                )}
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="outline" className="w-fit font-mono text-xs">
                     {col.config.templateId}
@@ -332,6 +409,18 @@ export function CollectionsPanel() {
                   >
                     <FolderOpen className="h-3.5 w-3.5" />
                     {t("load_button")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setRenamingId(col.id);
+                      setRenameValue(col.name);
+                    }}
+                    className="gap-1.5"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {t("rename_button")}
                   </Button>
                   <DeleteButton
                     label={t("delete_button")}

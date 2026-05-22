@@ -38,6 +38,12 @@
         "date": "May 2026",
         "excerpt": "How to use the builder, listener page, and engagement card export in authorized labs.",
         "body": "Open the home page builder to pick a template, set LHOST/LPORT, and copy or export commands. Use the listener page for handler one-liners, collections for presets, and the engagement card export to capture configuration and notes in markdown."
+      },
+      "builder-update": {
+        "title": "Builder persistence and shareable URLs",
+        "date": "May 2026",
+        "excerpt": "Your last builder config is saved locally; share lab setups with query parameters.",
+        "body": "The builder now restores your last template, LHOST, LPORT, and obfuscation from localStorage. Valid configs also sync to the URL so you can bookmark or share a lab setup. A recommended listener card appears beside the generated command, and the payload picker supports search across the expanded catalog."
       }
     }
   }

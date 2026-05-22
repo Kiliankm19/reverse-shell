@@ -12,7 +12,10 @@ test("obfuscation dropdown renders IFS label without i18n errors", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("combobox").nth(3).click();
+  await page
+    .getByRole("combobox")
+    .filter({ hasText: /None|Plain command/i })
+    .click();
   await expect(
     page.getByRole("option", { name: /Bash .*IFS.*Replace spaces/i }),
   ).toBeVisible();

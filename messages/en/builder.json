@@ -25,6 +25,13 @@
   "save_button": "Save",
   "export_card_button": "Export Card",
   "copy_command_button": "Copy Command",
+  "copy_listener_button": "Copy listener",
+  "recommended_listener_title": "Recommended listener",
+  "recommended_listener_hint": "Run this on your attack box before executing the payload.",
+  "recommended_listener_http_note": "Use the HTTP callback server below instead of a TCP listener.",
+  "open_listener_page": "Listener builder",
+  "open_upgrade_page": "TTY upgrade",
+  "payload_picker_title": "Choose payload",
   "generated_command_title": "Generated Command",
   "raw_command_title": "Raw Command",
   "stage_file_title": "Stage file",
@@ -97,6 +104,7 @@
     "ruby": "Ruby",
     "node": "Node.js",
     "java": "Java",
+    "go": "Go",
     "lua": "Lua",
     "awk": "awk",
     "openssl": "OpenSSL",
@@ -133,7 +141,7 @@
     },
     "java-runtime": {
       "name": "Java Runtime",
-      "description": "Java reverse shell using Runtime exec and socket streams."
+      "description": "Java reverse shell using ProcessBuilder and socket redirection (JDK 11+)."
     },
     "awk-tcp": {
       "name": "awk TCP",
@@ -190,6 +198,26 @@
     "python3-bind": {
       "name": "Python 3 bind shell",
       "description": "Python bind shell that listens on the target instead of calling back."
+    },
+    "golang-tcp": {
+      "name": "Go TCP reverse shell",
+      "description": "Go reverse shell compiled as a one-liner for targets with Go."
+    },
+    "zsh-dev-tcp": {
+      "name": "Zsh /dev/tcp",
+      "description": "Zsh reverse shell using /dev/tcp redirection."
+    },
+    "powershell-iex": {
+      "name": "PowerShell IEX",
+      "description": "PowerShell reverse shell using Invoke-Expression over TCP."
+    },
+    "powershell-downloadstring": {
+      "name": "PowerShell DownloadString",
+      "description": "Staged PowerShell loader that pulls a script from your HTTP server."
+    },
+    "msfvenom-bash": {
+      "name": "msfvenom Bash",
+      "description": "Generate a Metasploit Bash payload locally, then run the output on the target."
     }
   }
 }

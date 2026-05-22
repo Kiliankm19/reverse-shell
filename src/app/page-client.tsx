@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Bookmark, Copy, Download, RadioTower, Wand2 } from "lucide-react";
@@ -20,7 +20,16 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { SaveCollectionDialog } from "@/features/collections/save-collection-dialog";
 import { saveCollection } from "@/features/collections/collections-db";
-import { readActiveConfig } from "@/features/builder/store";
+import { PayloadPicker } from "@/features/builder/payload-picker";
+import { RecommendedListenerCard } from "@/features/builder/recommended-listener-card";
+import {
+  configFromSearchParams,
+  syncShareUrl,
+} from "@/features/builder/share-config";
+import {
+  persistBuilderConfig,
+  readInitialBuilderConfig,
+} from "@/features/builder/store";
 import {
   createEngagementCard,
   createHoaxShellServerScript,
@@ -91,6 +100,7 @@ const FAMILY_FILTERS: Array<"all" | ShellFamily> = [
   "ruby",
   "node",
   "java",
+  "go",
   "lua",
   "awk",
   "openssl",
@@ -132,8 +142,16 @@ export function BuilderPageClient() {
   const tListener = useTranslations("listener");
   const [config, setConfig] = useState<ReverseShellConfig>(() => {
     if (typeof window === "undefined") return defaultConfig();
-    return readActiveConfig() ?? defaultConfig();
+    return (
+      configFromSearchParams(window.location.search) ??
+      readInitialBuilderConfig()
+    );
   });
+
+  useEffect(() => {
+    persistBuilderConfig(config);
+    syncShareUrl(config);
+  }, [config]);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [stageTemplateId, setStageTemplateId] = useState(
     defaultStageTemplateId,
@@ -421,21 +439,11 @@ export function BuilderPageClient() {
                         })}
                       </span>
                     </div>
-                    <Select
+                    <PayloadPicker
+                      templates={filteredTemplates}
                       value={config.templateId}
-                      onValueChange={handleTemplateChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredTemplates.map((template) => (
-                          <SelectItem key={template.id} value={template.id}>
-                            {t(`templates.${template.id}.name`)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onChange={handleTemplateChange}
+                    />
                     {filteredTemplates.length === 0 && (
                       <p className="text-xs text-muted-foreground">
                         {t("payload_no_results")}
@@ -482,8 +490,9 @@ export function BuilderPageClient() {
                     </div>
                   )}
                   <div className="space-y-2">
-                    <Label>{t("lport_label")}</Label>
+                    <Label htmlFor="builder-lport">{t("lport_label")}</Label>
                     <Input
+                      id="builder-lport"
                       type="number"
                       min={1}
                       max={65535}
@@ -719,6 +728,12 @@ export function BuilderPageClient() {
           </div>
 
           <div className="space-y-6">
+            <RecommendedListenerCard
+              config={config}
+              connectionMode={connectionMode}
+              onCopy={(value) => void copy(value)}
+            />
+
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">

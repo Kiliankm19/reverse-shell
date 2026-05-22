@@ -10,6 +10,7 @@ import {
   exportCollectionsJson,
   importCollectionsJson,
   previewCollectionsJson,
+  renameCollection,
 } from "./collections-db";
 
 export function useCollections() {
@@ -31,6 +32,11 @@ export function useCollections() {
   const remove = useCallback(async (id: string) => {
     await deleteCollection(id);
     setCollections((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
+  const rename = useCallback(async (id: string, name: string) => {
+    await renameCollection(id, name);
+    setCollections(await loadAllCollections());
   }, []);
 
   const clear = useCallback(async () => {
@@ -56,6 +62,7 @@ export function useCollections() {
     collections,
     loading,
     save,
+    rename,
     remove,
     clear,
     exportJson,

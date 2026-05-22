@@ -7,6 +7,9 @@
   "lhost_hint": "LHOST is only used by handlers that need to advertise a callback address, such as Metasploit. Basic listeners bind on all interfaces.",
   "copy_listener": "Copy listener",
   "copied": "Copied to clipboard",
+  "search_placeholder": "Search listeners...",
+  "invalid_lhost": "Use an IP address or hostname without shell metacharacters.",
+  "invalid_lport": "Port must be between 1 and 65535.",
   "templates": {
     "nc": {
       "name": "Netcat",

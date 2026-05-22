@@ -24,6 +24,13 @@
   "name_placeholder": "Lab callback",
   "preset_saved": "Preset saved",
   "import_success": "Imported {count} collections.",
+  "import_success_duplicates": "Imported {count} collections ({duplicates} duplicate IDs reassigned).",
+  "preset_search_label": "Search presets",
+  "preset_search_placeholder": "Filter by name, tag, or template...",
+  "rename_button": "Rename",
+  "rename_save": "Save name",
+  "rename_cancel": "Cancel",
+  "renamed": "Collection renamed",
   "bind_badge": "bind:{port}",
   "obfuscation": {
     "none": "No obfuscation",

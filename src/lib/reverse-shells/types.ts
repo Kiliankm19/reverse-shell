@@ -9,6 +9,7 @@ export type ShellFamily =
   | "ruby"
   | "node"
   | "java"
+  | "go"
   | "lua"
   | "awk"
   | "openssl"
