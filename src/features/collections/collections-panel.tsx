@@ -349,6 +349,7 @@ export function CollectionsPanel() {
                 {renamingId === col.id ? (
                   <div className="flex flex-wrap items-center gap-2">
                     <Input
+                      data-testid="collection-rename-input"
                       value={renameValue}
                       onChange={(event) => setRenameValue(event.target.value)}
                       className="h-8 max-w-xs text-sm"
