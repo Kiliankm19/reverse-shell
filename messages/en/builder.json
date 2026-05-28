@@ -1,14 +1,31 @@
 {
   "title": "Reverse Shell Builder",
   "subtitle": "Generate one-liners, apply obfuscation, and save reusable configs.",
-  "payload_label": "Payload",
-  "payload_search_label": "Search payloads",
+  "payload_label": "Technique",
+  "payload_intro": "Choose a reliable technique, then narrow results by type, platform, and family.",
+  "payload_search_label": "Search techniques",
   "payload_search_placeholder": "Search by language, platform, or technique...",
-  "payload_result_count": "{count} of {total} payloads",
-  "payload_no_results": "No payloads match the current filters.",
+  "technique_type_label": "Technique type",
+  "payload_result_count": "{count} of {total} techniques",
+  "payload_no_results": "No techniques match the current filters.",
+  "attacker_title": "Attacker",
+  "attacker_intro": "Set the callback IP and port your target should connect back to.",
+  "ip_label": "IP",
+  "port_label": "Port",
+  "random_port_button": "Random port",
+  "random_port_hint": "Random ports avoid common services such as SSH, HTTP/S, DNS, databases, Redis, Docker, and common dev ports.",
+  "attacker_endpoint_label": "Current endpoint",
+  "attacker_ip_not_used": "Not used for this payload",
   "platform_filter_label": "Platform",
   "family_filter_label": "Family",
   "filter_all": "All",
+  "technique_types": {
+    "reverse": "Reverse",
+    "bind": "Bind",
+    "msfvenom": "MSFvenom",
+    "hoaxshell": "HoaxShell",
+    "assembled": "Assembled"
+  },
   "lhost_label": "LHOST",
   "lhost_bind_hint": "Not used for bind shells. Connect inbound to the target on LPORT.",
   "lhost_staged_hint": "HTTP server address that hosts your stage file (rs.sh).",
@@ -18,6 +35,7 @@
   "lport_bind_hint": "Port opened on the target. Connect with nc TARGET_IP LPORT.",
   "shell_label": "Shell",
   "obfuscation_label": "Obfuscation",
+  "obfuscation_intro": "Transform the generated command for encoding, transport, or simple filter bypass needs.",
   "mode_reverse": "Reverse TCP callback",
   "mode_bind": "Bind shell (inbound connection)",
   "mode_staged": "Staged payload (HTTP fetch)",
@@ -28,12 +46,21 @@
   "copy_listener_button": "Copy listener",
   "recommended_listener_title": "Recommended listener",
   "recommended_listener_hint": "Run this on your attack box before executing the payload.",
+  "listener_type_label": "Listener",
+  "listener_setup_title": "Listener setup",
+  "listener_command_label": "Listener command",
   "recommended_listener_http_note": "Use the HTTP callback server below instead of a TCP listener.",
-  "open_listener_page": "Listener builder",
   "open_upgrade_page": "TTY upgrade",
-  "payload_picker_title": "Choose payload",
+  "tty_upgrade_title": "TTY upgrade",
+  "tty_upgrade_hint": "Copy these steps after the callback lands to improve interactivity without leaving the builder.",
+  "tty_upgrade_recipe_label": "Upgrade recipe",
+  "tty_upgrade_steps_label": "Upgrade steps",
+  "copy_upgrade_button": "Copy upgrade steps",
+  "payload_picker_title": "Choose technique",
   "generated_command_title": "Generated Command",
+  "generated_command_intro": "Use this final command after validation and any compatible obfuscation.",
   "raw_command_title": "Raw Command",
+  "raw_command_intro": "Review the unmodified technique before local transformations are applied.",
   "stage_file_title": "Stage file",
   "stage_file_hint": "Host this file on your HTTP server, then run the staged command on the target.",
   "stage_template_label": "Second-stage payload",
@@ -55,11 +82,17 @@
   "exported_card": "Engagement card exported",
   "obfuscation_none": "None - Plain command",
   "obfuscation_url": "URL encode - HTTP parameter safe",
+  "obfuscation_url_double": "URL double encode - Nested decode contexts",
+  "obfuscation_base64": "Base64 encode - Raw UTF-8 output",
+  "obfuscation_hex": "Hex encode - Raw UTF-8 output",
   "obfuscation_bash_base64": "Bash base64 - Decode then pipe to shell",
+  "obfuscation_bash_base64_no_spaces": "Bash base64 compact - Minimal spaces",
   "obfuscation_bash_ifs": "Bash '${IFS}' - Replace spaces",
   "obfuscation_bash_rev": "Bash rev - Reverse string wrapper",
+  "obfuscation_bash_printf_hex": "Bash printf hex - Rebuild with escapes",
   "obfuscation_ps_enc": "PowerShell -Enc - UTF-16LE base64",
   "obfuscation_ps_concat": "PowerShell concat - String chunking",
+  "obfuscation_ps_base64": "PowerShell base64 - UTF-8 decode wrapper",
   "obfuscation_python_chr": "Python chr() - Character code rebuild",
   "lhost_placeholder": "10.10.14.3",
   "download_stage_button": "Download rs.sh",
@@ -83,20 +116,28 @@
   "obfuscation_notes": {
     "none": "No obfuscation applied.",
     "url": "URL-encoded output for HTTP parameter or form contexts.",
+    "url-double": "Command URL-encoded twice for double-decoding contexts.",
+    "base64": "Raw UTF-8 base64-encoded command output.",
+    "hex": "Raw UTF-8 hex-encoded command output.",
     "bash-base64": "Base64 wrapper decoded locally before execution.",
+    "bash-base64-no-spaces": "Bash base64 wrapper using minimal spaces.",
     "bash-ifs": "Spaces replaced with '${IFS}' for shell argument filtering.",
     "bash-rev": "Command is stored reversed and reconstructed with rev.",
+    "bash-printf-hex": "Command rebuilt from hex escape sequences with printf.",
     "powershell-encoded": "PowerShell -EncodedCommand uses UTF-16LE base64.",
     "powershell-concat": "PowerShell command split into concatenated string chunks.",
+    "powershell-base64": "PowerShell decodes a UTF-8 base64 command before execution.",
     "python-chr": "Command reconstructed from character codes before execution."
   },
   "platforms": {
     "linux": "Linux",
+    "macos": "macOS",
     "windows": "Windows",
     "multi": "Multi-platform"
   },
   "families": {
     "bash": "Bash",
+    "sh": "sh/dash",
     "nc": "Netcat",
     "python": "Python",
     "php": "PHP",
@@ -110,6 +151,7 @@
     "openssl": "OpenSSL",
     "telnet": "Telnet",
     "socat": "Socat",
+    "cmd": "CMD",
     "powershell": "PowerShell",
     "staged": "Staged",
     "bind": "Bind"
@@ -123,6 +165,30 @@
       "name": "Bash FD 196",
       "description": "Bash reverse shell using an explicit file descriptor."
     },
+    "bash-c-exec": {
+      "name": "Bash -c exec",
+      "description": "Bash reverse shell wrapped in bash -c with exec redirection."
+    },
+    "bash-5-fd": {
+      "name": "Bash FD 5",
+      "description": "Bash reverse shell using file descriptor 5 for TCP I/O."
+    },
+    "bash-read-line": {
+      "name": "Bash read loop",
+      "description": "Bash command loop over /dev/tcp without spawning a full PTY."
+    },
+    "sh-dev-tcp": {
+      "name": "sh /dev/tcp",
+      "description": "POSIX sh reverse shell when /dev/tcp is available (often via dash)."
+    },
+    "dash-dev-tcp": {
+      "name": "dash /dev/tcp",
+      "description": "dash reverse shell using /dev/tcp redirection."
+    },
+    "macos-bash-dev-tcp": {
+      "name": "macOS Bash /dev/tcp",
+      "description": "Bash /dev/tcp reverse shell for macOS targets."
+    },
     "nc-mkfifo": {
       "name": "Netcat mkfifo",
       "description": "Works with netcat builds that do not expose -e."
@@ -131,45 +197,169 @@
       "name": "Netcat -e",
       "description": "Shortest netcat variant when -e is available."
     },
+    "ncat-exec": {
+      "name": "Ncat --exec",
+      "description": "Ncat reverse shell using the explicit --exec option."
+    },
+    "ncat-sh-c": {
+      "name": "Ncat -c",
+      "description": "Ncat reverse shell using the -c command option."
+    },
+    "nc-openbsd-mkfifo": {
+      "name": "OpenBSD nc mkfifo",
+      "description": "OpenBSD netcat fallback using a FIFO and no -e option."
+    },
+    "nc-traditional-e": {
+      "name": "Netcat traditional -e",
+      "description": "Reverse shell for netcat-traditional builds that expose the -e option."
+    },
+    "nc-c-exec": {
+      "name": "Netcat -c",
+      "description": "BSD-style netcat reverse shell using the -c command option."
+    },
+    "ncat-ssl-exec": {
+      "name": "Ncat SSL --exec",
+      "description": "TLS reverse shell using ncat --ssl (requires OpenSSL-enabled ncat on the target)."
+    },
+    "macos-nc-mkfifo": {
+      "name": "macOS nc mkfifo",
+      "description": "macOS netcat FIFO fallback when -e is unavailable."
+    },
     "python3-socket": {
       "name": "Python 3 socket",
       "description": "Python reverse shell with stdio duplicated to the socket."
+    },
+    "python2-socket": {
+      "name": "Python 2 socket",
+      "description": "Python 2-compatible socket reverse shell."
+    },
+    "python3-pty": {
+      "name": "Python 3 PTY",
+      "description": "Python 3 reverse shell that spawns the selected shell through pty."
+    },
+    "python3-subprocess": {
+      "name": "Python 3 subprocess",
+      "description": "Python 3 reverse shell using subprocess.Popen."
+    },
+    "python3-no-spaces": {
+      "name": "Python 3 compact",
+      "description": "Compact Python 3 reverse shell useful for tight input fields."
     },
     "nodejs-child-process": {
       "name": "Node.js child_process",
       "description": "Node.js reverse shell using net and child_process."
     },
+    "nodejs-command-loop": {
+      "name": "Node.js command loop",
+      "description": "Node.js reverse command loop using net and exec."
+    },
+    "nodejs-reverse-sh": {
+      "name": "Node.js reverse sh",
+      "description": "Node.js reverse shell spawning the selected shell directly."
+    },
     "java-runtime": {
       "name": "Java Runtime",
       "description": "Java reverse shell using ProcessBuilder and socket redirection (JDK 11+)."
+    },
+    "jshell-processbuilder": {
+      "name": "JShell ProcessBuilder",
+      "description": "JShell reverse shell using ProcessBuilder and socket streams."
     },
     "awk-tcp": {
       "name": "awk TCP",
       "description": "awk reverse shell for systems with /inet/tcp support."
     },
+    "awk-sh-loop": {
+      "name": "awk sh loop",
+      "description": "awk command loop that executes received lines through /bin/sh."
+    },
     "lua-socket": {
       "name": "LuaSocket",
       "description": "Lua reverse shell using the LuaSocket module."
+    },
+    "lua-os-execute": {
+      "name": "Lua os.execute",
+      "description": "LuaSocket command loop using os.execute redirection."
     },
     "php-proc-open": {
       "name": "PHP proc_open",
       "description": "PHP one-liner for web RCE contexts."
     },
+    "php-fsockopen-exec": {
+      "name": "PHP exec",
+      "description": "PHP fsockopen reverse shell using exec and file descriptor redirection."
+    },
+    "php-cmd": {
+      "name": "PHP cmd",
+      "description": "PHP reverse shell using backtick command execution."
+    },
+    "php-cmd-2": {
+      "name": "PHP cmd 2",
+      "description": "PHP reverse shell using proc_open with socket-backed descriptors."
+    },
+    "php-shell-exec": {
+      "name": "PHP shell_exec",
+      "description": "PHP fsockopen reverse shell using shell_exec."
+    },
+    "php-fsockopen-system": {
+      "name": "PHP system",
+      "description": "PHP command loop over fsockopen using system()."
+    },
+    "php-fsockopen-passthru": {
+      "name": "PHP passthru",
+      "description": "PHP fsockopen reverse shell using passthru with fd redirection."
+    },
+    "php-popen": {
+      "name": "PHP popen",
+      "description": "PHP command loop over fsockopen using popen."
+    },
+    "php-stream-socket-loop": {
+      "name": "PHP stream_socket loop",
+      "description": "PHP reverse command loop using stream_socket_client and popen output."
+    },
     "perl-socket": {
       "name": "Perl socket",
       "description": "Perl reverse shell using Socket from the standard library."
+    },
+    "perl-dup2": {
+      "name": "Perl dup2",
+      "description": "Perl reverse shell using Socket and duplicated stdio handles."
     },
     "ruby-socket": {
       "name": "Ruby socket",
       "description": "Ruby reverse shell using TCPSocket."
     },
+    "ruby-stdio-reopen": {
+      "name": "Ruby stdio reopen",
+      "description": "Ruby reverse shell that reopens stdio on a TCP socket."
+    },
+    "ruby-exec": {
+      "name": "Ruby exec",
+      "description": "Ruby reverse shell using TCPSocket and exec."
+    },
     "socat-pty": {
       "name": "Socat PTY",
       "description": "Socat reverse shell that starts with a PTY-friendly process."
     },
+    "socat-exec": {
+      "name": "Socat exec",
+      "description": "Simple socat reverse shell using exec without PTY options."
+    },
+    "socat-tcp4-exec": {
+      "name": "Socat TCP4 EXEC",
+      "description": "Socat reverse shell using TCP4 connect syntax (requires socat on the target)."
+    },
+    "socat-openssl": {
+      "name": "Socat OpenSSL",
+      "description": "Socat reverse shell over TLS with certificate checks disabled."
+    },
     "openssl-fifo": {
       "name": "OpenSSL FIFO",
       "description": "TLS reverse shell using openssl s_client and a named pipe."
+    },
+    "openssl-client": {
+      "name": "OpenSSL client",
+      "description": "OpenSSL s_client reverse shell using a temporary FIFO."
     },
     "busybox-nc-e": {
       "name": "BusyBox nc -e",
@@ -179,33 +369,193 @@
       "name": "Telnet mkfifo",
       "description": "Telnet reverse shell fallback using a named pipe."
     },
+    "telnet-double": {
+      "name": "Telnet double pipe",
+      "description": "Telnet reverse shell using two outbound telnet connections."
+    },
+    "cmd-ncat-exec": {
+      "name": "CMD ncat --exec",
+      "description": "Windows cmd.exe reverse shell using Ncat --exec."
+    },
+    "cmd-ncat-e": {
+      "name": "CMD ncat -e",
+      "description": "Windows cmd.exe reverse shell using Ncat -e syntax."
+    },
+    "cmd-nc-e": {
+      "name": "CMD nc -e",
+      "description": "Windows cmd.exe reverse shell using nc.exe -e."
+    },
+    "cmd-powercat-exe": {
+      "name": "CMD powercat.exe",
+      "description": "Windows cmd.exe reverse shell using a standalone powercat executable."
+    },
+    "cmd-telnet-double": {
+      "name": "CMD telnet double pipe",
+      "description": "Windows cmd.exe reverse shell fallback using two telnet connections."
+    },
     "powershell-tcp-client": {
       "name": "PowerShell TCPClient",
       "description": "PowerShell reverse shell with an interactive command loop."
+    },
+    "powershell-nishang-style": {
+      "name": "PowerShell Nishang-style",
+      "description": "Compact PowerShell TCP reverse shell inspired by common Nishang workflows."
+    },
+    "powershell-powercat": {
+      "name": "PowerShell powercat",
+      "description": "PowerShell loader for a powercat reverse shell."
     },
     "powershell-hoaxshell-style": {
       "name": "PowerShell HoaxShell-style",
       "description": "HTTP polling PowerShell callback inspired by HoaxShell workflows."
     },
+    "powershell-hoaxshell-compact": {
+      "name": "PowerShell HoaxShell compact",
+      "description": "Shorter HoaxShell-style HTTP polling loop for PowerShell."
+    },
+    "powershell-hoaxshell-pwsh": {
+      "name": "PowerShell HoaxShell pwsh",
+      "description": "HoaxShell-style HTTP polling loop for PowerShell Core."
+    },
+    "powershell-hoaxshell-webclient": {
+      "name": "PowerShell HoaxShell WebClient",
+      "description": "HoaxShell-style polling loop using Net.WebClient."
+    },
+    "bash-hoaxshell-curl": {
+      "name": "Bash HoaxShell curl",
+      "description": "HoaxShell-style HTTP polling loop using Bash and curl."
+    },
+    "python3-hoaxshell-urllib": {
+      "name": "Python 3 HoaxShell urllib",
+      "description": "HoaxShell-style HTTP polling loop implemented with Python urllib."
+    },
     "bash-curl-staged": {
       "name": "Bash curl staged",
       "description": "Fetches a second-stage script from your HTTP server and pipes it to the shell."
+    },
+    "bash-wget-staged": {
+      "name": "Bash wget staged",
+      "description": "Fetches a second-stage script with wget and pipes it to the shell."
+    },
+    "python3-http-staged": {
+      "name": "Python 3 HTTP staged",
+      "description": "Python 3 loader that downloads and executes a staged script."
+    },
+    "bash-curl-dropper-staged": {
+      "name": "Bash curl dropper",
+      "description": "Downloads the stage to /tmp, marks it executable, then runs it."
+    },
+    "bash-wget-dropper-staged": {
+      "name": "Bash wget dropper",
+      "description": "Downloads the stage with wget, marks it executable, then runs it."
+    },
+    "macos-curl-zsh-staged": {
+      "name": "macOS curl zsh staged",
+      "description": "macOS-friendly curl loader that pipes the stage into zsh."
+    },
+    "windows-certutil-staged": {
+      "name": "Windows certutil staged",
+      "description": "Downloads a Windows stage with certutil and executes it."
+    },
+    "windows-powershell-iex-staged": {
+      "name": "Windows PowerShell IEX staged",
+      "description": "Downloads and executes a PowerShell stage with Invoke-Expression."
+    },
+    "nodejs-http-staged": {
+      "name": "Node.js HTTP staged",
+      "description": "Node.js loader that downloads a stage and runs it through the shell."
+    },
+    "php-http-staged": {
+      "name": "PHP HTTP staged",
+      "description": "PHP loader that downloads and executes a staged shell script."
+    },
+    "perl-http-staged": {
+      "name": "Perl HTTP staged",
+      "description": "Perl loader that fetches a stage over HTTP and runs it."
+    },
+    "ruby-http-staged": {
+      "name": "Ruby HTTP staged",
+      "description": "Ruby loader that fetches a stage over HTTP and runs it."
     },
     "nc-bind-e": {
       "name": "Netcat bind -e",
       "description": "Bind shell for labs where inbound access to the target is available."
     },
+    "ncat-bind-exec": {
+      "name": "Ncat bind --exec",
+      "description": "Ncat bind shell using the explicit --exec option."
+    },
     "python3-bind": {
       "name": "Python 3 bind shell",
       "description": "Python bind shell that listens on the target instead of calling back."
+    },
+    "socat-bind-pty": {
+      "name": "Socat bind PTY",
+      "description": "Socat bind shell with PTY-friendly options."
+    },
+    "php-bind-shell": {
+      "name": "PHP bind shell",
+      "description": "PHP bind shell that accepts one TCP client and runs commands."
+    },
+    "ruby-bind-shell": {
+      "name": "Ruby bind shell",
+      "description": "Ruby bind shell that executes received commands."
+    },
+    "nodejs-bind-shell": {
+      "name": "Node.js bind shell",
+      "description": "Node.js bind shell that executes received commands."
+    },
+    "busybox-nc-bind": {
+      "name": "BusyBox nc bind",
+      "description": "BusyBox netcat bind shell using -e."
+    },
+    "bind-nc-traditional-e": {
+      "name": "Netcat traditional bind -e",
+      "description": "Bind shell for netcat-traditional builds that expose the -e option."
+    },
+    "bind-perl-socket": {
+      "name": "Perl bind socket",
+      "description": "Perl bind shell that accepts one TCP client and execs a shell."
+    },
+    "bind-powershell-tcp-listener": {
+      "name": "PowerShell bind listener",
+      "description": "PowerShell bind shell using TcpListener (connect from the attacker)."
+    },
+    "bind-cmd-nc-listen": {
+      "name": "CMD nc bind listen",
+      "description": "Windows cmd.exe bind shell using nc.exe listen mode."
+    },
+    "golang-bind-tcp": {
+      "name": "Go bind TCP shell",
+      "description": "Go bind shell one-liner for targets with Go installed."
+    },
+    "lua-bind-tcp": {
+      "name": "Lua bind TCP",
+      "description": "Lua bind shell using LuaSocket (requires luasocket on the target)."
+    },
+    "staged-busybox-wget": {
+      "name": "BusyBox wget staged",
+      "description": "BusyBox wget loader that pipes a staged script into the shell."
+    },
+    "cmd-powershell-tcp-reverse": {
+      "name": "CMD PowerShell TCP reverse",
+      "description": "cmd.exe launcher for a compact PowerShell TCP reverse shell one-liner."
     },
     "golang-tcp": {
       "name": "Go TCP reverse shell",
       "description": "Go reverse shell compiled as a one-liner for targets with Go."
     },
+    "golang-bash": {
+      "name": "Go Bash reverse",
+      "description": "Go reverse shell that launches bash through os/exec."
+    },
     "zsh-dev-tcp": {
       "name": "Zsh /dev/tcp",
       "description": "Zsh reverse shell using /dev/tcp redirection."
+    },
+    "zsh-fd": {
+      "name": "Zsh FD",
+      "description": "Zsh reverse shell using an explicit TCP file descriptor."
     },
     "powershell-iex": {
       "name": "PowerShell IEX",
@@ -218,6 +568,78 @@
     "msfvenom-bash": {
       "name": "msfvenom Bash",
       "description": "Generate a Metasploit Bash payload locally, then run the output on the target."
+    },
+    "msfvenom-linux-x64-elf": {
+      "name": "msfvenom Linux x64 ELF",
+      "description": "Generate a Linux x64 shell_reverse_tcp ELF executable."
+    },
+    "msfvenom-linux-x86-elf": {
+      "name": "msfvenom Linux x86 ELF",
+      "description": "Generate a Linux x86 shell_reverse_tcp ELF executable."
+    },
+    "msfvenom-windows-x64-exe": {
+      "name": "msfvenom Windows x64 EXE",
+      "description": "Generate a Windows x64 shell_reverse_tcp executable."
+    },
+    "msfvenom-windows-x86-exe": {
+      "name": "msfvenom Windows x86 EXE",
+      "description": "Generate a Windows x86 shell_reverse_tcp executable."
+    },
+    "msfvenom-macos-x64-macho": {
+      "name": "msfvenom macOS x64 Mach-O",
+      "description": "Generate a macOS x64 shell_reverse_tcp Mach-O binary."
+    },
+    "msfvenom-php-reverse": {
+      "name": "msfvenom PHP reverse",
+      "description": "Generate a raw PHP reverse shell payload."
+    },
+    "msfvenom-python-reverse": {
+      "name": "msfvenom Python reverse",
+      "description": "Generate a raw Python reverse shell command payload."
+    },
+    "msfvenom-bash-cmd": {
+      "name": "msfvenom Bash command",
+      "description": "Generate a raw Bash reverse shell command payload."
+    },
+    "msfvenom-perl-cmd": {
+      "name": "msfvenom Perl command",
+      "description": "Generate a raw Perl reverse shell command payload."
+    },
+    "msfvenom-nodejs-cmd": {
+      "name": "msfvenom Node.js command",
+      "description": "Generate a raw Node.js reverse shell command payload."
+    },
+    "msfvenom-java-jar": {
+      "name": "msfvenom Java JAR",
+      "description": "Generate a Java shell_reverse_tcp JAR payload."
+    },
+    "msfvenom-jsp": {
+      "name": "msfvenom JSP",
+      "description": "Generate a JSP shell_reverse_tcp web payload."
+    },
+    "msfvenom-war": {
+      "name": "msfvenom WAR",
+      "description": "Generate a WAR archive containing a JSP reverse shell."
+    },
+    "msfvenom-asp": {
+      "name": "msfvenom ASP",
+      "description": "Generate a classic ASP reverse shell payload."
+    },
+    "msfvenom-aspx": {
+      "name": "msfvenom ASPX",
+      "description": "Generate an ASPX reverse shell payload for IIS targets."
+    },
+    "msfvenom-linux-aarch64-elf": {
+      "name": "msfvenom Linux aarch64 ELF",
+      "description": "Generate a Linux aarch64 shell_reverse_tcp ELF executable."
+    },
+    "msfvenom-powershell-cmd": {
+      "name": "msfvenom PowerShell command",
+      "description": "Generate a raw PowerShell reverse shell command payload."
+    },
+    "msfvenom-ruby-cmd": {
+      "name": "msfvenom Ruby command",
+      "description": "Generate a raw Ruby reverse shell command payload."
     }
   }
 }

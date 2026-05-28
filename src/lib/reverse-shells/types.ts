@@ -1,7 +1,8 @@
-export type Platform = "linux" | "windows" | "multi";
+export type Platform = "linux" | "macos" | "windows" | "multi";
 
 export type ShellFamily =
   | "bash"
+  | "sh"
   | "nc"
   | "python"
   | "php"
@@ -15,6 +16,7 @@ export type ShellFamily =
   | "openssl"
   | "telnet"
   | "socat"
+  | "cmd"
   | "powershell"
   | "staged"
   | "bind";
@@ -28,11 +30,17 @@ export type PayloadConnectionMode =
 export type ObfuscationMode =
   | "none"
   | "url"
+  | "url-double"
+  | "base64"
+  | "hex"
   | "bash-base64"
+  | "bash-base64-no-spaces"
   | "bash-ifs"
   | "bash-rev"
+  | "bash-printf-hex"
   | "powershell-encoded"
   | "powershell-concat"
+  | "powershell-base64"
   | "python-chr";
 
 export interface ReverseShellTemplate {

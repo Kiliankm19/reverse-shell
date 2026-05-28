@@ -15,19 +15,27 @@ describe("obfuscation compatibility", () => {
 
   it("allows only powershell modes for powershell payloads", () => {
     const template = getTemplate("powershell-tcp-client");
-    expect(compatibleObfuscationModes(template)).toContain("powershell-encoded");
+    expect(compatibleObfuscationModes(template)).toContain(
+      "powershell-encoded",
+    );
     expect(isObfuscationCompatible(template, "bash-base64")).toBe(false);
   });
 
   it("falls back to none for incompatible selections", () => {
-    expect(safeObfuscationForTemplate("bash-dev-tcp", "powershell-encoded")).toBe(
-      "none",
-    );
+    expect(
+      safeObfuscationForTemplate("bash-dev-tcp", "powershell-encoded"),
+    ).toBe("none");
   });
 
   it("does not offer bash wrappers for quoted web payloads", () => {
     const template = getTemplate("php-proc-open");
-    expect(compatibleObfuscationModes(template)).toEqual(["none", "url"]);
+    expect(compatibleObfuscationModes(template)).toEqual([
+      "none",
+      "url",
+      "url-double",
+      "base64",
+      "hex",
+    ]);
   });
 
   it("offers chr rebuild for Python payloads without bash wrappers", () => {
@@ -35,6 +43,9 @@ describe("obfuscation compatibility", () => {
     expect(compatibleObfuscationModes(template)).toEqual([
       "none",
       "url",
+      "url-double",
+      "base64",
+      "hex",
       "python-chr",
     ]);
   });

@@ -1,18 +1,25 @@
 import { getTemplate } from "./catalog";
 import type { ObfuscationMode, ReverseShellTemplate } from "./types";
 
-const COMMON_MODES: ObfuscationMode[] = ["none", "url"];
+const COMMON_MODES: ObfuscationMode[] = [
+  "none",
+  "url",
+  "url-double",
+  "base64",
+  "hex",
+];
 const BASH_WRAPPER_MODES: ObfuscationMode[] = [
   "bash-base64",
+  "bash-base64-no-spaces",
   "bash-ifs",
   "bash-rev",
+  "bash-printf-hex",
 ];
-const PYTHON_WRAPPER_MODES: ObfuscationMode[] = [
-  "python-chr",
-];
+const PYTHON_WRAPPER_MODES: ObfuscationMode[] = ["python-chr"];
 const POWERSHELL_MODES: ObfuscationMode[] = [
   "powershell-encoded",
   "powershell-concat",
+  "powershell-base64",
 ];
 
 export function compatibleObfuscationModes(

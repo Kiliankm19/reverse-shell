@@ -15,17 +15,49 @@
       "name": "Netcat",
       "description": "Simple TCP listener."
     },
+    "nc-traditional": {
+      "name": "Netcat traditional",
+      "description": "Fallback syntax for older netcat builds."
+    },
     "rlwrap-nc": {
       "name": "rlwrap + netcat",
       "description": "Adds readline history and line editing to netcat."
+    },
+    "rlwrap-nc-traditional": {
+      "name": "rlwrap + netcat traditional",
+      "description": "Line editing with old netcat listener syntax."
+    },
+    "ncat": {
+      "name": "Ncat",
+      "description": "Nmap ncat TCP listener."
+    },
+    "ncat-keep-open": {
+      "name": "Ncat keep-open",
+      "description": "Ncat listener that keeps accepting new connections."
     },
     "ncat-ssl": {
       "name": "Ncat SSL",
       "description": "TLS listener for custom SSL-capable payloads."
     },
+    "ncat-ssl-keep-open": {
+      "name": "Ncat SSL keep-open",
+      "description": "TLS ncat listener that remains open after disconnects."
+    },
     "socat-tty": {
       "name": "Socat TTY",
       "description": "Listener configured for a stronger interactive TTY."
+    },
+    "socat-fork": {
+      "name": "Socat fork",
+      "description": "Basic socat TCP listener that forks per connection."
+    },
+    "pwncat": {
+      "name": "pwncat-cs",
+      "description": "pwncat-cs listener with post-exploitation helpers."
+    },
+    "powercat": {
+      "name": "Powercat",
+      "description": "PowerShell-friendly listener using powercat."
     },
     "bind-connect": {
       "name": "Bind shell connect",
@@ -34,6 +66,10 @@
     "msfconsole": {
       "name": "Metasploit Bash handler",
       "description": "Bash reverse shell handler; match payload options before use."
+    },
+    "msfconsole-windows": {
+      "name": "Metasploit Windows handler",
+      "description": "Windows reverse TCP handler; match payload options before use."
     },
     "openssl-server": {
       "name": "OpenSSL s_server",

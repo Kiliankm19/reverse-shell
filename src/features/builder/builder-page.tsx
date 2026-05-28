@@ -3,10 +3,12 @@
 import { Bookmark, Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SaveCollectionDialog } from "@/features/collections/save-collection-dialog";
+import { AttackerCard } from "@/features/builder/attacker-card";
 import { CommandSidebar } from "@/features/builder/command-sidebar";
 import { HttpServerCard } from "@/features/builder/http-server-card";
 import { ObfuscationCard } from "@/features/builder/obfuscation-card";
 import { PayloadFormCard } from "@/features/builder/payload-form-card";
+import { RecommendedListenerCard } from "@/features/builder/recommended-listener-card";
 import { StageFileCard } from "@/features/builder/stage-file-card";
 import { useBuilder } from "@/features/builder/use-builder";
 import { supportsHttpServerNotes } from "@/lib/reverse-shells";
@@ -64,16 +66,28 @@ export function BuilderPage() {
           onSave={builder.handleSave}
         />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6">
+          <AttackerCard {...builder} />
+
+          <RecommendedListenerCard
+            config={builder.config}
+            connectionMode={builder.connectionMode}
+            onCopy={(value) => void builder.copy(value)}
+          />
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <PayloadFormCard {...builder} />
-            <ObfuscationCard {...builder} />
+            <CommandSidebar {...builder} />
+          </div>
+
+          <ObfuscationCard {...builder} />
+
+          <div className="space-y-6">
             <StageFileCard {...builder} />
             {supportsHttpServerNotes(builder.connectionMode) && (
               <HttpServerCard {...builder} />
             )}
           </div>
-          <CommandSidebar {...builder} />
         </div>
       </div>
     </main>

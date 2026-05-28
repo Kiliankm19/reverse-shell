@@ -10,11 +10,17 @@ const DEFAULT_TEMPLATE_ID = reverseShellTemplates[0]?.id ?? "bash-dev-tcp";
 export const obfuscationModes = [
   "none",
   "url",
+  "url-double",
+  "base64",
+  "hex",
   "bash-base64",
+  "bash-base64-no-spaces",
   "bash-ifs",
   "bash-rev",
+  "bash-printf-hex",
   "powershell-encoded",
   "powershell-concat",
+  "powershell-base64",
   "python-chr",
 ] as const;
 

@@ -9,6 +9,10 @@ import {
   syncShareUrl,
 } from "@/features/builder/share-config";
 import {
+  matchesTechniqueType,
+  type TechniqueTypeFilter,
+} from "@/features/builder/constants";
+import {
   persistBuilderConfig,
   readInitialBuilderConfig,
 } from "@/features/builder/store";
@@ -41,6 +45,14 @@ import {
   type ShellFamily,
 } from "@/lib/reverse-shells";
 
+const COMMON_PORTS = new Set([
+  20, 21, 22, 23, 25, 53, 67, 68, 69, 80, 110, 111, 119, 123, 135, 137, 138,
+  139, 143, 161, 162, 389, 443, 445, 465, 514, 515, 587, 631, 636, 873, 993,
+  995, 1080, 1433, 1521, 1723, 2049, 2375, 2376, 3000, 3001, 3002, 3306, 3389,
+  5000, 5432, 5601, 5672, 5900, 5985, 5986, 6379, 8000, 8008, 8080, 8081, 8443,
+  9000, 9200, 9300, 11211, 15672, 27017,
+]);
+
 export function useBuilder() {
   const t = useTranslations("builder");
   const tListener = useTranslations("listener");
@@ -56,7 +68,8 @@ export function useBuilder() {
   const [stageTemplateId, setStageTemplateId] = useState(
     defaultStageTemplateId,
   );
-  const [payloadQuery, setPayloadQuery] = useState("");
+  const [techniqueTypeFilter, setTechniqueTypeFilter] =
+    useState<TechniqueTypeFilter>("reverse");
   const [platformFilter, setPlatformFilter] = useState<"all" | Platform>("all");
   const [familyFilter, setFamilyFilter] = useState<"all" | ShellFamily>("all");
 
@@ -104,32 +117,18 @@ export function useBuilder() {
   const bindMode = usesBindPortOnly(connectionMode);
   const showShell = usesShellInput(config.templateId);
   const filteredTemplates = useMemo(() => {
-    const query = payloadQuery.trim().toLowerCase();
-
     return reverseShellTemplates.filter((template) => {
       const matchesPlatform =
-        platformFilter === "all" || template.platform === platformFilter;
+        platformFilter === "all" ||
+        template.platform === platformFilter ||
+        template.platform === "multi";
       const matchesFamily =
         familyFilter === "all" || template.family === familyFilter;
-      const translatedName = t(`templates.${template.id}.name`);
-      const translatedDescription = t(`templates.${template.id}.description`);
-      const haystack = [
-        template.id,
-        template.name,
-        template.family,
-        template.platform,
-        template.description,
-        translatedName,
-        translatedDescription,
-      ]
-        .join(" ")
-        .toLowerCase();
+      const matchesType = matchesTechniqueType(template, techniqueTypeFilter);
 
-      return (
-        matchesPlatform && matchesFamily && (!query || haystack.includes(query))
-      );
+      return matchesPlatform && matchesFamily && matchesType;
     });
-  }, [familyFilter, payloadQuery, platformFilter, t]);
+  }, [familyFilter, platformFilter, techniqueTypeFilter]);
 
   const lhostHint = bindMode
     ? t("lhost_bind_hint")
@@ -141,6 +140,15 @@ export function useBuilder() {
 
   function patchConfig(patch: Partial<ReverseShellConfig>) {
     setConfig((current) => ({ ...current, ...patch }));
+  }
+
+  function randomizeLport() {
+    const randomValues = crypto.getRandomValues(new Uint32Array(32));
+    const candidate =
+      Array.from(randomValues)
+        .map((value) => (value % 65535) + 1)
+        .find((port) => !COMMON_PORTS.has(port)) ?? 4444;
+    patchConfig({ lport: candidate });
   }
 
   function handleTemplateChange(templateId: string) {
@@ -229,6 +237,7 @@ export function useBuilder() {
     t,
     config,
     patchConfig,
+    randomizeLport,
     handleTemplateChange,
     copy,
     handleSave,
@@ -237,8 +246,8 @@ export function useBuilder() {
     setSaveDialogOpen,
     stageTemplateId,
     setStageTemplateId,
-    payloadQuery,
-    setPayloadQuery,
+    techniqueTypeFilter,
+    setTechniqueTypeFilter,
     platformFilter,
     setPlatformFilter,
     familyFilter,

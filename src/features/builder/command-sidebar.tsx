@@ -1,21 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Copy } from "lucide-react";
+import { Code2, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { RecommendedListenerCard } from "@/features/builder/recommended-listener-card";
 import type { BuilderState } from "@/features/builder/use-builder";
 
 type CommandSidebarProps = Pick<
   BuilderState,
-  "config" | "connectionMode" | "copy" | "generated" | "safeConfig"
+  "copy" | "generated" | "safeConfig"
 >;
 
 export function CommandSidebar({
-  config,
-  connectionMode,
   copy,
   generated,
   safeConfig,
@@ -24,17 +21,15 @@ export function CommandSidebar({
 
   return (
     <div className="space-y-6">
-      <RecommendedListenerCard
-        config={config}
-        connectionMode={connectionMode}
-        onCopy={(value) => void copy(value)}
-      />
-
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Terminal className="h-4 w-4 text-primary" />
             {t("generated_command_title")}
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {t("generated_command_intro")}
+          </p>
         </CardHeader>
         <CardContent className="space-y-3">
           <Textarea
@@ -43,8 +38,7 @@ export function CommandSidebar({
             className="min-h-48 font-mono text-xs"
           />
           <Button
-            variant="outline"
-            className="w-full gap-2"
+            className="w-fit gap-2"
             onClick={() => generated && void copy(generated.command)}
             disabled={!generated}
           >
@@ -56,7 +50,13 @@ export function CommandSidebar({
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t("raw_command_title")}</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Code2 className="h-4 w-4 text-primary" />
+            {t("raw_command_title")}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {t("raw_command_intro")}
+          </p>
         </CardHeader>
         <CardContent className="space-y-3">
           <Textarea

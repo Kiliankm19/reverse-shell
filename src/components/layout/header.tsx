@@ -63,8 +63,6 @@ export function Header() {
 
         <nav className="flex flex-wrap items-center gap-4">
           <NavLink href="/" label={t("builder")} pathname={pathname} />
-          <NavLink href="/listener" label={t("listener")} pathname={pathname} />
-          <NavLink href="/upgrade" label={t("upgrade")} pathname={pathname} />
           <NavLink
             href="/collections"
             label={t("collections")}

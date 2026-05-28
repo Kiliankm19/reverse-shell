@@ -27,6 +27,22 @@
   "import_success_duplicates": "Imported {count} collections ({duplicates} duplicate IDs reassigned).",
   "preset_search_label": "Search presets",
   "preset_search_placeholder": "Filter by name, tag, or template...",
+  "collection_search_label": "Search collection",
+  "collection_search_placeholder": "Search by name, platform, technique, command, or obfuscation...",
+  "no_builtin_matches": "No built-in collections match the current filters.",
+  "no_saved_matches": "No saved collections match the current filters.",
+  "collection_filters": {
+    "all": "All",
+    "linux": "Linux",
+    "windows": "Windows",
+    "macos": "macOS",
+    "reverse": "Reverse",
+    "bind": "Bind",
+    "msfvenom": "MSFvenom",
+    "hoaxshell": "HoaxShell",
+    "assembled": "Assembled",
+    "encoded": "Encoded"
+  },
   "rename_button": "Rename",
   "rename_save": "Save name",
   "rename_cancel": "Cancel",
@@ -35,11 +51,17 @@
   "obfuscation": {
     "none": "No obfuscation",
     "url": "URL encoded",
+    "url-double": "URL double encoded",
+    "base64": "Base64 encoded",
+    "hex": "Hex encoded",
     "bash-base64": "Bash base64",
+    "bash-base64-no-spaces": "Bash base64 compact",
     "bash-ifs": "Bash '${IFS}'",
     "bash-rev": "Bash rev",
+    "bash-printf-hex": "Bash printf hex",
     "powershell-encoded": "PowerShell -Enc",
     "powershell-concat": "PowerShell concat",
+    "powershell-base64": "PowerShell base64",
     "python-chr": "Python chr()"
   },
   "tags": {
@@ -65,7 +87,13 @@
     "node": "node",
     "openssl": "openssl",
     "tls": "TLS",
-    "busybox": "busybox"
+    "busybox": "busybox",
+    "sh": "sh",
+    "macos": "macOS",
+    "ncat": "ncat",
+    "cmd": "cmd",
+    "msfvenom": "MSFvenom",
+    "encoded": "encoded"
   },
   "presets": {
     "linux-bash-dev-tcp": {
@@ -135,6 +163,50 @@
     "linux-busybox-nc": {
       "name": "Linux BusyBox nc",
       "description": "Compact BusyBox netcat payload for minimal Linux environments."
+    },
+    "linux-sh-dev-tcp": {
+      "name": "Linux sh /dev/tcp",
+      "description": "POSIX sh reverse shell for targets where /dev/tcp is available."
+    },
+    "macos-bash-dev-tcp": {
+      "name": "macOS Bash /dev/tcp",
+      "description": "macOS-friendly Bash callback using the platform-specific preset."
+    },
+    "multi-ncat-ssl": {
+      "name": "Ncat SSL reverse shell",
+      "description": "TLS callback using ncat --ssl for targets with OpenSSL-enabled ncat."
+    },
+    "web-rce-php-stream": {
+      "name": "Web RCE PHP stream socket",
+      "description": "PHP stream_socket_client command loop for web RCE contexts."
+    },
+    "windows-cmd-powershell": {
+      "name": "Windows CMD PowerShell TCP",
+      "description": "cmd.exe launcher for a compact PowerShell reverse shell."
+    },
+    "linux-busybox-wget-staged": {
+      "name": "Linux BusyBox wget staged",
+      "description": "BusyBox wget loader that fetches a staged script from your HTTP server."
+    },
+    "linux-msfvenom-aarch64": {
+      "name": "MSFvenom Linux aarch64",
+      "description": "Generate a Linux aarch64 shell_reverse_tcp ELF payload."
+    },
+    "windows-msfvenom-powershell": {
+      "name": "MSFvenom PowerShell command",
+      "description": "Generate a raw PowerShell reverse TCP payload with msfvenom."
+    },
+    "linux-bash-url-double": {
+      "name": "Bash URL double encoded",
+      "description": "Bash reverse shell with URL double encoding for nested decode contexts."
+    },
+    "linux-bash-printf-hex": {
+      "name": "Bash printf hex",
+      "description": "Bash payload rebuilt with printf hex escapes for filter-sensitive shells."
+    },
+    "windows-powershell-base64": {
+      "name": "Windows PowerShell base64",
+      "description": "PowerShell TCPClient payload wrapped in a UTF-8 base64 decode launcher."
     }
   }
 }

@@ -32,6 +32,9 @@ export function ObfuscationCard({
         <CardTitle className="flex items-center gap-2 text-base">
           <Wand2 className="h-4 w-4 text-primary" /> {t("obfuscation_label")}
         </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {t("obfuscation_intro")}
+        </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <Select

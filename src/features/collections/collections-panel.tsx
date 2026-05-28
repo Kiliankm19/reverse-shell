@@ -28,8 +28,24 @@ import { Label } from "@/components/ui/label";
 import { MAX_COLLECTION_IMPORT_BYTES } from "@/lib/security";
 import {
   getConnectionModeById,
+  getTemplate,
   type ObfuscationMode,
 } from "@/lib/reverse-shells";
+
+const COLLECTION_FILTERS = [
+  "all",
+  "linux",
+  "windows",
+  "macos",
+  "reverse",
+  "bind",
+  "msfvenom",
+  "hoaxshell",
+  "assembled",
+  "encoded",
+] as const;
+
+type CollectionFilter = (typeof COLLECTION_FILTERS)[number];
 
 function formatDate(ts: number, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
@@ -41,6 +57,49 @@ function formatDate(ts: number, locale: string): string {
 
 function obfuscationLabelKey(mode: ObfuscationMode): string {
   return `obfuscation.${mode}`;
+}
+
+function matchesPlatformFilter(templateId: string, filter: CollectionFilter) {
+  const template = getTemplate(templateId);
+  return (
+    template.platform === filter ||
+    (filter === "linux" && template.platform === "multi") ||
+    (filter === "windows" && template.platform === "multi") ||
+    (filter === "macos" && template.platform === "multi")
+  );
+}
+
+function matchesCollectionFilter(
+  collection: BuiltinCollection | SavedCollection,
+  filter: CollectionFilter,
+) {
+  if (filter === "all") return true;
+
+  const templateId = collection.config.templateId;
+  const mode = getConnectionModeById(templateId);
+  const template = getTemplate(templateId);
+
+  if (filter === "linux" || filter === "windows" || filter === "macos") {
+    return (
+      matchesPlatformFilter(templateId, filter) ||
+      ("tags" in collection && collection.tags.includes(filter))
+    );
+  }
+
+  if (filter === "reverse") {
+    return (
+      mode === "reverse" &&
+      !templateId.startsWith("msfvenom-") &&
+      !templateId.includes("hoaxshell")
+    );
+  }
+  if (filter === "bind") return mode === "bind";
+  if (filter === "msfvenom") return templateId.startsWith("msfvenom-");
+  if (filter === "hoaxshell") return templateId.includes("hoaxshell");
+  if (filter === "assembled") return template.family === "staged";
+  if (filter === "encoded") return collection.config.obfuscation !== "none";
+
+  return false;
 }
 
 function DeleteButton({
@@ -97,26 +156,59 @@ export function CollectionsPanel() {
     text: string;
     count: number;
   } | null>(null);
-  const [presetQuery, setPresetQuery] = useState("");
+  const [collectionQuery, setCollectionQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<CollectionFilter>("all");
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
 
   const filteredPresets = useMemo(() => {
-    const needle = presetQuery.trim().toLowerCase();
-    if (!needle) return builtinCollections;
+    const needle = collectionQuery.trim().toLowerCase();
     return builtinCollections.filter((collection) => {
       const haystack = [
         collection.id,
         collection.config.templateId,
+        getTemplate(collection.config.templateId).platform,
+        getTemplate(collection.config.templateId).family,
+        getConnectionModeById(collection.config.templateId),
+        collection.config.obfuscation,
+        collection.renderedCommand,
         t(`presets.${collection.id}.name`),
         t(`presets.${collection.id}.description`),
         ...collection.tags.map((tag) => t(`tags.${tag}`)),
       ]
         .join(" ")
         .toLowerCase();
-      return haystack.includes(needle);
+      return (
+        (!needle || haystack.includes(needle)) &&
+        matchesCollectionFilter(collection, activeFilter)
+      );
     });
-  }, [presetQuery, t]);
+  }, [activeFilter, collectionQuery, t]);
+
+  const filteredCollections = useMemo(() => {
+    const needle = collectionQuery.trim().toLowerCase();
+    return collections.filter((collection) => {
+      const template = getTemplate(collection.config.templateId);
+      const haystack = [
+        collection.id,
+        collection.name,
+        collection.config.templateId,
+        template.name,
+        template.family,
+        template.platform,
+        getConnectionModeById(collection.config.templateId),
+        collection.config.obfuscation,
+        collection.renderedCommand,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        (!needle || haystack.includes(needle)) &&
+        matchesCollectionFilter(collection, activeFilter)
+      );
+    });
+  }, [activeFilter, collectionQuery, collections]);
 
   const handleLoad = useCallback(
     (col: Pick<SavedCollection, "config">) => {
@@ -204,17 +296,32 @@ export function CollectionsPanel() {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">{t("presets_title")}</h2>
-            <Badge variant="secondary">{builtinCollections.length}</Badge>
+            <Badge variant="secondary">
+              {filteredPresets.length}/{builtinCollections.length}
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground">{t("presets_hint")}</p>
         </div>
-        <div className="max-w-md space-y-2">
-          <Label>{t("preset_search_label")}</Label>
+        <div className="space-y-3 rounded-lg border bg-card p-4">
+          <Label>{t("collection_search_label")}</Label>
           <Input
-            value={presetQuery}
-            onChange={(event) => setPresetQuery(event.target.value)}
-            placeholder={t("preset_search_placeholder")}
+            value={collectionQuery}
+            onChange={(event) => setCollectionQuery(event.target.value)}
+            placeholder={t("collection_search_placeholder")}
           />
+          <div className="flex flex-wrap gap-2">
+            {COLLECTION_FILTERS.map((filter) => (
+              <Button
+                key={filter}
+                type="button"
+                variant={activeFilter === filter ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveFilter(filter)}
+              >
+                {t(`collection_filters.${filter}`)}
+              </Button>
+            ))}
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {filteredPresets.map((collection) => (
@@ -266,13 +373,20 @@ export function CollectionsPanel() {
               </CardContent>
             </Card>
           ))}
+          {filteredPresets.length === 0 && (
+            <div className="rounded-lg border bg-card p-6 text-sm text-muted-foreground">
+              {t("no_builtin_matches")}
+            </div>
+          )}
         </div>
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">{t("saved_title")}</h2>
-          <Badge variant="secondary">{collections.length}</Badge>
+          <Badge variant="secondary">
+            {filteredCollections.length}/{collections.length}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button
@@ -341,9 +455,13 @@ export function CollectionsPanel() {
         <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
           {t("empty")}
         </div>
+      ) : filteredCollections.length === 0 ? (
+        <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
+          {t("no_saved_matches")}
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {collections.map((col) => (
+          {filteredCollections.map((col) => (
             <Card key={col.id} className="flex flex-col">
               <CardHeader className="pb-2">
                 {renamingId === col.id ? (

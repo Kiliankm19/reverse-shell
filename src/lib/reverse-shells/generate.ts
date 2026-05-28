@@ -16,6 +16,12 @@ function utf8Base64(value: string): string {
   return btoa(binary);
 }
 
+function hexEncode(value: string): string {
+  return Array.from(new TextEncoder().encode(value))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 function utf16LeBase64(value: string): string {
   const bytes: number[] = [];
   for (let i = 0; i < value.length; i += 1) {
@@ -48,10 +54,32 @@ export function obfuscateCommand(
         command: encodeURIComponent(command),
         notes: ["URL-encoded output for HTTP parameter or form contexts."],
       };
+    case "url-double": {
+      const encoded = encodeURIComponent(encodeURIComponent(command));
+      return {
+        command: encoded,
+        notes: ["Command URL-encoded twice for double-decoding contexts."],
+      };
+    }
+    case "base64":
+      return {
+        command: utf8Base64(command),
+        notes: ["Raw UTF-8 base64-encoded command output."],
+      };
+    case "hex":
+      return {
+        command: hexEncode(command),
+        notes: ["Raw UTF-8 hex-encoded command output."],
+      };
     case "bash-base64":
       return {
         command: `echo ${utf8Base64(command)} | base64 -d | ${shell}`,
         notes: ["Base64 wrapper decoded locally before execution."],
+      };
+    case "bash-base64-no-spaces":
+      return {
+        command: `base64 -d<<<${utf8Base64(command)}|${shell}`,
+        notes: ["Bash base64 wrapper using minimal spaces."],
       };
     case "bash-ifs":
       return {
@@ -65,6 +93,17 @@ export function obfuscateCommand(
         notes: ["Command is stored reversed and reconstructed with rev."],
       };
     }
+    case "bash-printf-hex":
+      return {
+        command: `printf ${singleQuote(
+          `\\x${
+            hexEncode(command)
+              .match(/.{1,2}/g)
+              ?.join("\\x") ?? ""
+          }`,
+        )} | ${shell}`,
+        notes: ["Command rebuilt from hex escape sequences with printf."],
+      };
     case "powershell-encoded":
       return {
         command: `powershell -NoP -NonI -W Hidden -Enc ${utf16LeBase64(command)}`,
@@ -74,6 +113,11 @@ export function obfuscateCommand(
       return {
         command: `powershell -NoP -NonI -W Hidden -Command \"iex (${splitForPowerShell(command)})\"`,
         notes: ["PowerShell command split into concatenated string chunks."],
+      };
+    case "powershell-base64":
+      return {
+        command: `powershell -NoP -NonI -W Hidden -Command "$c='${utf8Base64(command)}';iex ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($c)))"`,
+        notes: ["PowerShell decodes a UTF-8 base64 command before execution."],
       };
     case "python-chr": {
       const chars = [...command].map((char) => char.charCodeAt(0)).join(",");

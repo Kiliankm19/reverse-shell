@@ -16,6 +16,22 @@
       "name": "script fallback",
       "description": "Useful on hosts without Python but with util-linux script."
     },
+    "script-bsd-tty": {
+      "name": "script BSD/macOS fallback",
+      "description": "BSD script syntax for macOS and BSD-like targets."
+    },
+    "stty-stabilize": {
+      "name": "stty job-control stabilize",
+      "description": "Generic stabilization steps after spawning a PTY with Python or script."
+    },
+    "rlwrap-reconnect": {
+      "name": "rlwrap reconnect",
+      "description": "Reconnect through rlwrap when the target has Bash /dev/tcp support."
+    },
+    "expect-spawn": {
+      "name": "expect spawn",
+      "description": "PTY fallback when expect is installed on the target."
+    },
     "socat-upgrade": {
       "name": "Socat full TTY",
       "description": "Best terminal behavior when socat exists on both ends."
@@ -23,6 +39,14 @@
     "windows-conpty": {
       "name": "Windows ConPTY note",
       "description": "Upgrade guidance for modern Windows shells."
+    },
+    "windows-codepage": {
+      "name": "Windows code page cleanup",
+      "description": "Small fixes for garbled Windows shell output."
+    },
+    "windows-ncat-reconnect": {
+      "name": "Windows ncat reconnect",
+      "description": "Reconnect with ncat for a cleaner Windows shell when ncat is available."
     }
   }
 }
