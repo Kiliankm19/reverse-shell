@@ -5,7 +5,8 @@ test("builder loads with payload controls", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Reverse Shell Builder/i }),
   ).toBeVisible();
-  await expect(page.getByText("LHOST")).toBeVisible();
+  await expect(page.getByText("Target profile", { exact: true })).toBeVisible();
+  await expect(page.getByLabel(/^Port$/i)).toBeVisible();
 });
 
 test("obfuscation dropdown renders IFS label without i18n errors", async ({

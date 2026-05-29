@@ -9,8 +9,36 @@
   "copied": "Copied to clipboard",
   "recipes": {
     "python-pty": {
+      "name": "Python 3 / python PTY upgrade",
+      "description": "The common PTY upgrade path that tries python3, then python."
+    },
+    "python-command-pty": {
       "name": "Python PTY upgrade",
-      "description": "The most common upgrade path when Python is present."
+      "description": "PTY upgrade using the unversioned python command."
+    },
+    "python2-pty-upgrade": {
+      "name": "Python 2 PTY upgrade",
+      "description": "PTY upgrade for legacy targets where only python2 exists."
+    },
+    "bash-interactive": {
+      "name": "Bash interactive",
+      "description": "Simple first step when Bash exists but the shell is not interactive."
+    },
+    "sh-interactive": {
+      "name": "sh interactive fallback",
+      "description": "Minimal interactive fallback for targets without Bash."
+    },
+    "terminal-env": {
+      "name": "Terminal environment",
+      "description": "Common environment exports for cleaner prompt and terminal behavior."
+    },
+    "terminal-reset": {
+      "name": "Terminal reset",
+      "description": "Reset a messy terminal after foregrounding a raw shell."
+    },
+    "terminal-resize": {
+      "name": "Terminal resize",
+      "description": "Set rows and columns manually when full-screen tools render poorly."
     },
     "script-tty": {
       "name": "script fallback",

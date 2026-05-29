@@ -1,17 +1,17 @@
 "use client";
 
-import { Bookmark, Copy, Download } from "lucide-react";
+import { Bookmark, Copy, Download, RadioTower } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaveCollectionDialog } from "@/features/collections/save-collection-dialog";
 import { AttackerCard } from "@/features/builder/attacker-card";
 import { CommandSidebar } from "@/features/builder/command-sidebar";
-import { HttpServerCard } from "@/features/builder/http-server-card";
+import { NextStepCard } from "@/features/builder/next-step-card";
 import { ObfuscationCard } from "@/features/builder/obfuscation-card";
 import { PayloadFormCard } from "@/features/builder/payload-form-card";
 import { RecommendedListenerCard } from "@/features/builder/recommended-listener-card";
-import { StageFileCard } from "@/features/builder/stage-file-card";
+import { TechniqueSupportCard } from "@/features/builder/technique-support-card";
 import { useBuilder } from "@/features/builder/use-builder";
-import { supportsHttpServerNotes } from "@/lib/reverse-shells";
 
 export function BuilderPage() {
   const builder = useBuilder();
@@ -67,27 +67,52 @@ export function BuilderPage() {
         />
 
         <div className="space-y-6">
-          <AttackerCard {...builder} />
-
-          <RecommendedListenerCard
-            config={builder.config}
-            connectionMode={builder.connectionMode}
-            onCopy={(value) => void builder.copy(value)}
+          <AttackerCard
+            {...builder}
+            listenerContent={
+              <RecommendedListenerCard
+                config={builder.config}
+                selectedListenerId={builder.selectedListenerId}
+                onListenerChange={builder.onListenerChange}
+                onCopy={(value) => void builder.copy(value)}
+                embedded
+              />
+            }
           />
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <PayloadFormCard {...builder} />
-            <CommandSidebar {...builder} />
-          </div>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <RadioTower className="h-4 w-4 text-primary" />
+                {t("technique_command_title")}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {t("technique_command_intro")}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <PayloadFormCard {...builder} embedded />
+              <ObfuscationCard {...builder} embedded />
+              <CommandSidebar {...builder} embedded />
+              <TechniqueSupportCard
+                safeConfig={builder.safeConfig}
+                connectionMode={builder.connectionMode}
+                stageTemplateId={builder.stageTemplateId}
+                onStageTemplateChange={builder.setStageTemplateId}
+                onCopy={(value) => void builder.copy(value)}
+              />
+            </CardContent>
+          </Card>
 
-          <ObfuscationCard {...builder} />
-
-          <div className="space-y-6">
-            <StageFileCard {...builder} />
-            {supportsHttpServerNotes(builder.connectionMode) && (
-              <HttpServerCard {...builder} />
-            )}
-          </div>
+          <NextStepCard
+            config={builder.config}
+            connectionMode={builder.connectionMode}
+            selectedUpgradeRecipeId={builder.selectedUpgradeRecipeId}
+            onUpgradeRecipeChange={builder.setSelectedUpgradeRecipeId}
+            selectedCleanupRecipeId={builder.selectedCleanupRecipeId}
+            onCleanupRecipeChange={builder.setSelectedCleanupRecipeId}
+            onCopy={(value) => void builder.copy(value)}
+          />
         </div>
       </div>
     </main>

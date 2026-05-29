@@ -41,7 +41,8 @@
     "msfvenom": "MSFvenom",
     "hoaxshell": "HoaxShell",
     "assembled": "Assembled",
-    "encoded": "Encoded"
+    "encoded": "Encoded",
+    "encrypted": "Encrypted"
   },
   "rename_button": "Rename",
   "rename_save": "Save name",
@@ -93,7 +94,8 @@
     "ncat": "ncat",
     "cmd": "cmd",
     "msfvenom": "MSFvenom",
-    "encoded": "encoded"
+    "encoded": "encoded",
+    "encrypted": "encrypted"
   },
   "presets": {
     "linux-bash-dev-tcp": {
@@ -107,6 +109,14 @@
     "web-rce-python3": {
       "name": "Web RCE Python 3",
       "description": "Python reverse shell suited for command injection and web RCE contexts."
+    },
+    "web-rce-python": {
+      "name": "Web RCE Python",
+      "description": "Unversioned Python reverse shell for targets where python is available."
+    },
+    "web-rce-python2": {
+      "name": "Web RCE Python 2",
+      "description": "Python 2 reverse shell for legacy targets."
     },
     "web-rce-php": {
       "name": "Web RCE PHP",
@@ -152,6 +162,14 @@
       "name": "Bind shell Python 3",
       "description": "Python bind shell fallback when netcat -e is unavailable."
     },
+    "multi-python-bind": {
+      "name": "Bind shell Python",
+      "description": "Unversioned Python bind shell fallback when netcat -e is unavailable."
+    },
+    "multi-python2-bind": {
+      "name": "Bind shell Python 2",
+      "description": "Python 2 bind shell fallback for legacy targets."
+    },
     "web-rce-nodejs": {
       "name": "Web RCE Node.js",
       "description": "Node.js reverse shell for targets with server-side JavaScript execution."
@@ -175,6 +193,22 @@
     "multi-ncat-ssl": {
       "name": "Ncat SSL reverse shell",
       "description": "TLS callback using ncat --ssl for targets with OpenSSL-enabled ncat."
+    },
+    "multi-python3-ssl": {
+      "name": "Python 3 SSL reverse shell",
+      "description": "Python 3 TLS callback using ssl.wrap_socket."
+    },
+    "multi-nodejs-tls": {
+      "name": "Node.js TLS reverse shell",
+      "description": "Node.js TLS callback using tls and child_process."
+    },
+    "web-rce-php-ssl": {
+      "name": "Web RCE PHP SSL",
+      "description": "PHP TLS callback using ssl:// fsockopen."
+    },
+    "windows-powershell-tls": {
+      "name": "Windows PowerShell TLS",
+      "description": "PowerShell reverse shell over TLS using SslStream."
     },
     "web-rce-php-stream": {
       "name": "Web RCE PHP stream socket",

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Wand2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -17,26 +18,21 @@ import type { ObfuscationMode } from "@/lib/reverse-shells";
 type ObfuscationCardProps = Pick<
   BuilderState,
   "config" | "patchConfig" | "compatibleOptions"
->;
+> & {
+  embedded?: boolean;
+};
 
 export function ObfuscationCard({
   config,
   patchConfig,
   compatibleOptions,
+  embedded = false,
 }: ObfuscationCardProps) {
   const t = useTranslations("builder");
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Wand2 className="h-4 w-4 text-primary" /> {t("obfuscation_label")}
-        </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          {t("obfuscation_intro")}
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
+  const content = (
+    <>
+      <div className="space-y-2">
+        <Label>{t("obfuscation_select_label")}</Label>
         <Select
           value={config.obfuscation}
           onValueChange={(value) =>
@@ -56,11 +52,42 @@ export function ObfuscationCard({
               ))}
           </SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">{t("obfuscation_note")}</p>
-        <p className="text-xs text-muted-foreground">
-          {t("obfuscation_compat_note")}
+      </div>
+      <p className="text-xs text-muted-foreground">{t("obfuscation_note")}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("obfuscation_compat_note")}
+      </p>
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
+        <div>
+          <h3 className="flex items-center gap-2 text-sm font-medium">
+            <Wand2 className="h-4 w-4 text-primary" />
+            {t("obfuscation_label")}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {t("obfuscation_intro")}
+          </p>
+        </div>
+        {content}
+      </section>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Wand2 className="h-4 w-4 text-primary" /> {t("obfuscation_label")}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {t("obfuscation_intro")}
         </p>
-      </CardContent>
+      </CardHeader>
+      <CardContent className="space-y-4">{content}</CardContent>
     </Card>
   );
 }

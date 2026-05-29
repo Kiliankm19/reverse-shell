@@ -22,7 +22,7 @@ describe("stage helpers", () => {
 
   it("generates python http.server command", () => {
     expect(stageServeCommand(stagedConfig)).toBe(
-      "python3 -m http.server 8080 --bind 10.0.0.5",
+      "python3 -m http.server 8080 --bind 10.0.0.5 || python -m http.server 8080 --bind 10.0.0.5 || python2 -m SimpleHTTPServer 8080",
     );
   });
 

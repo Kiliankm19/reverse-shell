@@ -6,7 +6,9 @@ test("preset search filters built-in collections", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Ready-to-use reverse shells/i }),
   ).toBeVisible();
-  await page.getByPlaceholder(/Filter by name, tag, or template/i).fill("bind");
+  await page
+    .getByPlaceholder(/Search by name, platform, technique/i)
+    .fill("bind");
   await expect(page.getByText(/bind shell/i).first()).toBeVisible();
 });
 

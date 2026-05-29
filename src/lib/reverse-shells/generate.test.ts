@@ -37,13 +37,15 @@ describe("obfuscateCommand", () => {
   it("python-chr rebuilds commands with embedded quotes", () => {
     const payload = 'python3 -c "import socket"';
     const { command } = obfuscateCommand(payload, "python-chr", "/bin/bash");
-    expect(command).toMatch(/^python3 -c 'exec\(bytes\(\[/);
+    expect(command).toMatch(/^python3 -c 'exec\(""\.join\(map\(chr,\[/);
+    expect(command).toContain(" || python -c ");
+    expect(command).toContain(" || python2 -c ");
     const result = generateReverseShell({
       ...baseConfig,
       templateId: "python3-socket",
       obfuscation: "python-chr",
     });
-    expect(result.command).toMatch(/^python3 -c 'exec\(bytes\(\[/);
+    expect(result.command).toMatch(/^python3 -c 'exec\(""\.join\(map\(chr,\[/);
     expect(result.command).not.toContain('os.system("');
   });
 });

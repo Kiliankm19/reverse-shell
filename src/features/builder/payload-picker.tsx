@@ -53,6 +53,7 @@ export function PayloadPicker({
         <Button
           variant="outline"
           role="combobox"
+          aria-label={t("payload_label")}
           aria-expanded={open}
           className="w-full justify-between font-normal"
         >

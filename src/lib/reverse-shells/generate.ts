@@ -93,17 +93,16 @@ export function obfuscateCommand(
         notes: ["Command is stored reversed and reconstructed with rev."],
       };
     }
-    case "bash-printf-hex":
+    case "bash-printf-hex": {
+      const hexParts = hexEncode(command).match(/.{1,2}/g);
+      const hexEscaped = hexParts ? `\\x${hexParts.join("\\x")}` : "";
       return {
-        command: `printf ${singleQuote(
-          `\\x${
-            hexEncode(command)
-              .match(/.{1,2}/g)
-              ?.join("\\x") ?? ""
-          }`,
-        )} | ${shell}`,
+        command: hexEscaped
+          ? `printf ${singleQuote(hexEscaped)} | ${shell}`
+          : "",
         notes: ["Command rebuilt from hex escape sequences with printf."],
       };
+    }
     case "powershell-encoded":
       return {
         command: `powershell -NoP -NonI -W Hidden -Enc ${utf16LeBase64(command)}`,
@@ -121,8 +120,9 @@ export function obfuscateCommand(
       };
     case "python-chr": {
       const chars = [...command].map((char) => char.charCodeAt(0)).join(",");
+      const pythonCommand = `exec("".join(map(chr,[${chars}])))`;
       return {
-        command: `python3 -c 'exec(bytes([${chars}]).decode())'`,
+        command: `python3 -c '${pythonCommand}' || python -c '${pythonCommand}' || python2 -c '${pythonCommand}'`,
         notes: ["Command reconstructed from character codes before execution."],
       };
     }

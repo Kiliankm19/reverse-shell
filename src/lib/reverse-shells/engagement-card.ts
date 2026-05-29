@@ -11,7 +11,11 @@ import {
   getConnectionModeById,
   getRecommendedListenerId,
 } from "./template-meta";
-import type { GeneratedReverseShell, ReverseShellConfig } from "./types";
+import type {
+  GeneratedReverseShell,
+  ListenerTemplate,
+  ReverseShellConfig,
+} from "./types";
 
 interface ListenerRecommendation {
   label: string;
@@ -21,8 +25,10 @@ interface ListenerRecommendation {
 function listenerForConfig(
   config: ReverseShellConfig,
   labels: EngagementCardLabels,
+  selectedListenerId?: ListenerTemplate["id"] | "hoax-http" | null,
 ): ListenerRecommendation {
-  const recommendedId = getRecommendedListenerId(config.templateId);
+  const recommendedId =
+    selectedListenerId ?? getRecommendedListenerId(config.templateId);
 
   if (recommendedId === "hoax-http") {
     return {
@@ -106,10 +112,11 @@ export function createEngagementCard(
   labels: EngagementCardLabels = defaultLabels,
   stageTemplateId = "bash-dev-tcp",
   exportNotes?: string[],
+  selectedListenerId?: ListenerTemplate["id"] | "hoax-http" | null,
 ): string {
   const notes = exportNotes ?? generated.notes;
   const template = getTemplate(config.templateId);
-  const listener = listenerForConfig(config, labels);
+  const listener = listenerForConfig(config, labels, selectedListenerId);
   const mode = getConnectionModeById(config.templateId);
   const hostLine =
     mode === "bind"
@@ -196,4 +203,3 @@ export function createEngagementCard(
     "",
   ].join("\n");
 }
-

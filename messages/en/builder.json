@@ -2,29 +2,69 @@
   "title": "Reverse Shell Builder",
   "subtitle": "Generate one-liners, apply obfuscation, and save reusable configs.",
   "payload_label": "Technique",
-  "payload_intro": "Choose a reliable technique, then narrow results by type, platform, and family.",
+  "payload_intro": "Select the shell method that best matches the target profile.",
+  "technique_command_title": "Technique & Command",
+  "technique_command_intro": "Choose a compatible technique, optionally transform it, then copy the final command.",
   "payload_search_label": "Search techniques",
   "payload_search_placeholder": "Search by language, platform, or technique...",
-  "technique_type_label": "Technique type",
+  "technique_type_label": "Mode",
   "payload_result_count": "{count} of {total} techniques",
   "payload_no_results": "No techniques match the current filters.",
-  "attacker_title": "Attacker",
-  "attacker_intro": "Set the callback IP and port your target should connect back to.",
+  "attacker_victim_title": "Target & Callback",
+  "attacker_victim_intro": "Define the target constraints, then prepare the callback endpoint and listener.",
+  "attacker_title": "Callback endpoint",
+  "attacker_intro": "Set where the target should connect back.",
+  "target_profile_title": "Target profile",
+  "target_profile_intro": "Filter techniques by the target platform, architecture, available tools, and outbound network access.",
   "ip_label": "IP",
   "port_label": "Port",
   "random_port_button": "Random port",
   "random_port_hint": "Random ports avoid common services such as SSH, HTTP/S, DNS, databases, Redis, Docker, and common dev ports.",
-  "attacker_endpoint_label": "Current endpoint",
+  "attacker_endpoint_label": "Endpoint preview",
   "attacker_ip_not_used": "Not used for this payload",
-  "platform_filter_label": "Platform",
-  "family_filter_label": "Family",
+  "platform_filter_label": "Target OS",
+  "architecture_filter_label": "CPU architecture",
+  "network_egress_label": "Outbound access",
+  "target_profile_tools_label": "Tools on target",
+  "target_profile_tools_hint": "Leave tools unselected when you are not sure what exists on the target.",
+  "family_filter_label": "Runtime / tool",
   "filter_all": "All",
+  "architectures": {
+    "x64": "x64 / amd64",
+    "x86": "x86 / i386",
+    "aarch64": "ARM64 / aarch64",
+    "arm": "ARM"
+  },
+  "network_egress": {
+    "raw-tcp": "Raw TCP",
+    "http": "HTTP(S) only",
+    "tls": "TLS preferred"
+  },
+  "victim_tools": {
+    "bash": "bash",
+    "sh": "sh",
+    "nc": "nc",
+    "ncat": "ncat",
+    "python": "python",
+    "python3": "python3",
+    "python2": "python2",
+    "php": "php",
+    "perl": "perl",
+    "ruby": "ruby",
+    "node": "node",
+    "powershell": "PowerShell",
+    "curl": "curl",
+    "wget": "wget",
+    "socat": "socat",
+    "openssl": "OpenSSL"
+  },
   "technique_types": {
     "reverse": "Reverse",
     "bind": "Bind",
     "msfvenom": "MSFvenom",
     "hoaxshell": "HoaxShell",
-    "assembled": "Assembled"
+    "assembled": "Assembled",
+    "encrypted": "Encrypted"
   },
   "lhost_label": "LHOST",
   "lhost_bind_hint": "Not used for bind shells. Connect inbound to the target on LPORT.",
@@ -33,9 +73,10 @@
   "lport_label": "LPORT",
   "http_port_label": "HTTP port",
   "lport_bind_hint": "Port opened on the target. Connect with nc TARGET_IP LPORT.",
-  "shell_label": "Shell",
+  "shell_label": "Shell path",
   "obfuscation_label": "Obfuscation",
-  "obfuscation_intro": "Transform the generated command for encoding, transport, or simple filter bypass needs.",
+  "obfuscation_intro": "Apply an encoding or wrapper compatible with the selected technique.",
+  "obfuscation_select_label": "Transform",
   "mode_reverse": "Reverse TCP callback",
   "mode_bind": "Bind shell (inbound connection)",
   "mode_staged": "Staged payload (HTTP fetch)",
@@ -44,23 +85,31 @@
   "export_card_button": "Export Card",
   "copy_command_button": "Copy Command",
   "copy_listener_button": "Copy listener",
-  "recommended_listener_title": "Recommended listener",
-  "recommended_listener_hint": "Run this on your attack box before executing the payload.",
+  "recommended_listener_title": "Listener command",
+  "recommended_listener_hint": "Run this listener before executing the generated command.",
   "listener_type_label": "Listener",
   "listener_setup_title": "Listener setup",
-  "listener_command_label": "Listener command",
+  "listener_command_label": "Command to run",
   "recommended_listener_http_note": "Use the HTTP callback server below instead of a TCP listener.",
   "open_upgrade_page": "TTY upgrade",
+  "next_step_title": "Session Upgrade",
+  "next_step_hint": "Upgrade the shell, then clean up terminal behavior for a smoother session.",
   "tty_upgrade_title": "TTY upgrade",
   "tty_upgrade_hint": "Copy these steps after the callback lands to improve interactivity without leaving the builder.",
+  "tty_upgrade_verified_note": "Verified upgrade methods only. Cleanup helpers are separated below.",
   "tty_upgrade_recipe_label": "Upgrade recipe",
   "tty_upgrade_steps_label": "Upgrade steps",
   "copy_upgrade_button": "Copy upgrade steps",
+  "session_cleanup_title": "Session cleanup",
+  "session_cleanup_hint": "Use these helpers after the upgrade to fix terminal behavior, prompt output, or reconnect workflow.",
+  "session_cleanup_recipe_label": "Cleanup helper",
+  "session_cleanup_steps_label": "Cleanup steps",
+  "copy_cleanup_button": "Copy cleanup steps",
   "payload_picker_title": "Choose technique",
-  "generated_command_title": "Generated Command",
-  "generated_command_intro": "Use this final command after validation and any compatible obfuscation.",
-  "raw_command_title": "Raw Command",
-  "raw_command_intro": "Review the unmodified technique before local transformations are applied.",
+  "generated_command_title": "Final command",
+  "generated_command_intro": "Copy this command after confirming the target and listener settings.",
+  "raw_command_title": "Original command",
+  "raw_command_intro": "Reference version before any transform is applied.",
   "stage_file_title": "Stage file",
   "stage_file_hint": "Host this file on your HTTP server, then run the staged command on the target.",
   "stage_template_label": "Second-stage payload",
@@ -75,9 +124,10 @@
   "validation_field_shell": "Use a shell path without spaces or shell metacharacters.",
   "validation_field_lport": "Port must be between 1 and 65535.",
   "validation_field_http_port": "HTTP port must be between 1 and 65535.",
-  "obfuscation_note": "Obfuscation is applied locally in the browser and never sends the payload anywhere.",
-  "obfuscation_compat_note": "Only modes compatible with the selected payload are shown.",
+  "obfuscation_note": "Transforms are applied locally in your browser.",
+  "obfuscation_compat_note": "Only compatible transforms are shown.",
   "copied": "Copied to clipboard",
+  "copy_failed": "Failed to copy to clipboard",
   "saved": "Collection saved",
   "exported_card": "Engagement card exported",
   "obfuscation_none": "None - Plain command",
@@ -229,6 +279,10 @@
       "name": "Python 3 socket",
       "description": "Python reverse shell with stdio duplicated to the socket."
     },
+    "python-socket": {
+      "name": "Python socket",
+      "description": "Unversioned Python reverse shell for targets where python is available."
+    },
     "python2-socket": {
       "name": "Python 2 socket",
       "description": "Python 2-compatible socket reverse shell."
@@ -237,13 +291,41 @@
       "name": "Python 3 PTY",
       "description": "Python 3 reverse shell that spawns the selected shell through pty."
     },
+    "python-pty": {
+      "name": "Python PTY",
+      "description": "Unversioned Python reverse shell that spawns a PTY."
+    },
+    "python2-pty": {
+      "name": "Python 2 PTY",
+      "description": "Python 2 reverse shell that spawns the selected shell through pty."
+    },
     "python3-subprocess": {
       "name": "Python 3 subprocess",
       "description": "Python 3 reverse shell using subprocess.Popen."
     },
+    "python-subprocess": {
+      "name": "Python subprocess",
+      "description": "Unversioned Python reverse shell using subprocess.Popen."
+    },
+    "python2-subprocess": {
+      "name": "Python 2 subprocess",
+      "description": "Python 2 reverse shell using subprocess.Popen."
+    },
     "python3-no-spaces": {
       "name": "Python 3 compact",
       "description": "Compact Python 3 reverse shell useful for tight input fields."
+    },
+    "python3-ssl-socket": {
+      "name": "Python 3 SSL socket",
+      "description": "Python 3 TLS reverse shell using ssl.wrap_socket."
+    },
+    "python-ssl-socket": {
+      "name": "Python SSL socket",
+      "description": "Unversioned Python TLS reverse shell using ssl.wrap_socket."
+    },
+    "python2-ssl-socket": {
+      "name": "Python 2 SSL socket",
+      "description": "Python 2 TLS reverse shell using ssl.wrap_socket."
     },
     "nodejs-child-process": {
       "name": "Node.js child_process",
@@ -256,6 +338,10 @@
     "nodejs-reverse-sh": {
       "name": "Node.js reverse sh",
       "description": "Node.js reverse shell spawning the selected shell directly."
+    },
+    "nodejs-tls-child-process": {
+      "name": "Node.js TLS child_process",
+      "description": "Node.js TLS reverse shell using tls and child_process."
     },
     "java-runtime": {
       "name": "Java Runtime",
@@ -317,6 +403,14 @@
       "name": "PHP stream_socket loop",
       "description": "PHP reverse command loop using stream_socket_client and popen output."
     },
+    "php-ssl-fsockopen": {
+      "name": "PHP SSL fsockopen",
+      "description": "PHP TLS reverse shell using ssl:// fsockopen."
+    },
+    "php-ssl-stream-socket": {
+      "name": "PHP SSL stream_socket",
+      "description": "PHP TLS command loop using stream_socket_client."
+    },
     "perl-socket": {
       "name": "Perl socket",
       "description": "Perl reverse shell using Socket from the standard library."
@@ -336,6 +430,10 @@
     "ruby-exec": {
       "name": "Ruby exec",
       "description": "Ruby reverse shell using TCPSocket and exec."
+    },
+    "ruby-openssl": {
+      "name": "Ruby OpenSSL",
+      "description": "Ruby TLS reverse shell using OpenSSL::SSL::SSLSocket."
     },
     "socat-pty": {
       "name": "Socat PTY",
@@ -397,6 +495,10 @@
       "name": "PowerShell TCPClient",
       "description": "PowerShell reverse shell with an interactive command loop."
     },
+    "powershell-tls-schannel": {
+      "name": "PowerShell TLS SslStream",
+      "description": "PowerShell reverse shell over TLS using SslStream and permissive certificate validation."
+    },
     "powershell-nishang-style": {
       "name": "PowerShell Nishang-style",
       "description": "Compact PowerShell TCP reverse shell inspired by common Nishang workflows."
@@ -440,6 +542,14 @@
     "python3-http-staged": {
       "name": "Python 3 HTTP staged",
       "description": "Python 3 loader that downloads and executes a staged script."
+    },
+    "python-http-staged": {
+      "name": "Python HTTP staged",
+      "description": "Unversioned Python loader that downloads and executes a staged script."
+    },
+    "python2-http-staged": {
+      "name": "Python 2 HTTP staged",
+      "description": "Python 2 loader that downloads and executes a staged script."
     },
     "bash-curl-dropper-staged": {
       "name": "Bash curl dropper",
@@ -488,6 +598,14 @@
     "python3-bind": {
       "name": "Python 3 bind shell",
       "description": "Python bind shell that listens on the target instead of calling back."
+    },
+    "python-bind": {
+      "name": "Python bind shell",
+      "description": "Unversioned Python bind shell that listens on the target instead of calling back."
+    },
+    "python2-bind": {
+      "name": "Python 2 bind shell",
+      "description": "Python 2 bind shell that listens on the target instead of calling back."
     },
     "socat-bind-pty": {
       "name": "Socat bind PTY",

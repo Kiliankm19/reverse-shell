@@ -43,6 +43,7 @@ const COLLECTION_FILTERS = [
   "hoaxshell",
   "assembled",
   "encoded",
+  "encrypted",
 ] as const;
 
 type CollectionFilter = (typeof COLLECTION_FILTERS)[number];
@@ -66,6 +67,16 @@ function matchesPlatformFilter(templateId: string, filter: CollectionFilter) {
     (filter === "linux" && template.platform === "multi") ||
     (filter === "windows" && template.platform === "multi") ||
     (filter === "macos" && template.platform === "multi")
+  );
+}
+
+function isEncryptedTemplate(templateId: string) {
+  const template = getTemplate(templateId);
+  return (
+    template.family === "openssl" ||
+    templateId.includes("ssl") ||
+    templateId.includes("tls") ||
+    templateId.includes("openssl")
   );
 }
 
@@ -98,6 +109,12 @@ function matchesCollectionFilter(
   if (filter === "hoaxshell") return templateId.includes("hoaxshell");
   if (filter === "assembled") return template.family === "staged";
   if (filter === "encoded") return collection.config.obfuscation !== "none";
+  if (filter === "encrypted") {
+    return (
+      isEncryptedTemplate(templateId) ||
+      ("tags" in collection && collection.tags.includes("encrypted"))
+    );
+  }
 
   return false;
 }

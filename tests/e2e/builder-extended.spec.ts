@@ -2,15 +2,15 @@ import { test, expect } from "@playwright/test";
 
 test("recommended listener card is visible", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText(/Recommended listener/i)).toBeVisible();
+  await expect(page.getByText(/Listener command/i)).toBeVisible();
   await expect(page.getByText(/rlwrap|netcat|Netcat/i).first()).toBeVisible();
 });
 
 test("payload picker dialog opens", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("combobox").nth(2).click();
+  await page.getByRole("combobox", { name: "Technique" }).click();
   await expect(
-    page.getByRole("heading", { name: /Choose payload/i }),
+    page.getByRole("heading", { name: /Choose technique/i }),
   ).toBeVisible();
 });
 
@@ -21,7 +21,7 @@ test("share URL restores LPORT", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Reverse Shell Builder/i }),
   ).toBeVisible();
-  await expect(page.getByLabel(/LPORT/i)).toHaveValue("9001");
+  await expect(page.getByLabel(/^Port$/i)).toHaveValue("9001");
 });
 
 test("copy command shows toast", async ({ page }) => {

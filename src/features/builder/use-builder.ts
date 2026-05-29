@@ -7,36 +7,38 @@ import { saveCollection } from "@/features/collections/collections-db";
 import {
   configFromSearchParams,
   syncShareUrl,
+  uiFromSearchParams,
 } from "@/features/builder/share-config";
 import {
-  matchesTechniqueType,
+  familyAvailableForFilters,
+  templateMatchesFilters,
+  type ArchitectureFilter,
+  type NetworkEgressFilter,
   type TechniqueTypeFilter,
+  type VictimToolFilter,
 } from "@/features/builder/constants";
 import {
   persistBuilderConfig,
+  persistBuilderUi,
   readInitialBuilderConfig,
+  readPersistedBuilderUi,
 } from "@/features/builder/store";
 import { downloadText } from "@/features/builder/utils";
 import {
   createEngagementCard,
-  createHoaxShellServerScript,
-  createStageScript,
   defaultStageTemplateId,
   defaultConfig,
   generateReverseShell,
-  hoaxShellServerCommand,
   compatibleObfuscationModes,
   getConnectionModeById,
-  getRecommendedListenerId,
+  getSmartDefaultListenerId,
   getTemplate,
+  listenerTemplates,
   reverseShellTemplates,
   getConfigFieldErrors,
   safeParseReverseShellConfig,
   safeObfuscationForTemplate,
-  stageServeCommand,
   stageTemplateOptions,
-  supportsHttpServerNotes,
-  supportsStageFile,
   usesBindPortOnly,
   usesCallbackHost,
   usesShellInput,
@@ -56,27 +58,117 @@ const COMMON_PORTS = new Set([
 export function useBuilder() {
   const t = useTranslations("builder");
   const tListener = useTranslations("listener");
-
-  const [config, setConfig] = useState<ReverseShellConfig>(() => {
+  const initialConfig = useMemo(() => {
     if (typeof window === "undefined") return defaultConfig();
     return (
       configFromSearchParams(window.location.search) ??
       readInitialBuilderConfig()
     );
-  });
+  }, []);
+  const persistedUi = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return (
+      uiFromSearchParams(window.location.search) ?? readPersistedBuilderUi()
+    );
+  }, []);
+
+  const [config, setConfig] = useState<ReverseShellConfig>(initialConfig);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [stageTemplateId, setStageTemplateId] = useState(
-    defaultStageTemplateId,
-  );
   const [techniqueTypeFilter, setTechniqueTypeFilter] =
-    useState<TechniqueTypeFilter>("reverse");
-  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>("all");
-  const [familyFilter, setFamilyFilter] = useState<"all" | ShellFamily>("all");
+    useState<TechniqueTypeFilter>(
+      () => persistedUi?.techniqueTypeFilter ?? "reverse",
+    );
+  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>(
+    () => persistedUi?.platformFilter ?? "all",
+  );
+  const [architectureFilter, setArchitectureFilter] =
+    useState<ArchitectureFilter>(
+      () => persistedUi?.architectureFilter ?? "all",
+    );
+  const [victimToolFilters, setVictimToolFilters] = useState<
+    VictimToolFilter[]
+  >(() => persistedUi?.victimToolFilters ?? []);
+  const [networkEgressFilter, setNetworkEgressFilter] =
+    useState<NetworkEgressFilter>(
+      () => persistedUi?.networkEgressFilter ?? "all",
+    );
+  const [familyFilter, setFamilyFilter] = useState<"all" | ShellFamily>(
+    () => persistedUi?.familyFilter ?? "all",
+  );
+  const [selectedListenerId, setSelectedListenerId] = useState<string | null>(
+    () =>
+      persistedUi?.selectedListenerId ??
+      getSmartDefaultListenerId(initialConfig.templateId),
+  );
+  const [stageTemplateId, setStageTemplateId] = useState(
+    () => persistedUi?.stageTemplateId ?? defaultStageTemplateId,
+  );
+  const [selectedUpgradeRecipeId, setSelectedUpgradeRecipeId] = useState(
+    () => persistedUi?.selectedUpgradeRecipeId ?? "python-pty",
+  );
+  const [selectedCleanupRecipeId, setSelectedCleanupRecipeId] = useState(
+    () => persistedUi?.selectedCleanupRecipeId ?? "terminal-env",
+  );
+  const stageTemplates = useMemo(() => stageTemplateOptions(), []);
+  const safeStageTemplateId = stageTemplates.some(
+    (template) => template.id === stageTemplateId,
+  )
+    ? stageTemplateId
+    : defaultStageTemplateId;
 
   useEffect(() => {
     persistBuilderConfig(config);
-    syncShareUrl(config);
-  }, [config]);
+    syncShareUrl(config, {
+      platformFilter,
+      architectureFilter,
+      victimToolFilters,
+      networkEgressFilter,
+      familyFilter,
+      techniqueTypeFilter,
+      selectedListenerId,
+      stageTemplateId: safeStageTemplateId,
+      selectedUpgradeRecipeId,
+      selectedCleanupRecipeId,
+    });
+  }, [
+    config,
+    platformFilter,
+    architectureFilter,
+    victimToolFilters,
+    networkEgressFilter,
+    familyFilter,
+    techniqueTypeFilter,
+    selectedListenerId,
+    safeStageTemplateId,
+    selectedUpgradeRecipeId,
+    selectedCleanupRecipeId,
+  ]);
+
+  useEffect(() => {
+    persistBuilderUi({
+      platformFilter,
+      architectureFilter,
+      victimToolFilters,
+      networkEgressFilter,
+      familyFilter,
+      techniqueTypeFilter,
+      selectedListenerId,
+      stageTemplateId: safeStageTemplateId,
+      selectedUpgradeRecipeId,
+      selectedCleanupRecipeId,
+    });
+  }, [
+    platformFilter,
+    architectureFilter,
+    victimToolFilters,
+    networkEgressFilter,
+    familyFilter,
+    techniqueTypeFilter,
+    selectedListenerId,
+    safeStageTemplateId,
+    selectedUpgradeRecipeId,
+    selectedCleanupRecipeId,
+  ]);
 
   const fieldErrors = useMemo(
     () => getConfigFieldErrors(config, config.templateId),
@@ -92,43 +184,29 @@ export function useBuilder() {
   );
   const selectedTemplate = getTemplate(config.templateId);
   const connectionMode = getConnectionModeById(config.templateId);
-  const stageScript = useMemo(
-    () =>
-      safeConfig && supportsStageFile(connectionMode)
-        ? createStageScript(safeConfig, stageTemplateId)
-        : null,
-    [safeConfig, connectionMode, stageTemplateId],
-  );
-  const stageTemplates = stageTemplateOptions();
-  const stageServe = safeConfig ? stageServeCommand(safeConfig) : "";
-  const hoaxServerScript = useMemo(
-    () =>
-      safeConfig && supportsHttpServerNotes(connectionMode)
-        ? createHoaxShellServerScript(safeConfig)
-        : null,
-    [safeConfig, connectionMode],
-  );
-  const hoaxServerCommand =
-    safeConfig && supportsHttpServerNotes(connectionMode)
-      ? hoaxShellServerCommand(safeConfig)
-      : "";
   const compatibleOptions = compatibleObfuscationModes(selectedTemplate);
   const showLhost = usesCallbackHost(connectionMode);
   const bindMode = usesBindPortOnly(connectionMode);
   const showShell = usesShellInput(config.templateId);
   const filteredTemplates = useMemo(() => {
-    return reverseShellTemplates.filter((template) => {
-      const matchesPlatform =
-        platformFilter === "all" ||
-        template.platform === platformFilter ||
-        template.platform === "multi";
-      const matchesFamily =
-        familyFilter === "all" || template.family === familyFilter;
-      const matchesType = matchesTechniqueType(template, techniqueTypeFilter);
-
-      return matchesPlatform && matchesFamily && matchesType;
-    });
-  }, [familyFilter, platformFilter, techniqueTypeFilter]);
+    return reverseShellTemplates.filter((template) =>
+      templateMatchesFilters(template, {
+        platform: platformFilter,
+        architecture: architectureFilter,
+        victimTools: victimToolFilters,
+        networkEgress: networkEgressFilter,
+        family: familyFilter,
+        techniqueType: techniqueTypeFilter,
+      }),
+    );
+  }, [
+    architectureFilter,
+    familyFilter,
+    networkEgressFilter,
+    platformFilter,
+    techniqueTypeFilter,
+    victimToolFilters,
+  ]);
 
   const lhostHint = bindMode
     ? t("lhost_bind_hint")
@@ -158,11 +236,163 @@ export function useBuilder() {
       shell: template.defaultShell,
       obfuscation: safeObfuscationForTemplate(templateId, config.obfuscation),
     });
+    setSelectedListenerId(getSmartDefaultListenerId(templateId));
+  }
+
+  function handleListenerChange(listenerId: string) {
+    setSelectedListenerId(listenerId);
+  }
+
+  function familyAvailableForVictim(
+    family: "all" | ShellFamily,
+    platform: "all" | Platform,
+    architecture: ArchitectureFilter,
+    victimTools: VictimToolFilter[],
+    networkEgress: NetworkEgressFilter,
+  ) {
+    return familyAvailableForFilters(reverseShellTemplates, family, {
+      platform,
+      architecture,
+      victimTools,
+      networkEgress,
+      techniqueType: techniqueTypeFilter,
+    });
+  }
+
+  function selectFirstTemplateForVictim(
+    platform: "all" | Platform,
+    architecture: ArchitectureFilter,
+    victimTools: VictimToolFilter[],
+    networkEgress: NetworkEgressFilter,
+    family: "all" | ShellFamily,
+  ) {
+    if (
+      templateMatchesFilters(selectedTemplate, {
+        platform,
+        architecture,
+        victimTools,
+        networkEgress,
+        family,
+        techniqueType: techniqueTypeFilter,
+      })
+    ) {
+      return;
+    }
+
+    const firstMatchingTemplate = reverseShellTemplates.find((template) =>
+      templateMatchesFilters(template, {
+        platform,
+        architecture,
+        victimTools,
+        networkEgress,
+        family,
+        techniqueType: techniqueTypeFilter,
+      }),
+    );
+
+    if (firstMatchingTemplate) {
+      handleTemplateChange(firstMatchingTemplate.id);
+    }
+  }
+
+  function handlePlatformFilterChange(value: "all" | Platform) {
+    setPlatformFilter(value);
+    const nextFamily = familyAvailableForVictim(
+      familyFilter,
+      value,
+      architectureFilter,
+      victimToolFilters,
+      networkEgressFilter,
+    )
+      ? familyFilter
+      : "all";
+
+    if (nextFamily !== familyFilter) setFamilyFilter("all");
+    selectFirstTemplateForVictim(
+      value,
+      architectureFilter,
+      victimToolFilters,
+      networkEgressFilter,
+      nextFamily,
+    );
+  }
+
+  function handleArchitectureFilterChange(value: ArchitectureFilter) {
+    setArchitectureFilter(value);
+    const nextFamily = familyAvailableForVictim(
+      familyFilter,
+      platformFilter,
+      value,
+      victimToolFilters,
+      networkEgressFilter,
+    )
+      ? familyFilter
+      : "all";
+
+    if (nextFamily !== familyFilter) setFamilyFilter("all");
+    selectFirstTemplateForVictim(
+      platformFilter,
+      value,
+      victimToolFilters,
+      networkEgressFilter,
+      nextFamily,
+    );
+  }
+
+  function handleVictimToolToggle(tool: VictimToolFilter) {
+    const nextTools = victimToolFilters.includes(tool)
+      ? victimToolFilters.filter((currentTool) => currentTool !== tool)
+      : [...victimToolFilters, tool];
+    setVictimToolFilters(nextTools);
+    const nextFamily = familyAvailableForVictim(
+      familyFilter,
+      platformFilter,
+      architectureFilter,
+      nextTools,
+      networkEgressFilter,
+    )
+      ? familyFilter
+      : "all";
+
+    if (nextFamily !== familyFilter) setFamilyFilter("all");
+    selectFirstTemplateForVictim(
+      platformFilter,
+      architectureFilter,
+      nextTools,
+      networkEgressFilter,
+      nextFamily,
+    );
+  }
+
+  function handleNetworkEgressChange(value: NetworkEgressFilter) {
+    setNetworkEgressFilter(value);
+    const nextFamily = familyAvailableForVictim(
+      familyFilter,
+      platformFilter,
+      architectureFilter,
+      victimToolFilters,
+      value,
+    )
+      ? familyFilter
+      : "all";
+
+    if (nextFamily !== familyFilter) setFamilyFilter("all");
+    selectFirstTemplateForVictim(
+      platformFilter,
+      architectureFilter,
+      victimToolFilters,
+      value,
+      nextFamily,
+    );
   }
 
   async function copy(value: string) {
-    await navigator.clipboard.writeText(value);
-    toast.success(t("copied"));
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success(t("copied"));
+    } catch {
+      toast.error(t("copy_failed"));
+    }
   }
 
   function handleSave(name: string) {
@@ -184,7 +414,16 @@ export function useBuilder() {
       toast.error(t("invalid_export"));
       return;
     }
-    const listenerId = getRecommendedListenerId(safeConfig.templateId);
+    const listenerOptions = new Set<string>(
+      listenerTemplates.map((listener) => listener.id),
+    );
+    if (connectionMode === "http-callback") {
+      listenerOptions.add("hoax-http");
+    }
+    const listenerId =
+      selectedListenerId && listenerOptions.has(selectedListenerId)
+        ? selectedListenerId
+        : getSmartDefaultListenerId(safeConfig.templateId);
     const listenerLabel =
       listenerId === "hoax-http"
         ? t("card_http_command_server")
@@ -222,8 +461,9 @@ export function useBuilder() {
         tcpListener: t("card_tcp_listener"),
         listenerName: listenerLabel,
       },
-      stageTemplateId,
+      safeStageTemplateId,
       exportNotes,
+      listenerId,
     );
     downloadText(
       `reverseshell-${safeConfig.templateId}-${safeConfig.lhost}-${safeConfig.lport}.md`,
@@ -244,12 +484,16 @@ export function useBuilder() {
     handleExportCard,
     saveDialogOpen,
     setSaveDialogOpen,
-    stageTemplateId,
-    setStageTemplateId,
     techniqueTypeFilter,
     setTechniqueTypeFilter,
     platformFilter,
-    setPlatformFilter,
+    setPlatformFilter: handlePlatformFilterChange,
+    architectureFilter,
+    setArchitectureFilter: handleArchitectureFilterChange,
+    victimToolFilters,
+    toggleVictimTool: handleVictimToolToggle,
+    networkEgressFilter,
+    setNetworkEgressFilter: handleNetworkEgressChange,
     familyFilter,
     setFamilyFilter,
     fieldErrors,
@@ -257,17 +501,20 @@ export function useBuilder() {
     generated,
     selectedTemplate,
     connectionMode,
-    stageScript,
-    stageTemplates,
-    stageServe,
-    hoaxServerScript,
-    hoaxServerCommand,
     compatibleOptions,
     showLhost,
     bindMode,
     showShell,
     filteredTemplates,
     lhostHint,
+    selectedListenerId,
+    onListenerChange: handleListenerChange,
+    stageTemplateId: safeStageTemplateId,
+    setStageTemplateId,
+    selectedUpgradeRecipeId,
+    setSelectedUpgradeRecipeId,
+    selectedCleanupRecipeId,
+    setSelectedCleanupRecipeId,
   };
 }
 
