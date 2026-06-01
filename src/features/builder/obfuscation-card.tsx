@@ -39,7 +39,7 @@ export function ObfuscationCard({
             patchConfig({ obfuscation: value as ObfuscationMode })
           }
         >
-          <SelectTrigger>
+          <SelectTrigger aria-label={t("obfuscation_select_label")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -62,18 +62,20 @@ export function ObfuscationCard({
 
   if (embedded) {
     return (
-      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
-        <div>
-          <h3 className="flex items-center gap-2 text-sm font-medium">
+      <details className="rounded-md border bg-muted/20 p-3">
+        <summary className="cursor-pointer text-sm font-medium">
+          <span className="inline-flex items-center gap-2">
             <Wand2 className="h-4 w-4 text-primary" />
             {t("obfuscation_label")}
-          </h3>
+          </span>
+        </summary>
+        <div className="mt-3 space-y-3">
           <p className="text-xs text-muted-foreground">
             {t("obfuscation_intro")}
           </p>
+          {content}
         </div>
-        {content}
-      </section>
+      </details>
     );
   }
 

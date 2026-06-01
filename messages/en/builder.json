@@ -1,6 +1,71 @@
 {
   "title": "Reverse Shell Builder",
   "subtitle": "Generate one-liners, apply obfuscation, and save reusable configs.",
+  "step_target": "Target",
+  "step_technique": "Technique",
+  "step_session": "Session",
+  "step_back": "Back",
+  "step_next": "Next",
+  "step_progress": "Step {current}/{total}",
+  "scenario_title": "Start with intent",
+  "scenario_subtitle": "Pick the closest lab scenario. The builder will preselect a practical technique.",
+  "scenario_click_budget": "Target: command-ready in 3 clicks",
+  "scenario_skip": "Skip and choose manually",
+  "scenarios": {
+    "web": {
+      "title": "Web RCE",
+      "description": "Command injection or web shell context"
+    },
+    "linux": {
+      "title": "Linux TCP",
+      "description": "Bash or netcat callback"
+    },
+    "windows": {
+      "title": "Windows",
+      "description": "PowerShell callback"
+    },
+    "tls": {
+      "title": "TLS egress",
+      "description": "Encrypted outbound path"
+    },
+    "bind": {
+      "title": "Bind shell",
+      "description": "Inbound lab connection"
+    },
+    "unsure": {
+      "title": "I'm not sure",
+      "description": "Use a safe common default"
+    }
+  },
+  "mode_toggle_label": "Builder mode",
+  "mode_guided": "Guided",
+  "mode_expert": "Expert",
+  "recents_title": "Recent workflows",
+  "recents_clear": "Clear",
+  "reset_button": "Reset",
+  "reset_done": "Builder reset to defaults",
+  "output_panel_title": "Command output",
+  "output_panel_hint": "Run the listener first, then copy the payload command.",
+  "copied_inline": "Copied",
+  "copy_receipt_title": "Command copied",
+  "copy_receipt_body": "Save this workflow or export a short engagement card if you will reuse it.",
+  "copy_receipt_save": "Save workflow",
+  "copy_receipt_export": "Export card",
+  "resume_last_title": "Resume your last lab",
+  "resume_last_hint": "{template} · {endpoint}",
+  "resume_last_cta": "Resume",
+  "resume_last_clear": "Clear",
+  "resume_last_label": "Last lab",
+  "output_listener_first": "Run the listener first",
+  "fit_level_high": "High fit {score}%",
+  "fit_level_medium": "Good fit {score}%",
+  "fit_level_low": "Low fit {score}%",
+  "fit_reason_platform_match": "Matches the selected target OS.",
+  "fit_reason_platform_mismatch": "May not match the selected target OS.",
+  "fit_reason_platform_open": "No strict OS filter applied.",
+  "fit_reason_endpoint_ready": "Callback endpoint looks ready.",
+  "fit_reason_endpoint_incomplete": "Complete LHOST and LPORT first.",
+  "fit_reason_obfuscation_applied": "Obfuscation is applied.",
   "payload_label": "Technique",
   "payload_intro": "Select the shell method that best matches the target profile.",
   "technique_command_title": "Technique & Command",
@@ -28,6 +93,7 @@
   "target_profile_tools_label": "Tools on target",
   "target_profile_tools_hint": "Leave tools unselected when you are not sure what exists on the target.",
   "family_filter_label": "Runtime / tool",
+  "advanced_controls_title": "Advanced controls",
   "filter_all": "All",
   "architectures": {
     "x64": "x64 / amd64",

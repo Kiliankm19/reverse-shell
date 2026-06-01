@@ -133,6 +133,12 @@ export function readPersistedConfig(): ReverseShellConfig | null {
   }
 }
 
+export function clearPersistedConfig(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(ACTIVE_CONFIG_KEY);
+  localStorage.removeItem(PERSISTED_CONFIG_KEY);
+}
+
 export function persistBuilderConfig(config: ReverseShellConfig): void {
   if (typeof window === "undefined") return;
   const safeConfig = safeParseReverseShellConfig(config);

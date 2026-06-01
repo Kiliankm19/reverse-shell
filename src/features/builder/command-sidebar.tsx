@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { Code2, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,18 +8,21 @@ import type { BuilderState } from "@/features/builder/use-builder";
 
 type CommandSidebarProps = Pick<
   BuilderState,
-  "copy" | "generated" | "safeConfig"
+  "copy" | "generated" | "safeConfig" | "t"
 > & {
   embedded?: boolean;
+  /** When true with embedded, only show raw command (final command lives in sticky panel). */
+  rawOnly?: boolean;
 };
 
 export function CommandSidebar({
   copy,
   generated,
   safeConfig,
+  t,
   embedded = false,
+  rawOnly = false,
 }: CommandSidebarProps) {
-  const t = useTranslations("builder");
   const generatedCommandHeader = (
     <div>
       <h3 className="flex items-center gap-2 text-sm font-medium">
@@ -79,6 +81,19 @@ export function CommandSidebar({
   );
 
   if (embedded) {
+    if (rawOnly) {
+      return (
+        <details className="rounded-md border bg-muted/20 p-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            {t("raw_command_title")}
+          </summary>
+          <div className="mt-3 space-y-3">
+            {rawCommandHeader}
+            {rawCommandBody}
+          </div>
+        </details>
+      );
+    }
     return (
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="space-y-3 rounded-md border bg-muted/20 p-3">

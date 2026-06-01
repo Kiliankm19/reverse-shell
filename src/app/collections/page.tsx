@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { CollectionsPanel } from "@/features/collections/collections-panel";
 
@@ -11,7 +12,13 @@ export default async function CollectionsPage() {
           <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <CollectionsPanel />
+        <Suspense
+          fallback={
+            <p className="text-sm text-muted-foreground">{t("loading")}</p>
+          }
+        >
+          <CollectionsPanel />
+        </Suspense>
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
-import { HomePage } from "@/features/home/home-page";
+import { redirect } from "next/navigation";
 
-export default function ReverseShellLandingPage() {
-  return <HomePage />;
+export default function ReverseShellLegacyPage() {
+  redirect("/");
 }

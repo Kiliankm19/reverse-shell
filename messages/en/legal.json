@@ -1,5 +1,11 @@
 {
   "title": "Legal & Acceptable Use",
+  "intro": "reverseshell is built for authorized security professionals. Read these policies before generating or running any command.",
+  "trust_summary": {
+    "title": "Trust & safety at a glance",
+    "body": "Commands are generated locally in your browser. reverseshell does not execute payloads, open callbacks, or upload your lab data to our servers.",
+    "cta": "Open the builder"
+  },
   "disclaimer": {
     "title": "Disclaimer",
     "body": "reverseshell is provided for educational purposes, authorized security testing, bug bounty programs, CTF competitions, and security research only. You must have explicit written permission before testing any system you do not own."
@@ -11,6 +17,23 @@
       "Do not use generated commands for malicious attacks, harassment, or unauthorized access.",
       "You are solely responsible for compliance with applicable laws and regulations.",
       "reverseshell does not execute payloads or open callbacks — you control where commands are used."
+    ]
+  },
+  "prohibited": {
+    "title": "Prohibited use",
+    "items": [
+      "Targeting systems without written authorization.",
+      "Using generated output for fraud, extortion, or disruption.",
+      "Attempting to bypass laws, regulations, or program rules."
+    ]
+  },
+  "does_not_do": {
+    "title": "What reverseshell does not do",
+    "items": [
+      "Execute payloads or open network callbacks on your behalf.",
+      "Upload your commands, collections, or lab notes to our servers.",
+      "Provide exploits, initial access, or target discovery.",
+      "Replace written authorization or legal review for your engagement."
     ]
   },
   "privacy": {

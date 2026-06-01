@@ -16,15 +16,19 @@ test("load preset navigates to builder with template", async ({ page }) => {
   await page.goto("/collections");
   const loadButton = page.getByRole("button", { name: /^Load$/i }).first();
   await loadButton.click();
-  await page.waitForURL((url) => new URL(url).pathname === "/");
+  await page.waitForURL((url) => new URL(url).pathname === "/builder");
   await expect(
     page.getByRole("heading", { name: /Reverse Shell Builder/i }),
   ).toBeVisible();
 });
 
 test("rename saved collection", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /^Save$/i }).click();
+  await page.goto("/builder");
+  await page
+    .getByRole("button", { name: /Copy Command/i })
+    .first()
+    .click();
+  await page.getByRole("button", { name: /Save workflow/i }).click();
   await page.getByLabel(/Collection name/i).fill("E2E rename me");
   await page.getByRole("button", { name: /Save copy/i }).click();
   await expect(

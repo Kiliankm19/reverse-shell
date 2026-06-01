@@ -56,7 +56,7 @@ export function RecommendedListenerCard({
   const content = (
     <div className="space-y-3">
       <Select value={listenerId} onValueChange={onListenerChange}>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full" aria-label={t("listener_type_label")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

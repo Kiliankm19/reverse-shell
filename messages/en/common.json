@@ -1,19 +1,55 @@
 {
   "nav": {
+    "home": "Product",
     "builder": "Builder",
+    "collections": "Collections",
+    "guides": "Guides",
+    "legal": "Legal",
     "listener": "Listener",
     "upgrade": "Upgrade",
-    "collections": "Collections",
-    "legal": "Legal",
-    "toggle_theme": "Toggle theme"
+    "toggle_theme": "Toggle theme",
+    "launch_builder": "Launch Builder",
+    "browse_presets": "Browse presets",
+    "open_guides": "View guides",
+    "open_menu": "Open menu",
+    "local_badge": "100% local"
+  },
+  "trust": {
+    "banner_toggle": "Trust & privacy",
+    "local_only": "Runs entirely in your browser",
+    "no_upload": "No payloads sent to servers",
+    "authorized": "Authorized security testing only",
+    "storage": "Configs saved locally on your device"
   },
   "home": {
     "title": "reverseshell",
-    "tagline": "Client-side reverse shell generator for authorized security testing. Generate one-liners, listeners, obfuscation variants, and shell upgrade steps entirely in your browser.",
+    "hero_title": "Generate copy-ready reverse shell workflows in seconds",
+    "tagline": "Client-side reverse shell generator for authorized security testing. Build one-liners, listeners, obfuscation variants, and shell upgrade steps without sending data to a server.",
     "client_side_note": "100% client-side. Built for authorized security testing only.",
     "cta_launch": "Launch Builder",
-    "cta_collections": "Browse Collections",
-    "cta_legal": "Legal & Acceptable Use",
+    "cta_collections": "Browse presets",
+    "cta_legal": "Legal & acceptable use",
+    "how_it_works_title": "How it works",
+    "how_step_1_title": "Define the target",
+    "how_step_1_desc": "Set OS, architecture, egress, and available tools to filter compatible techniques.",
+    "how_step_2_title": "Generate the command",
+    "how_step_2_desc": "Pick a technique, apply obfuscation, and copy the listener plus payload.",
+    "how_step_3_title": "Upgrade the session",
+    "how_step_3_desc": "Use verified TTY upgrade and cleanup recipes after the callback lands.",
+    "scenarios_title": "Start from a real lab scenario",
+    "scenarios_subtitle": "Load a curated preset and adapt LHOST/LPORT in the builder.",
+    "scenario_web_title": "Web RCE",
+    "scenario_web_desc": "Python, PHP, and Node payloads for injection contexts.",
+    "scenario_linux_title": "Linux TCP",
+    "scenario_linux_desc": "Bash /dev/tcp, netcat, and socat callbacks.",
+    "scenario_windows_title": "Windows",
+    "scenario_windows_desc": "PowerShell, cmd, and encoded payloads.",
+    "scenario_tls_title": "TLS egress",
+    "scenario_tls_desc": "OpenSSL, ncat SSL, and TLS-wrapped callbacks.",
+    "scenario_bind_title": "Bind shell",
+    "scenario_bind_desc": "Inbound connection presets for isolated labs.",
+    "scenario_staged_title": "Staged HTTP",
+    "scenario_staged_desc": "curl/wget loaders and second-stage scripts.",
     "feature_payloads_title": "Reverse, bind, staged, and HTTP callbacks",
     "feature_payloads_desc": "Bash, netcat, Python, PHP, PowerShell, socat, bind shells, curl staged payloads, and HoaxShell-style HTTP polling.",
     "feature_encoders_title": "Obfuscation helpers",
@@ -21,29 +57,88 @@
     "feature_formats_title": "Listener, upgrade, and engagement card",
     "feature_formats_desc": "Generate handlers, copy shell upgrade recipes, and export a markdown engagement card for your lab notes.",
     "feature_collections_title": "Ready-to-use collections",
-    "feature_collections_desc": "Load curated presets or save your own configurations with JSON import and export."
+    "feature_collections_desc": "Load curated presets or save your own configurations with JSON import and export.",
+    "faq_title": "FAQ",
+    "faq_q1": "Does reverseshell execute payloads?",
+    "faq_a1": "No. It only generates commands in your browser. You decide where they run.",
+    "faq_q2": "Is my data sent to your servers?",
+    "faq_a2": "No. Generation and collections are stored locally in your browser.",
+    "faq_q3": "Can I share a lab setup?",
+    "faq_a3": "Yes. Valid builder configs sync to the URL for bookmarking or sharing.",
+    "faq_q4": "Who is this for?",
+    "faq_a4": "Authorized pentesters, bug bounty hunters, CTF players, and security researchers.",
+    "final_cta_title": "Ready for your next lab?",
+    "final_cta_subtitle": "Start with a safe preset or open the full builder.",
+    "final_cta_primary": "Open Builder",
+    "final_cta_secondary": "View presets",
+    "mockup_title": "Live preview",
+    "mockup_subtitle": "Listener + payload generated locally — demo values only.",
+    "mockup_listener_label": "Listener",
+    "mockup_payload_label": "Payload",
+    "mockup_footnote": "No network calls. Your lab values stay in the browser."
   },
   "footer": {
+    "scenarios_title": "Lab scenarios",
     "tagline": "Authorized security testing only. All processing happens in your browser.",
+    "product_title": "Product",
+    "resources_title": "Resources",
+    "trust_title": "Trust",
+    "home": "Product",
+    "builder": "Builder",
+    "collections": "Collections",
+    "guides": "Guides",
     "blog": "Blog",
-    "legal": "Legal"
+    "legal": "Legal",
+    "privacy_note": "Local-only processing"
   },
   "blog": {
-    "title": "Blog",
-    "description": "Notes and updates for authorized security testing workflows.",
+    "title": "Guides",
+    "description": "Scenario playbooks for authorized labs — pick a path, load a preset, adapt LHOST/LPORT.",
     "intro": "Short guides and release notes for lab workflows. All generation still runs locally in your browser.",
+    "scenarios_title": "Scenario playbooks",
+    "scenarios_subtitle": "Start from a real engagement pattern, not a changelog.",
+    "scenario_cta_presets": "Browse presets",
+    "scenario_cta_launch": "Launch playbook",
+    "release_notes_title": "Release notes",
+    "read_in_builder": "Open in Builder",
+    "scenarios": {
+      "web": {
+        "title": "Web RCE → callback",
+        "body": "Use Python, PHP, or Node one-liners when you have command execution but limited tooling. Prefer URL-encoded variants behind WAFs."
+      },
+      "linux": {
+        "title": "Linux TCP callback",
+        "body": "Bash /dev/tcp, netcat mkfifo, or socat when outbound TCP is open. Match architecture and available binaries on target."
+      },
+      "windows": {
+        "title": "Windows callback",
+        "body": "PowerShell and cmd techniques with optional encoding. Confirm execution policy and AMSI context in your lab."
+      },
+      "tls": {
+        "title": "TLS / SSL egress",
+        "body": "When only encrypted outbound traffic is allowed, use OpenSSL, ncat SSL, or TLS-wrapped callbacks."
+      },
+      "bind": {
+        "title": "Bind shell labs",
+        "body": "Inbound connections when reverse egress is blocked. Set bind port and ensure firewall rules in the lab."
+      },
+      "staged": {
+        "title": "Staged HTTP delivery",
+        "body": "curl/wget loaders and second-stage scripts for segmented networks. Host the stage on your HTTP server."
+      }
+    },
     "posts": {
       "welcome": {
         "title": "Welcome to reverseshell",
         "date": "May 2026",
-        "excerpt": "How to use the builder, listener page, and engagement card export in authorized labs.",
-        "body": "Open the home page builder to pick a template, set LHOST/LPORT, and copy or export commands. Use the listener page for handler one-liners, collections for presets, and the engagement card export to capture configuration and notes in markdown."
+        "excerpt": "How to use the builder, listener, and engagement card export in authorized labs.",
+        "body": "Open the builder to pick a template, set LHOST/LPORT, and copy or export commands. Use collections for presets, and the engagement card export to capture configuration and notes in markdown."
       },
       "builder-update": {
         "title": "Builder persistence and shareable URLs",
         "date": "May 2026",
         "excerpt": "Your last builder config is saved locally; share lab setups with query parameters.",
-        "body": "The builder now restores your last template, LHOST, LPORT, and obfuscation from localStorage. Valid configs also sync to the URL so you can bookmark or share a lab setup. A recommended listener card appears beside the generated command, and the payload picker supports search across the expanded catalog."
+        "body": "The builder restores your last template, LHOST, LPORT, and obfuscation from localStorage. Valid configs also sync to the URL so you can bookmark or share a lab setup. A recommended listener card appears beside the generated command, and the payload picker supports search across the expanded catalog."
       }
     }
   }

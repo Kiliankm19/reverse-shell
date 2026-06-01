@@ -77,108 +77,110 @@ export function AttackerCard({
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <section className="space-y-4 rounded-md border bg-muted/20 p-3">
-          <div>
-            <p className="flex items-center gap-2 text-sm font-medium">
+        <details className="rounded-md border bg-muted/20 p-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            <span className="inline-flex items-center gap-2">
               <MonitorCog className="h-4 w-4 text-primary" />
               {t("target_profile_title")}
-            </p>
+            </span>
+          </summary>
+          <div className="mt-4 space-y-4">
             <p className="text-xs text-muted-foreground">
               {t("target_profile_intro")}
             </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label>{t("platform_filter_label")}</Label>
-              <Select
-                value={platformFilter}
-                onValueChange={(value) =>
-                  setPlatformFilter(value as "all" | Platform)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLATFORM_FILTERS.map((platform) => (
-                    <SelectItem key={platform} value={platform}>
-                      {platform === "all"
-                        ? t("filter_all")
-                        : t(`platforms.${platform}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-2">
+                <Label>{t("platform_filter_label")}</Label>
+                <Select
+                  value={platformFilter}
+                  onValueChange={(value) =>
+                    setPlatformFilter(value as "all" | Platform)
+                  }
+                >
+                  <SelectTrigger aria-label={t("platform_filter_label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLATFORM_FILTERS.map((platform) => (
+                      <SelectItem key={platform} value={platform}>
+                        {platform === "all"
+                          ? t("filter_all")
+                          : t(`platforms.${platform}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("architecture_filter_label")}</Label>
+                <Select
+                  value={architectureFilter}
+                  onValueChange={(value) =>
+                    setArchitectureFilter(value as ArchitectureFilter)
+                  }
+                >
+                  <SelectTrigger aria-label={t("architecture_filter_label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ARCHITECTURE_FILTERS.map((architecture) => (
+                      <SelectItem key={architecture} value={architecture}>
+                        {architecture === "all"
+                          ? t("filter_all")
+                          : t(`architectures.${architecture}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("network_egress_label")}</Label>
+                <Select
+                  value={networkEgressFilter}
+                  onValueChange={(value) =>
+                    setNetworkEgressFilter(value as NetworkEgressFilter)
+                  }
+                >
+                  <SelectTrigger aria-label={t("network_egress_label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NETWORK_EGRESS_FILTERS.map((network) => (
+                      <SelectItem key={network} value={network}>
+                        {network === "all"
+                          ? t("filter_all")
+                          : t(`network_egress.${network}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="space-y-2">
-              <Label>{t("architecture_filter_label")}</Label>
-              <Select
-                value={architectureFilter}
-                onValueChange={(value) =>
-                  setArchitectureFilter(value as ArchitectureFilter)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {ARCHITECTURE_FILTERS.map((architecture) => (
-                    <SelectItem key={architecture} value={architecture}>
-                      {architecture === "all"
-                        ? t("filter_all")
-                        : t(`architectures.${architecture}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t("network_egress_label")}</Label>
-              <Select
-                value={networkEgressFilter}
-                onValueChange={(value) =>
-                  setNetworkEgressFilter(value as NetworkEgressFilter)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {NETWORK_EGRESS_FILTERS.map((network) => (
-                    <SelectItem key={network} value={network}>
-                      {network === "all"
-                        ? t("filter_all")
-                        : t(`network_egress.${network}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>{t("target_profile_tools_label")}</Label>
+              <div className="flex flex-wrap gap-2">
+                {VICTIM_TOOL_FILTERS.map((tool) => {
+                  const isSelected = victimToolFilters.includes(tool);
+                  return (
+                    <Button
+                      key={tool}
+                      type="button"
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => toggleVictimTool(tool as VictimToolFilter)}
+                    >
+                      {t(`victim_tools.${tool}`)}
+                    </Button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t("target_profile_tools_hint")}
+              </p>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label>{t("target_profile_tools_label")}</Label>
-            <div className="flex flex-wrap gap-2">
-              {VICTIM_TOOL_FILTERS.map((tool) => {
-                const isSelected = victimToolFilters.includes(tool);
-                return (
-                  <Button
-                    key={tool}
-                    type="button"
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 px-2 text-xs"
-                    onClick={() => toggleVictimTool(tool as VictimToolFilter)}
-                  >
-                    {t(`victim_tools.${tool}`)}
-                  </Button>
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {t("target_profile_tools_hint")}
-            </p>
-          </div>
-        </section>
+        </details>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="space-y-4 rounded-md border bg-muted/20 p-3">
@@ -206,6 +208,22 @@ export function AttackerCard({
                       placeholder={t("lhost_placeholder")}
                       aria-invalid={!!fieldErrors.lhost}
                     />
+                    <div className="flex flex-wrap gap-1.5">
+                      {(["10.10.14.3", "127.0.0.1", "0.0.0.0"] as const).map(
+                        (preset) => (
+                          <Button
+                            key={preset}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-6 px-2 text-[10px] font-mono"
+                            onClick={() => patchConfig({ lhost: preset })}
+                          >
+                            {preset}
+                          </Button>
+                        ),
+                      )}
+                    </div>
                     {fieldErrors.lhost && (
                       <p className="text-xs text-destructive">
                         {t("validation_field_lhost")}

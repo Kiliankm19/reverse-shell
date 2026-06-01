@@ -109,6 +109,7 @@ export function useBuilder() {
   const [selectedCleanupRecipeId, setSelectedCleanupRecipeId] = useState(
     () => persistedUi?.selectedCleanupRecipeId ?? "terminal-env",
   );
+  const [lastCopiedAt, setLastCopiedAt] = useState<number | null>(null);
   const stageTemplates = useMemo(() => stageTemplateOptions(), []);
   const safeStageTemplateId = stageTemplates.some(
     (template) => template.id === stageTemplateId,
@@ -389,6 +390,7 @@ export function useBuilder() {
   async function copy(value: string) {
     try {
       await navigator.clipboard.writeText(value);
+      setLastCopiedAt(Date.now());
       toast.success(t("copied"));
     } catch {
       toast.error(t("copy_failed"));
@@ -407,6 +409,22 @@ export function useBuilder() {
       config: safeConfig,
       renderedCommand: generated.command,
     }).then(() => toast.success(t("saved")));
+  }
+
+  function resetBuilder() {
+    const defaults = defaultConfig();
+    setConfig(defaults);
+    setTechniqueTypeFilter("reverse");
+    setPlatformFilter("all");
+    setArchitectureFilter("all");
+    setVictimToolFilters([]);
+    setNetworkEgressFilter("all");
+    setFamilyFilter("all");
+    setSelectedListenerId(getSmartDefaultListenerId(defaults.templateId));
+    setStageTemplateId(defaultStageTemplateId);
+    setSelectedUpgradeRecipeId("python-pty");
+    setSelectedCleanupRecipeId("terminal-env");
+    toast.success(t("reset_done"));
   }
 
   function handleExportCard() {
@@ -515,6 +533,8 @@ export function useBuilder() {
     setSelectedUpgradeRecipeId,
     selectedCleanupRecipeId,
     setSelectedCleanupRecipeId,
+    resetBuilder,
+    lastCopiedAt,
   };
 }
 

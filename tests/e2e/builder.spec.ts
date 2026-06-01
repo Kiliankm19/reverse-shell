@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("builder loads with payload controls", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/builder");
   await expect(
     page.getByRole("heading", { name: /Reverse Shell Builder/i }),
   ).toBeVisible();
@@ -12,7 +12,12 @@ test("builder loads with payload controls", async ({ page }) => {
 test("obfuscation dropdown renders IFS label without i18n errors", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/builder");
+  await page.getByRole("button", { name: /2 Technique/i }).click();
+  await page
+    .locator("summary")
+    .filter({ hasText: /Obfuscation/i })
+    .click();
   await page
     .getByRole("combobox")
     .filter({ hasText: /None|Plain command/i })
