@@ -1,7 +1,12 @@
 import { del, entries, set } from "idb-keyval";
 import { z } from "zod";
 import type { SavedCollection } from "./types";
-import { MAX_COLLECTIONS_PER_IMPORT, trimCollectionName } from "@/lib/security";
+import {
+  MAX_COLLECTION_IMPORT_BYTES,
+  MAX_COLLECTIONS_PER_IMPORT,
+  assertWithinTextLimit,
+  trimCollectionName,
+} from "@/lib/security";
 import {
   generateReverseShell,
   reverseShellConfigSchema,
@@ -103,6 +108,7 @@ export function previewCollectionsJson(json: string): SavedCollection[] {
 export async function importCollectionsJson(
   json: string,
 ): Promise<CollectionsImportResult> {
+  assertWithinTextLimit(json, MAX_COLLECTION_IMPORT_BYTES, "Import file");
   const cols = previewCollectionsJson(json);
   const existingIds = new Set(
     (await loadAllCollections()).map((col) => col.id),

@@ -24,12 +24,17 @@ export const obfuscationModes = [
   "python-chr",
 ] as const;
 
+// Brackets are allowed for IPv6 literals (e.g. [::1]), but note that bash /dev/tcp
+// does not support bracket notation — IPv6 lhost values will produce invalid commands
+// in most templates. The UI should warn when an IPv6 address is detected.
+// First char must be alphanumeric or '[' (IPv6 bracket) — prevents leading '-'
+// which would inject arguments into generated shell commands (e.g. --bind -v).
 const safeHostSchema = z
   .string()
   .trim()
   .min(1)
   .max(253)
-  .regex(/^[A-Za-z0-9.:[\]_-]+$/, {
+  .regex(/^[A-Za-z0-9\[][A-Za-z0-9.:[\]_-]*$/, {
     message:
       "Use an IP address, hostname, or domain without shell metacharacters.",
   });
