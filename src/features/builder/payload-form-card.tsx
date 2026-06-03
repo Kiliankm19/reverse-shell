@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { RadioTower } from "lucide-react";
+import { Code, Layers } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -191,10 +191,12 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
 
   const content = (
     <div className="space-y-4">
-      <div className="grid gap-4 rounded-lg border bg-background p-3 md:grid-cols-[minmax(170px,220px)_1fr]">
+      <div className="grid gap-4 rounded-xl border border-border/50 bg-background/50 p-4 md:grid-cols-[minmax(170px,220px)_1fr]">
         <div className="space-y-2">
-          <Label>{t("technique_type_label")}</Label>
-          <div className="flex flex-wrap gap-2">
+          <Label className="text-xs font-medium">
+            {t("technique_type_label")}
+          </Label>
+          <div className="flex flex-wrap gap-1.5">
             {TECHNIQUE_TYPE_FILTERS.map((type) => {
               const isSelected = techniqueTypeFilter === type;
               return (
@@ -203,7 +205,11 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
                   type="button"
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
-                  className="h-8 px-2.5 text-xs"
+                  className={`h-7 px-2.5 text-xs ${
+                    isSelected
+                      ? "glow-primary-sm"
+                      : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                  }`}
                   aria-pressed={isSelected}
                   onClick={() => handleTechniqueTypeChange(type)}
                 >
@@ -214,8 +220,10 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>{t("family_filter_label")}</Label>
-          <div className="flex flex-wrap gap-2">
+          <Label className="text-xs font-medium">
+            {t("family_filter_label")}
+          </Label>
+          <div className="flex flex-wrap gap-1.5">
             {availableFamilyFilters.map((family) => {
               const isSelected = familyFilter === family;
               return (
@@ -224,7 +232,11 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
                   type="button"
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
-                  className="h-8 px-2.5 text-xs"
+                  className={`h-7 px-2.5 text-xs ${
+                    isSelected
+                      ? "glow-primary-sm"
+                      : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                  }`}
                   aria-pressed={isSelected}
                   onClick={() => handleFamilyFilterChange(family)}
                 >
@@ -236,8 +248,8 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
         </div>
         {showShell && (
           <div className="space-y-2 md:col-span-2">
-            <Label>{t("shell_label")}</Label>
-            <div className="flex flex-wrap gap-2">
+            <Label className="text-xs font-medium">{t("shell_label")}</Label>
+            <div className="flex flex-wrap gap-1.5">
               {shellOptions.map((shell) => {
                 const isSelected = config.shell === shell;
                 return (
@@ -246,7 +258,11 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
                     type="button"
                     variant={isSelected ? "default" : "outline"}
                     size="sm"
-                    className="h-8 px-2.5 font-mono text-xs"
+                    className={`h-7 px-2.5 font-mono text-xs ${
+                      isSelected
+                        ? "glow-primary-sm"
+                        : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                    }`}
                     aria-pressed={isSelected}
                     onClick={() => patchConfig({ shell })}
                   >
@@ -269,10 +285,11 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
         platformFilter={platformFilter}
         architectureFilter={architectureFilter}
       />
-      <div className="space-y-2">
+
+      <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <Label>{t("payload_label")}</Label>
-          <span className="text-xs text-muted-foreground">
+          <Label className="text-xs font-medium">{t("payload_label")}</Label>
+          <span className="rounded-full border border-border/50 bg-muted/30 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             {t("payload_result_count", {
               count: filteredTemplates.length,
               total: reverseShellTemplates.length,
@@ -290,30 +307,46 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
           </p>
         )}
         <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="font-mono text-xs">
+          <Badge
+            variant="outline"
+            className="font-mono text-[10px] border-primary/30 bg-primary/5 text-primary"
+          >
             {modeLabel(t, connectionMode)}
           </Badge>
-          <Badge variant="secondary" className="font-mono text-xs">
+          <Badge variant="secondary" className="font-mono text-[10px]">
             {selectedTemplate.platform}
           </Badge>
         </div>
       </div>
 
-      <div className="space-y-2 rounded-lg bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">
-        <p>
-          <strong className="text-foreground">
+      <div className="terminal-block p-4">
+        <p className="text-sm leading-relaxed">
+          <span className="font-semibold text-primary">
             {t(`templates.${selectedTemplate.id}.name`)}
-          </strong>
-          {" · "}
-          {selectedTemplate.platform} ·{" "}
-          {t(`templates.${selectedTemplate.id}.description`)}
+          </span>
+          <span className="mx-2 text-muted-foreground">·</span>
+          <span className="text-muted-foreground">
+            {selectedTemplate.platform}
+          </span>
+          <span className="mx-2 text-muted-foreground">·</span>
+          <span className="text-muted-foreground">
+            {t(`templates.${selectedTemplate.id}.description`)}
+          </span>
         </p>
-        {lhostHint && <p>{lhostHint}</p>}
-        {bindMode && <p>{t("lport_bind_hint")}</p>}
+        {lhostHint && (
+          <p className="mt-2 text-xs text-muted-foreground">{lhostHint}</p>
+        )}
+        {bindMode && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t("lport_bind_hint")}
+          </p>
+        )}
       </div>
-      <Separator />
+
+      <Separator className="bg-border/50" />
+
       {!safeConfig && Object.keys(fieldErrors).length > 0 && (
-        <div className="rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {t("validation_error")}
         </div>
       )}
@@ -322,12 +355,10 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
 
   if (embedded) {
     return (
-      <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
-        <div className="space-y-1">
-          <h3 className="flex items-center gap-2 text-sm font-medium">
-            <RadioTower className="h-4 w-4 text-primary" />
-            {t("payload_picker_title")}
-          </h3>
+      <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+        <div className="flex items-center gap-2">
+          <Code className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">{t("payload_picker_title")}</h3>
         </div>
         {content}
       </section>
@@ -335,14 +366,17 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <RadioTower className="h-4 w-4 text-primary" /> {t("payload_label")}
+    <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardHeader className="pb-3 border-b border-border/50">
+        <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+            <Layers className="h-4 w-4 text-primary" />
+          </div>
+          {t("payload_label")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">{t("payload_intro")}</p>
       </CardHeader>
-      <CardContent>{content}</CardContent>
+      <CardContent className="pt-4">{content}</CardContent>
     </Card>
   );
 }

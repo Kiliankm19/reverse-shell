@@ -32,14 +32,19 @@ export function ObfuscationCard({
   const content = (
     <>
       <div className="space-y-2">
-        <Label>{t("obfuscation_select_label")}</Label>
+        <Label className="text-xs font-medium">
+          {t("obfuscation_select_label")}
+        </Label>
         <Select
           value={config.obfuscation}
           onValueChange={(value) =>
             patchConfig({ obfuscation: value as ObfuscationMode })
           }
         >
-          <SelectTrigger aria-label={t("obfuscation_select_label")}>
+          <SelectTrigger
+            aria-label={t("obfuscation_select_label")}
+            className="h-9 border-border/50 bg-background/50"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -62,29 +67,32 @@ export function ObfuscationCard({
 
   if (embedded) {
     return (
-      <section className="rounded-lg border bg-muted/20 p-3">
-        <div className="space-y-1 text-sm font-medium">
-          <span className="inline-flex items-center gap-2">
-            <Wand2 className="h-4 w-4 text-primary" />
+      <section className="rounded-xl border border-border/50 bg-muted/5 p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Wand2 className="h-4 w-4 text-primary" />
+          <span className="text-sm font-semibold">
             {t("obfuscation_label")}
           </span>
         </div>
-        <div className="mt-3 space-y-3">{content}</div>
+        <div className="space-y-3">{content}</div>
       </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Wand2 className="h-4 w-4 text-primary" /> {t("obfuscation_label")}
+    <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardHeader className="pb-3 border-b border-border/50">
+        <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+            <Wand2 className="h-4 w-4 text-primary" />
+          </div>
+          {t("obfuscation_label")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {t("obfuscation_intro")}
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">{content}</CardContent>
+      <CardContent className="space-y-4 pt-4">{content}</CardContent>
     </Card>
   );
 }

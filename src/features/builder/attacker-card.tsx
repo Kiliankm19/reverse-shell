@@ -1,7 +1,15 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Crosshair, MonitorCog, Shuffle } from "lucide-react";
+import {
+  Crosshair,
+  Monitor,
+  Shuffle,
+  Server,
+  Cpu,
+  Globe,
+  Wrench,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,31 +79,31 @@ export function AttackerCard({
   const t = useTranslations("builder");
 
   return (
-    <Card className="h-full transition-colors hover:border-primary/40 focus-within:border-primary/40">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Crosshair className="h-4 w-4 text-primary" />
+    <Card className="overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-200 hover:border-primary/30">
+      <CardHeader className="pb-3 border-b border-border/50">
+        <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+            <Crosshair className="h-4 w-4 text-primary" />
+          </div>
           {t("attacker_victim_title")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {t("attacker_victim_intro")}
         </p>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-3">
-            <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
-              <div>
-                <p className="flex items-center gap-2 text-sm font-medium">
-                  <Crosshair className="h-4 w-4 text-primary" />
-                  {t("attacker_title")}
-                </p>
+      <CardContent className="pt-4">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Attacker Configuration */}
+          <div className="space-y-4">
+            <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+              <div className="flex items-center gap-2">
+                <Server className="h-4 w-4 text-primary" />
+                <p className="text-sm font-semibold">{t("attacker_title")}</p>
               </div>
-              <div className="grid gap-3 md:grid-cols-2">
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <div className="flex h-7 items-center">
-                    <Label>{t("ip_label")}</Label>
-                  </div>
+                  <Label className="text-xs font-medium">{t("ip_label")}</Label>
                   {showLhost ? (
                     <>
                       <Input
@@ -105,6 +113,7 @@ export function AttackerCard({
                         }
                         placeholder={t("lhost_placeholder")}
                         aria-invalid={!!fieldErrors.lhost}
+                        className="h-9 font-mono text-sm bg-background/50 border-border/50"
                       />
                       <div className="flex flex-wrap gap-1.5">
                         {(["10.10.14.3", "127.0.0.1", "0.0.0.0"] as const).map(
@@ -114,7 +123,7 @@ export function AttackerCard({
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="h-6 px-2 text-[10px] font-mono"
+                              className="h-6 px-2 text-[10px] font-mono border-border/50 hover:border-primary/50 hover:bg-primary/5"
                               onClick={() => patchConfig({ lhost: preset })}
                             >
                               {preset}
@@ -129,22 +138,28 @@ export function AttackerCard({
                       )}
                     </>
                   ) : (
-                    <div className="flex h-9 items-center rounded-md border bg-muted/40 px-3 text-sm text-muted-foreground">
+                    <div className="flex h-9 items-center rounded-md border border-border/50 bg-muted/30 px-3 text-sm text-muted-foreground">
                       {t("attacker_ip_not_used")}
                     </div>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <Label htmlFor="builder-lport">{t("port_label")}</Label>
+                    <Label
+                      htmlFor="builder-lport"
+                      className="text-xs font-medium"
+                    >
+                      {t("port_label")}
+                    </Label>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="h-7 gap-1.5 px-2 text-xs"
+                      className="h-6 gap-1 px-2 text-[10px] text-muted-foreground hover:text-primary"
                       onClick={randomizeLport}
                     >
-                      <Shuffle className="h-3.5 w-3.5" />
+                      <Shuffle className="h-3 w-3" />
                       {t("random_port_button")}
                     </Button>
                   </div>
@@ -158,6 +173,7 @@ export function AttackerCard({
                       patchConfig({ lport: Number(event.target.value) || 1 })
                     }
                     aria-invalid={!!fieldErrors.lport}
+                    className="h-9 font-mono text-sm bg-background/50 border-border/50"
                   />
                   {fieldErrors.lport && (
                     <p className="text-xs text-destructive">
@@ -165,9 +181,13 @@ export function AttackerCard({
                     </p>
                   )}
                 </div>
+
                 {connectionMode === "staged" && (
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="builder-http-port">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label
+                      htmlFor="builder-http-port"
+                      className="text-xs font-medium"
+                    >
                       {t("http_port_label")}
                     </Label>
                     <Input
@@ -182,6 +202,7 @@ export function AttackerCard({
                         })
                       }
                       aria-invalid={!!fieldErrors.httpPort}
+                      className="h-9 font-mono text-sm bg-background/50 border-border/50"
                     />
                     {fieldErrors.httpPort && (
                       <p className="text-xs text-destructive">
@@ -191,16 +212,20 @@ export function AttackerCard({
                   </div>
                 )}
               </div>
-              <div className="rounded-md border bg-muted/30 px-3 py-2">
-                <p className="text-xs font-medium text-muted-foreground">
+
+              {/* Endpoint Display */}
+              <div className="terminal-block p-3">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1">
                   {t("attacker_endpoint_label")}
                 </p>
-                <p className="mt-1 break-all font-mono text-sm">
+                <p className="font-mono text-sm text-primary">
+                  <span className="text-muted-foreground">$ connect </span>
                   {showLhost
                     ? `${config.lhost}:${config.lport}`
                     : `:${config.lport}`}
                 </p>
               </div>
+
               <p className="text-xs text-muted-foreground">
                 {t("random_port_hint")}
               </p>
@@ -209,17 +234,23 @@ export function AttackerCard({
             {listenerContent}
           </div>
 
-          <section className="rounded-lg border bg-muted/20 p-3">
-            <div>
-              <p className="flex items-center gap-2 text-sm font-medium">
-                <MonitorCog className="h-4 w-4 text-primary" />
+          {/* Target Profile */}
+          <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+            <div className="flex items-center gap-2">
+              <Monitor className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold">
                 {t("target_profile_title")}
               </p>
             </div>
-            <div className="mt-3 space-y-3">
+
+            <div className="space-y-4">
+              {/* Platform */}
               <div className="space-y-2">
-                <Label>{t("platform_filter_label")}</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label className="text-xs font-medium flex items-center gap-1.5">
+                  <Cpu className="h-3 w-3 text-muted-foreground" />
+                  {t("platform_filter_label")}
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
                   {TARGET_PLATFORM_FILTERS.map((platform) => {
                     const isSelected = platformFilter === platform;
                     return (
@@ -228,7 +259,11 @@ export function AttackerCard({
                         type="button"
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        className="h-7 px-2.5 text-xs"
+                        className={`h-7 px-2.5 text-xs ${
+                          isSelected
+                            ? "glow-primary-sm"
+                            : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                        }`}
                         aria-pressed={isSelected}
                         onClick={() => setPlatformFilter(platform)}
                       >
@@ -238,9 +273,14 @@ export function AttackerCard({
                   })}
                 </div>
               </div>
+
+              {/* Architecture */}
               <div className="space-y-2">
-                <Label>{t("architecture_filter_label")}</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label className="text-xs font-medium flex items-center gap-1.5">
+                  <Cpu className="h-3 w-3 text-muted-foreground" />
+                  {t("architecture_filter_label")}
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
                   {TARGET_ARCHITECTURE_FILTERS.map((architecture) => {
                     const isSelected = architectureFilter === architecture;
                     return (
@@ -249,7 +289,11 @@ export function AttackerCard({
                         type="button"
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        className="h-7 px-2.5 text-xs"
+                        className={`h-7 px-2.5 text-xs ${
+                          isSelected
+                            ? "glow-primary-sm"
+                            : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                        }`}
                         aria-pressed={isSelected}
                         onClick={() =>
                           setArchitectureFilter(
@@ -263,9 +307,14 @@ export function AttackerCard({
                   })}
                 </div>
               </div>
+
+              {/* Network Egress */}
               <div className="space-y-2">
-                <Label>{t("network_egress_label")}</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label className="text-xs font-medium flex items-center gap-1.5">
+                  <Globe className="h-3 w-3 text-muted-foreground" />
+                  {t("network_egress_label")}
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
                   {TARGET_NETWORK_EGRESS_FILTERS.map((network) => {
                     const isSelected = networkEgressFilter === network;
                     return (
@@ -274,7 +323,11 @@ export function AttackerCard({
                         type="button"
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        className="h-7 px-2.5 text-xs"
+                        className={`h-7 px-2.5 text-xs ${
+                          isSelected
+                            ? "glow-primary-sm"
+                            : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                        }`}
                         aria-pressed={isSelected}
                         onClick={() =>
                           setNetworkEgressFilter(network as NetworkEgressFilter)
@@ -286,9 +339,14 @@ export function AttackerCard({
                   })}
                 </div>
               </div>
+
+              {/* Tools */}
               <div className="space-y-2">
-                <Label>{t("target_profile_tools_label")}</Label>
-                <div className="flex flex-wrap gap-2">
+                <Label className="text-xs font-medium flex items-center gap-1.5">
+                  <Wrench className="h-3 w-3 text-muted-foreground" />
+                  {t("target_profile_tools_label")}
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
                   {VICTIM_TOOL_FILTERS.map((tool) => {
                     const isSelected = victimToolFilters.includes(tool);
                     return (
@@ -297,7 +355,11 @@ export function AttackerCard({
                         type="button"
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        className="h-7 px-2.5 text-xs"
+                        className={`h-7 px-2.5 text-xs ${
+                          isSelected
+                            ? "glow-primary-sm"
+                            : "border-border/50 hover:border-primary/50 hover:bg-primary/5"
+                        }`}
                         onClick={() =>
                           toggleVictimTool(tool as VictimToolFilter)
                         }
