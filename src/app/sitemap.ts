@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 const BASE_URL = "https://reverseshell.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/builder", "/collections", "/guides", "/legal"];
+  const routes = ["", "/builder", "/collections", "/legal"];
 
   return routes.map((route) => ({
     url: `${BASE_URL}${route}`,

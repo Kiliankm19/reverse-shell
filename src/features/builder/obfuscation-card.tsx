@@ -62,20 +62,15 @@ export function ObfuscationCard({
 
   if (embedded) {
     return (
-      <details className="rounded-md border bg-muted/20 p-3">
-        <summary className="cursor-pointer text-sm font-medium">
+      <section className="rounded-lg border bg-muted/20 p-3">
+        <div className="space-y-1 text-sm font-medium">
           <span className="inline-flex items-center gap-2">
             <Wand2 className="h-4 w-4 text-primary" />
             {t("obfuscation_label")}
           </span>
-        </summary>
-        <div className="mt-3 space-y-3">
-          <p className="text-xs text-muted-foreground">
-            {t("obfuscation_intro")}
-          </p>
-          {content}
         </div>
-      </details>
+        <div className="mt-3 space-y-3">{content}</div>
+      </section>
     );
   }
 

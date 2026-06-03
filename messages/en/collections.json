@@ -7,13 +7,10 @@
   "empty": "No saved collections yet. Generate a reverse shell and save it.",
   "empty_cta": "Open Builder",
   "load_success": "Loaded “{name}” — opening builder",
-  "recents_title": "Recent",
   "favorites_title": "Favorites",
   "favorite_load_hint": "Load in one click",
   "favorite_add": "Favorite",
   "favorite_remove": "Unfavorite",
-  "recommended_title": "Recommended for most labs",
-  "recommended_load_hint": "Load preset",
   "metadata": {
     "platform_linux": "Linux",
     "platform_windows": "Windows",
@@ -51,10 +48,11 @@
   "show_all_presets": "Show all presets",
   "show_fewer_presets": "Show fewer",
   "presets_visible": "{shown} of {total} presets shown",
+  "preset_lhost_label": "Set your callback IP",
+  "preset_lhost_hint": "Use your current lab IP to make reverse-shell presets ready to copy and paste.",
+  "preset_lhost_empty": "No IP set yet. Reverse presets will show {placeholder} instead of a hard-coded address.",
   "select_preset_hint": "Select a preset to preview the command",
   "preset_search_placeholder": "Filter by name, tag, or template...",
-  "collection_search_label": "Search collection",
-  "collection_search_placeholder": "Search by name, platform, technique, command, or obfuscation...",
   "no_builtin_matches": "No built-in collections match the current filters.",
   "no_saved_matches": "No saved collections match the current filters.",
   "collection_filters": {
@@ -65,10 +63,7 @@
     "reverse": "Reverse",
     "bind": "Bind",
     "msfvenom": "MSFvenom",
-    "hoaxshell": "HoaxShell",
-    "assembled": "Assembled",
-    "encoded": "Encoded",
-    "encrypted": "Encrypted"
+    "encoded": "Encoded"
   },
   "rename_button": "Rename",
   "rename_save": "Save name",
@@ -83,7 +78,7 @@
     "hex": "Hex encoded",
     "bash-base64": "Bash base64",
     "bash-base64-no-spaces": "Bash base64 compact",
-    "bash-ifs": "Bash '${IFS}'",
+    "bash-ifs": "Bash $'{'IFS'}'",
     "bash-rev": "Bash rev",
     "bash-printf-hex": "Bash printf hex",
     "powershell-encoded": "PowerShell -Enc",
@@ -153,8 +148,8 @@
       "description": "Bash payload wrapped in base64 decode for filter-sensitive shells."
     },
     "linux-bash-no-spaces": {
-      "name": "Bash no-space '${IFS}'",
-      "description": "Bash payload with spaces replaced by '${IFS}' for simple space filters."
+      "name": "Bash no-space $'{'IFS'}'",
+      "description": "Bash payload with spaces replaced by $'{'IFS'}' for simple space filters."
     },
     "windows-powershell-encoded": {
       "name": "Windows PowerShell encoded",

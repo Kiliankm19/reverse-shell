@@ -85,7 +85,7 @@ const SCENARIOS: Scenario[] = [
     platform: "linux",
     architecture: "all",
     egress: "tls",
-    techniqueType: "encrypted",
+    techniqueType: "reverse",
     family: "openssl",
   },
   {

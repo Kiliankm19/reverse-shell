@@ -11,17 +11,15 @@ import {
   type BuiltinCollection,
 } from "./builtin-collections";
 import type { SavedCollection } from "./types";
-import { saveActiveConfig } from "@/features/builder/store";
+import {
+  readPersistedConfig,
+  saveActiveConfig,
+} from "@/features/builder/store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommandOutput } from "@/components/ui/command-output";
 import { PresetMetadataBadges } from "@/components/collections/preset-metadata-badges";
-import {
-  pushRecentWorkflow,
-  readRecentWorkflows,
-  type RecentWorkflow,
-} from "@/lib/recent-workflows";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
@@ -37,8 +35,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MAX_COLLECTION_IMPORT_BYTES } from "@/lib/security";
 import {
+  generateReverseShell,
   getConnectionModeById,
   getTemplate,
+  normalizeHost,
   type ObfuscationMode,
 } from "@/lib/reverse-shells";
 
@@ -50,21 +50,14 @@ const COLLECTION_FILTERS = [
   "reverse",
   "bind",
   "msfvenom",
-  "hoaxshell",
-  "assembled",
   "encoded",
-  "encrypted",
 ] as const;
 
 type CollectionFilter = (typeof COLLECTION_FILTERS)[number];
 
 const PRESETS_PAGE_SIZE = 8;
-const RECOMMENDED_PRESET_IDS = [
-  "linux-bash-dev-tcp",
-  "web-rce-python3",
-  "windows-powershell-encoded",
-  "linux-openssl-fifo",
-] as const;
+const PRESET_LHOST_KEY = "reverseshell:collections-preset-lhost";
+const FALLBACK_PRESET_LHOST = "YOUR-IP";
 const FAVORITE_PRESETS_KEY = "reverseshell:favorite-presets";
 
 function readFavoritePresets(): string[] {
@@ -79,6 +72,40 @@ function readFavoritePresets(): string[] {
   } catch {
     return [];
   }
+}
+
+function readInitialPresetLhost(): string {
+  if (typeof window === "undefined") return "";
+
+  const saved = localStorage.getItem(PRESET_LHOST_KEY);
+  if (saved !== null) return saved;
+
+  const persistedConfig = readPersistedConfig();
+  return persistedConfig?.lhost === "0.0.0.0"
+    ? ""
+    : (persistedConfig?.lhost ?? "");
+}
+
+function resolvePresetLhost(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return FALLBACK_PRESET_LHOST;
+  return normalizeHost(trimmed, FALLBACK_PRESET_LHOST);
+}
+
+function withPresetLhost(
+  collection: BuiltinCollection,
+  lhost: string,
+): BuiltinCollection {
+  if (getConnectionModeById(collection.config.templateId) === "bind") {
+    return collection;
+  }
+
+  const config = { ...collection.config, lhost };
+  return {
+    ...collection,
+    config,
+    renderedCommand: generateReverseShell(config).command,
+  };
 }
 
 function isCollectionFilter(value: string | null): value is CollectionFilter {
@@ -109,16 +136,6 @@ function matchesPlatformFilter(templateId: string, filter: CollectionFilter) {
   );
 }
 
-function isEncryptedTemplate(templateId: string) {
-  const template = getTemplate(templateId);
-  return (
-    template.family === "openssl" ||
-    templateId.includes("ssl") ||
-    templateId.includes("tls") ||
-    templateId.includes("openssl")
-  );
-}
-
 function matchesCollectionFilter(
   collection: BuiltinCollection | SavedCollection,
   filter: CollectionFilter,
@@ -127,7 +144,6 @@ function matchesCollectionFilter(
 
   const templateId = collection.config.templateId;
   const mode = getConnectionModeById(templateId);
-  const template = getTemplate(templateId);
 
   if (filter === "linux" || filter === "windows" || filter === "macos") {
     return (
@@ -145,15 +161,7 @@ function matchesCollectionFilter(
   }
   if (filter === "bind") return mode === "bind";
   if (filter === "msfvenom") return templateId.startsWith("msfvenom-");
-  if (filter === "hoaxshell") return templateId.includes("hoaxshell");
-  if (filter === "assembled") return template.family === "staged";
   if (filter === "encoded") return collection.config.obfuscation !== "none";
-  if (filter === "encrypted") {
-    return (
-      isEncryptedTemplate(templateId) ||
-      ("tags" in collection && collection.tags.includes("encrypted"))
-    );
-  }
 
   return false;
 }
@@ -214,66 +222,36 @@ export function CollectionsPanel() {
     text: string;
     count: number;
   } | null>(null);
-  const [collectionQuery, setCollectionQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<CollectionFilter>(() =>
     isCollectionFilter(initialFilterParam) ? initialFilterParam : "all",
   );
   const [showAllPresets, setShowAllPresets] = useState(false);
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+  const [presetLhost, setPresetLhost] = useState(readInitialPresetLhost);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [favoritePresetIds, setFavoritePresetIds] = useState<string[]>(() =>
     readFavoritePresets(),
   );
+  const resolvedPresetLhost = resolvePresetLhost(presetLhost);
+
+  const materializePreset = useCallback(
+    (collection: BuiltinCollection) =>
+      withPresetLhost(collection, resolvedPresetLhost),
+    [resolvedPresetLhost],
+  );
 
   const filteredPresets = useMemo(() => {
-    const needle = collectionQuery.trim().toLowerCase();
-    return builtinCollections.filter((collection) => {
-      const haystack = [
-        collection.id,
-        collection.config.templateId,
-        getTemplate(collection.config.templateId).platform,
-        getTemplate(collection.config.templateId).family,
-        getConnectionModeById(collection.config.templateId),
-        collection.config.obfuscation,
-        collection.renderedCommand,
-        t(`presets.${collection.id}.name`),
-        t(`presets.${collection.id}.description`),
-        ...collection.tags.map((tag) => t(`tags.${tag}`)),
-      ]
-        .join(" ")
-        .toLowerCase();
-      return (
-        (!needle || haystack.includes(needle)) &&
-        matchesCollectionFilter(collection, activeFilter)
-      );
-    });
-  }, [activeFilter, collectionQuery, t]);
+    return builtinCollections.filter((collection) =>
+      matchesCollectionFilter(collection, activeFilter),
+    );
+  }, [activeFilter]);
 
   const filteredCollections = useMemo(() => {
-    const needle = collectionQuery.trim().toLowerCase();
-    return collections.filter((collection) => {
-      const template = getTemplate(collection.config.templateId);
-      const haystack = [
-        collection.id,
-        collection.name,
-        collection.config.templateId,
-        template.name,
-        template.family,
-        template.platform,
-        getConnectionModeById(collection.config.templateId),
-        collection.config.obfuscation,
-        collection.renderedCommand,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return (
-        (!needle || haystack.includes(needle)) &&
-        matchesCollectionFilter(collection, activeFilter)
-      );
-    });
-  }, [activeFilter, collectionQuery, collections]);
+    return collections.filter((collection) =>
+      matchesCollectionFilter(collection, activeFilter),
+    );
+  }, [activeFilter, collections]);
 
   const visiblePresets = useMemo(() => {
     if (showAllPresets) return filteredPresets;
@@ -283,16 +261,8 @@ export function CollectionsPanel() {
   const selectedPreset = useMemo(() => {
     if (!filteredPresets.length) return null;
     const match = filteredPresets.find((p) => p.id === selectedPresetId);
-    return match ?? filteredPresets[0];
-  }, [filteredPresets, selectedPresetId]);
-
-  const recommendedPresets = useMemo(
-    () =>
-      RECOMMENDED_PRESET_IDS.map((id) =>
-        builtinCollections.find((collection) => collection.id === id),
-      ).filter((collection): collection is BuiltinCollection => !!collection),
-    [],
-  );
+    return materializePreset(match ?? filteredPresets[0]);
+  }, [filteredPresets, materializePreset, selectedPresetId]);
 
   const favoritePresets = useMemo(
     () =>
@@ -304,8 +274,13 @@ export function CollectionsPanel() {
     [favoritePresetIds],
   );
 
-  const [recents, setRecents] = useState<RecentWorkflow[]>(() =>
-    readRecentWorkflows(),
+  const handlePresetLhostChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setPresetLhost(value);
+      localStorage.setItem(PRESET_LHOST_KEY, value);
+    },
+    [],
   );
 
   const handleLoad = useCallback(
@@ -321,14 +296,6 @@ export function CollectionsPanel() {
         options?.label ??
         col.name ??
         (options?.presetId ? t(`presets.${options.presetId}.name`) : "Builder");
-      const id = options?.presetId ?? col.id ?? label;
-      pushRecentWorkflow({
-        id,
-        label,
-        href: "/builder",
-        kind: options?.presetId ? "preset" : "saved",
-      });
-      setRecents(readRecentWorkflows());
       toast.success(t("load_success", { name: label }));
       router.push("/builder");
     },
@@ -337,15 +304,16 @@ export function CollectionsPanel() {
 
   const handleSaveBuiltin = useCallback(
     (collection: BuiltinCollection) => {
+      const readyCollection = materializePreset(collection);
       void save({
         id: crypto.randomUUID(),
-        name: t(`presets.${collection.id}.name`),
+        name: t(`presets.${readyCollection.id}.name`),
         createdAt: Date.now(),
-        config: collection.config,
-        renderedCommand: collection.renderedCommand,
+        config: readyCollection.config,
+        renderedCommand: readyCollection.renderedCommand,
       }).then(() => toast.success(t("preset_saved")));
     },
-    [save, t],
+    [materializePreset, save, t],
   );
 
   const toggleFavoritePreset = useCallback((presetId: string) => {
@@ -419,28 +387,8 @@ export function CollectionsPanel() {
 
   return (
     <div className="space-y-6">
-      {recents.length > 0 && (
-        <section className="rounded-lg border bg-muted/20 px-3 py-2">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">
-            {t("recents_title")}
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {recents.map((item) => (
-              <li key={`${item.id}-${item.at}`}>
-                <Link
-                  href={item.href}
-                  className="inline-flex rounded-md border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary/40"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       {favoritePresets.length > 0 && (
-        <section className="rounded-lg border bg-card p-4">
+        <section className="rounded-lg border bg-card p-4 transition-colors hover:border-primary/40 focus-within:border-primary/40">
           <div className="mb-3 flex items-center gap-2">
             <Star className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-semibold">{t("favorites_title")}</h2>
@@ -451,7 +399,7 @@ export function CollectionsPanel() {
                 key={preset.id}
                 type="button"
                 onClick={() =>
-                  handleLoad(preset, {
+                  handleLoad(materializePreset(preset), {
                     presetId: preset.id,
                     label: t(`presets.${preset.id}.name`),
                   })
@@ -470,36 +418,6 @@ export function CollectionsPanel() {
         </section>
       )}
 
-      {!collectionQuery.trim() && recommendedPresets.length > 0 && (
-        <section className="rounded-lg border bg-card p-4">
-          <h2 className="mb-3 text-sm font-semibold">
-            {t("recommended_title")}
-          </h2>
-          <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
-            {recommendedPresets.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() =>
-                  handleLoad(preset, {
-                    presetId: preset.id,
-                    label: t(`presets.${preset.id}.name`),
-                  })
-                }
-                className="rounded-md border bg-background p-3 text-left text-sm transition-colors hover:border-primary/50 hover:bg-muted/40"
-              >
-                <span className="block font-medium">
-                  {t(`presets.${preset.id}.name`)}
-                </span>
-                <span className="mt-1 block text-xs text-muted-foreground">
-                  {t("recommended_load_hint")}
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section className="space-y-4">
         <div>
           <div className="flex items-center gap-2">
@@ -510,13 +428,33 @@ export function CollectionsPanel() {
           </div>
           <p className="text-sm text-muted-foreground">{t("presets_hint")}</p>
         </div>
-        <div className="sticky top-14 z-30 space-y-3 rounded-lg border bg-card/95 p-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/80">
-          <Label>{t("collection_search_label")}</Label>
-          <Input
-            value={collectionQuery}
-            onChange={(event) => setCollectionQuery(event.target.value)}
-            placeholder={t("collection_search_placeholder")}
-          />
+        <div className="space-y-3 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:border-primary/40 focus-within:border-primary/40">
+          <div className="rounded-md border bg-muted/20 p-3">
+            <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_minmax(220px,320px)] md:items-end">
+              <div>
+                <Label>{t("preset_lhost_label")}</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t("preset_lhost_hint")}
+                </p>
+              </div>
+              <Input
+                value={presetLhost}
+                onChange={handlePresetLhostChange}
+                placeholder={FALLBACK_PRESET_LHOST}
+                aria-label={t("preset_lhost_label")}
+              />
+            </div>
+            {!presetLhost.trim() && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t("preset_lhost_empty", {
+                  placeholder: FALLBACK_PRESET_LHOST,
+                })}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-3 transition-colors hover:border-primary/40 focus-within:border-primary/40">
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-thin">
             {COLLECTION_FILTERS.map((filter) => (
               <Button
@@ -532,42 +470,55 @@ export function CollectionsPanel() {
             ))}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">
-          {t("presets_visible", {
-            shown: visiblePresets.length,
-            total: filteredPresets.length,
-          })}
-        </p>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,280px)_1fr]">
-          <ul className="max-h-[32rem] space-y-1 overflow-y-auto rounded-lg border bg-card p-2">
-            {visiblePresets.map((collection) => {
-              const isSelected = selectedPreset?.id === collection.id;
-              return (
-                <li key={collection.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPresetId(collection.id)}
-                    className={cn(
-                      "w-full rounded-md px-3 py-2 text-left text-sm transition-colors",
-                      isSelected
-                        ? "bg-primary/10 font-medium text-foreground"
-                        : "hover:bg-muted/60 text-muted-foreground",
-                    )}
-                  >
-                    {t(`presets.${collection.id}.name`)}
-                  </button>
+          <section className="space-y-3 rounded-lg border bg-card p-3 transition-colors hover:border-primary/40 focus-within:border-primary/40">
+            <p className="text-xs text-muted-foreground">
+              {t("presets_visible", {
+                shown: visiblePresets.length,
+                total: filteredPresets.length,
+              })}
+            </p>
+            <ul className="max-h-[32rem] space-y-1 overflow-y-auto">
+              {visiblePresets.map((collection) => {
+                const isSelected = selectedPreset?.id === collection.id;
+                return (
+                  <li key={collection.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPresetId(collection.id)}
+                      className={cn(
+                        "w-full rounded-md px-3 py-2 text-left text-sm transition-colors",
+                        isSelected
+                          ? "bg-primary/10 font-medium text-foreground"
+                          : "hover:bg-muted/60 text-muted-foreground",
+                      )}
+                    >
+                      {t(`presets.${collection.id}.name`)}
+                    </button>
+                  </li>
+                );
+              })}
+              {filteredPresets.length === 0 && (
+                <li className="p-4 text-sm text-muted-foreground">
+                  {t("no_builtin_matches")}
                 </li>
-              );
-            })}
-            {filteredPresets.length === 0 && (
-              <li className="p-4 text-sm text-muted-foreground">
-                {t("no_builtin_matches")}
-              </li>
+              )}
+            </ul>
+            {filteredPresets.length > PRESETS_PAGE_SIZE && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAllPresets((value) => !value)}
+              >
+                {showAllPresets
+                  ? t("show_fewer_presets")
+                  : t("show_all_presets")}
+              </Button>
             )}
-          </ul>
+          </section>
 
-          <Card className="flex flex-col">
+          <Card className="flex flex-col transition-colors hover:border-primary/40 focus-within:border-primary/40">
             {selectedPreset ? (
               <>
                 <CardHeader className="pb-2">
@@ -636,16 +587,6 @@ export function CollectionsPanel() {
             )}
           </Card>
         </div>
-
-        {filteredPresets.length > PRESETS_PAGE_SIZE && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAllPresets((value) => !value)}
-          >
-            {showAllPresets ? t("show_fewer_presets") : t("show_all_presets")}
-          </Button>
-        )}
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -744,7 +685,10 @@ export function CollectionsPanel() {
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {filteredCollections.map((col) => (
-            <Card key={col.id} className="flex flex-col">
+            <Card
+              key={col.id}
+              className="flex flex-col transition-colors hover:border-primary/40 focus-within:border-primary/40"
+            >
               <CardHeader className="pb-2">
                 {renamingId === col.id ? (
                   <div className="flex flex-wrap items-center gap-2">

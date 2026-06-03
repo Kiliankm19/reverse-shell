@@ -50,7 +50,7 @@ function ThemeToggle({ label }: { label: string }) {
 
 function contextualCta(pathname: string): {
   href: string;
-  labelKey: "launch_builder" | "browse_presets" | "open_guides";
+  labelKey: "launch_builder" | "browse_presets";
   show: boolean;
 } {
   if (pathname === "/" || pathname.startsWith("/builder")) {
@@ -59,7 +59,7 @@ function contextualCta(pathname: string): {
   if (pathname.startsWith("/collections")) {
     return { href: "/builder", labelKey: "launch_builder", show: true };
   }
-  if (pathname.startsWith("/guides") || pathname.startsWith("/legal")) {
+  if (pathname.startsWith("/legal")) {
     return { href: "/builder", labelKey: "launch_builder", show: true };
   }
   return { href: "/builder", labelKey: "launch_builder", show: true };
@@ -75,25 +75,23 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex min-h-14 max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2 font-bold">
+        <div className="flex shrink-0 items-center gap-2 font-bold">
           <RadioTower className="h-5 w-5 text-primary" />
           <span className="font-mono tracking-tight">
             <span className="text-primary">reverse</span>shell
           </span>
-        </Link>
+        </div>
 
         <nav
           className="hidden flex-1 items-center gap-4 md:flex"
           aria-label="Main navigation"
         >
-          <NavLink href="/" label={t("home")} pathname={pathname} exact />
           <NavLink href="/builder" label={t("builder")} pathname={pathname} />
           <NavLink
             href="/collections"
             label={t("collections")}
             pathname={pathname}
           />
-          <NavLink href="/guides" label={t("guides")} pathname={pathname} />
           <NavLink href="/legal" label={t("legal")} pathname={pathname} />
         </nav>
 

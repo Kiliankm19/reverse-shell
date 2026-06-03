@@ -1,6 +1,5 @@
 # Reverse Shell
 
-
 Client-side reverse shell generator for authorized security testing and lab work. It is inspired by tools such as [revshells.com](https://www.revshells.com) and [tex2e reverse shell generator](https://tex2e.github.io/reverse-shell-generator/index.html).
 
 > Use only in environments where you have explicit permission. The app generates commands in the browser; it does not open callbacks or execute payloads.
@@ -30,14 +29,12 @@ Open `http://localhost:3002` for the reverse shell builder (dev server uses port
 
 ## Routes
 
-| Route           | Page                             |
-| --------------- | -------------------------------- |
-| `/`             | Reverse shell builder (home)     |
-| `/builder`      | Redirects to `/` (legacy path)   |
-| `/reverseshell` | Marketing landing page           |
-| `/collections`  | Presets and saved configurations |
-| `/blog`         | Notes and release updates        |
-| `/legal`        | Legal information                |
+| Route          | Page                             |
+| -------------- | -------------------------------- |
+| `/`            | Reverse shell builder (home)     |
+| `/builder`     | Redirects to `/` (legacy path)   |
+| `/collections` | Presets and saved configurations |
+| `/legal`       | Legal information                |
 
 ## Scripts
 

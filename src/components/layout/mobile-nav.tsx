@@ -27,10 +27,8 @@ export function MobileNav({ ctaHref, ctaLabel, showCta }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   const links = [
-    { href: "/", label: t("home"), exact: true },
     { href: "/builder", label: t("builder") },
     { href: "/collections", label: t("collections") },
-    { href: "/guides", label: t("guides") },
     { href: "/legal", label: t("legal") },
   ];
 
@@ -57,9 +55,8 @@ export function MobileNav({ ctaHref, ctaLabel, showCta }: MobileNavProps) {
         </DialogHeader>
         <nav className="flex flex-col px-2 py-3" aria-label="Mobile navigation">
           {links.map((link) => {
-            const isActive = link.exact
-              ? pathname === link.href
-              : pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive =
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
             return (
               <Link
                 key={link.href}

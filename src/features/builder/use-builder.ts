@@ -55,6 +55,27 @@ const COMMON_PORTS = new Set([
   9000, 9200, 9300, 11211, 15672, 27017,
 ]);
 
+const DEFAULT_PLATFORM_FILTER: Platform = "linux";
+const DEFAULT_ARCHITECTURE_FILTER: Exclude<ArchitectureFilter, "all"> = "x64";
+const DEFAULT_NETWORK_EGRESS_FILTER: Exclude<NetworkEgressFilter, "all"> =
+  "raw-tcp";
+
+function normalizePlatformFilter(value?: "all" | Platform): Platform {
+  return value && value !== "all" ? value : DEFAULT_PLATFORM_FILTER;
+}
+
+function normalizeArchitectureFilter(
+  value?: ArchitectureFilter,
+): ArchitectureFilter {
+  return value && value !== "all" ? value : DEFAULT_ARCHITECTURE_FILTER;
+}
+
+function normalizeNetworkEgressFilter(
+  value?: NetworkEgressFilter,
+): NetworkEgressFilter {
+  return value && value !== "all" ? value : DEFAULT_NETWORK_EGRESS_FILTER;
+}
+
 export function useBuilder() {
   const t = useTranslations("builder");
   const tListener = useTranslations("listener");
@@ -78,19 +99,19 @@ export function useBuilder() {
     useState<TechniqueTypeFilter>(
       () => persistedUi?.techniqueTypeFilter ?? "reverse",
     );
-  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>(
-    () => persistedUi?.platformFilter ?? "all",
+  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>(() =>
+    normalizePlatformFilter(persistedUi?.platformFilter),
   );
   const [architectureFilter, setArchitectureFilter] =
-    useState<ArchitectureFilter>(
-      () => persistedUi?.architectureFilter ?? "all",
+    useState<ArchitectureFilter>(() =>
+      normalizeArchitectureFilter(persistedUi?.architectureFilter),
     );
   const [victimToolFilters, setVictimToolFilters] = useState<
     VictimToolFilter[]
   >(() => persistedUi?.victimToolFilters ?? []);
   const [networkEgressFilter, setNetworkEgressFilter] =
-    useState<NetworkEgressFilter>(
-      () => persistedUi?.networkEgressFilter ?? "all",
+    useState<NetworkEgressFilter>(() =>
+      normalizeNetworkEgressFilter(persistedUi?.networkEgressFilter),
     );
   const [familyFilter, setFamilyFilter] = useState<"all" | ShellFamily>(
     () => persistedUi?.familyFilter ?? "all",

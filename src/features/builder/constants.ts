@@ -113,14 +113,7 @@ export const FAMILY_FILTERS: Array<"all" | ShellFamily> = [
   "bind",
 ];
 
-export const TECHNIQUE_TYPE_FILTERS = [
-  "reverse",
-  "bind",
-  "msfvenom",
-  "hoaxshell",
-  "assembled",
-  "encrypted",
-] as const;
+export const TECHNIQUE_TYPE_FILTERS = ["reverse", "bind", "msfvenom"] as const;
 
 export type TechniqueTypeFilter = (typeof TECHNIQUE_TYPE_FILTERS)[number];
 
@@ -255,11 +248,6 @@ export function matchesTechniqueType(
 ) {
   if (typeFilter === "bind") return template.family === "bind";
   if (typeFilter === "msfvenom") return template.id.startsWith("msfvenom-");
-  if (typeFilter === "hoaxshell") return template.id.includes("hoaxshell");
-  if (typeFilter === "assembled") return template.family === "staged";
-  if (typeFilter === "encrypted") {
-    return isEncryptedTemplate(template);
-  }
 
   return (
     template.family !== "bind" &&

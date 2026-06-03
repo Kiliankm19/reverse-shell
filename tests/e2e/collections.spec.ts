@@ -1,14 +1,12 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
 
-test("preset search filters built-in collections", async ({ page }) => {
+test("preset filters show built-in collections", async ({ page }) => {
   await page.goto("/collections");
   await expect(
     page.getByRole("heading", { name: /Ready-to-use reverse shells/i }),
   ).toBeVisible();
-  await page
-    .getByPlaceholder(/Search by name, platform, technique/i)
-    .fill("bind");
+  await page.getByRole("button", { name: /^Bind$/i }).click();
   await expect(page.getByText(/bind shell/i).first()).toBeVisible();
 });
 

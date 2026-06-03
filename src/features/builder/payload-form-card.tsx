@@ -3,15 +3,9 @@
 import { useTranslations } from "next-intl";
 import { RadioTower } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { PayloadPicker } from "@/features/builder/payload-picker";
 import { TechniqueFitBadge } from "@/features/builder/technique-fit-badge";
@@ -83,13 +77,15 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
     lhostHint,
     embedded = false,
   } = props;
-  const shellOptions = Array.from(
-    new Set(
-      [selectedTemplate.defaultShell, config.shell, ...SHELL_OPTIONS].filter(
-        Boolean,
-      ),
-    ),
-  );
+  const shellOptions = (() => {
+    const options = [...SHELL_OPTIONS];
+    for (const shell of [selectedTemplate.defaultShell, config.shell]) {
+      if (shell && !options.includes(shell)) {
+        options.push(shell);
+      }
+    }
+    return options;
+  })();
   const availableFamilyFilters = FAMILY_FILTERS.filter((family) =>
     familyAvailableForFilters(reverseShellTemplates, family, {
       platform: platformFilter,
@@ -195,6 +191,79 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
 
   const content = (
     <div className="space-y-4">
+      <div className="grid gap-4 rounded-lg border bg-background p-3 md:grid-cols-[minmax(170px,220px)_1fr]">
+        <div className="space-y-2">
+          <Label>{t("technique_type_label")}</Label>
+          <div className="flex flex-wrap gap-2">
+            {TECHNIQUE_TYPE_FILTERS.map((type) => {
+              const isSelected = techniqueTypeFilter === type;
+              return (
+                <Button
+                  key={type}
+                  type="button"
+                  variant={isSelected ? "default" : "outline"}
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  aria-pressed={isSelected}
+                  onClick={() => handleTechniqueTypeChange(type)}
+                >
+                  {t(`technique_types.${type}`)}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>{t("family_filter_label")}</Label>
+          <div className="flex flex-wrap gap-2">
+            {availableFamilyFilters.map((family) => {
+              const isSelected = familyFilter === family;
+              return (
+                <Button
+                  key={family}
+                  type="button"
+                  variant={isSelected ? "default" : "outline"}
+                  size="sm"
+                  className="h-8 px-2.5 text-xs"
+                  aria-pressed={isSelected}
+                  onClick={() => handleFamilyFilterChange(family)}
+                >
+                  {family === "all" ? t("filter_all") : t(`families.${family}`)}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+        {showShell && (
+          <div className="space-y-2 md:col-span-2">
+            <Label>{t("shell_label")}</Label>
+            <div className="flex flex-wrap gap-2">
+              {shellOptions.map((shell) => {
+                const isSelected = config.shell === shell;
+                return (
+                  <Button
+                    key={shell}
+                    type="button"
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    className="h-8 px-2.5 font-mono text-xs"
+                    aria-pressed={isSelected}
+                    onClick={() => patchConfig({ shell })}
+                  >
+                    {shell}
+                  </Button>
+                );
+              })}
+            </div>
+            {fieldErrors.shell && (
+              <p className="text-xs text-destructive">
+                {t("validation_field_shell")}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
       <TechniqueFitBadge
         safeConfig={safeConfig}
         platformFilter={platformFilter}
@@ -230,7 +299,7 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
         </div>
       </div>
 
-      <div className="space-y-2 rounded-md bg-muted/40 p-3 text-sm text-muted-foreground">
+      <div className="space-y-2 rounded-lg bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           <strong className="text-foreground">
             {t(`templates.${selectedTemplate.id}.name`)}
@@ -242,83 +311,6 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
         {lhostHint && <p>{lhostHint}</p>}
         {bindMode && <p>{t("lport_bind_hint")}</p>}
       </div>
-      <details className="rounded-md border bg-background p-3">
-        <summary className="cursor-pointer text-sm font-medium">
-          {t("advanced_controls_title")}
-        </summary>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label>{t("technique_type_label")}</Label>
-            <Select
-              value={techniqueTypeFilter}
-              onValueChange={(value) =>
-                handleTechniqueTypeChange(value as TechniqueTypeFilter)
-              }
-            >
-              <SelectTrigger aria-label={t("technique_type_label")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TECHNIQUE_TYPE_FILTERS.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {t(`technique_types.${type}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>{t("family_filter_label")}</Label>
-            <Select
-              value={familyFilter}
-              onValueChange={(value) =>
-                handleFamilyFilterChange(value as "all" | ShellFamily)
-              }
-            >
-              <SelectTrigger aria-label={t("family_filter_label")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {availableFamilyFilters.map((family) => (
-                  <SelectItem key={family} value={family}>
-                    {family === "all"
-                      ? t("filter_all")
-                      : t(`families.${family}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {showShell && (
-            <div className="space-y-2 md:col-span-2">
-              <Label>{t("shell_label")}</Label>
-              <Select
-                value={config.shell}
-                onValueChange={(value) => patchConfig({ shell: value })}
-              >
-                <SelectTrigger
-                  className="w-full"
-                  aria-invalid={!!fieldErrors.shell}
-                >
-                  <SelectValue placeholder={selectedTemplate.defaultShell} />
-                </SelectTrigger>
-                <SelectContent>
-                  {shellOptions.map((shell) => (
-                    <SelectItem key={shell} value={shell}>
-                      {shell}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldErrors.shell && (
-                <p className="text-xs text-destructive">
-                  {t("validation_field_shell")}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      </details>
       <Separator />
       {!safeConfig && Object.keys(fieldErrors).length > 0 && (
         <div className="rounded-md border border-destructive bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -330,13 +322,12 @@ export function PayloadFormCard(props: PayloadFormCardProps) {
 
   if (embedded) {
     return (
-      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
-        <div>
+      <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
+        <div className="space-y-1">
           <h3 className="flex items-center gap-2 text-sm font-medium">
             <RadioTower className="h-4 w-4 text-primary" />
             {t("payload_picker_title")}
           </h3>
-          <p className="text-xs text-muted-foreground">{t("payload_intro")}</p>
         </div>
         {content}
       </section>

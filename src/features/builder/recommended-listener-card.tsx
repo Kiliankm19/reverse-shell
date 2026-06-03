@@ -97,15 +97,12 @@ export function RecommendedListenerCard({
 
   if (embedded) {
     return (
-      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
-        <div>
+      <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
+        <div className="space-y-1">
           <h3 className="flex items-center gap-2 text-sm font-medium">
             <Headphones className="h-4 w-4 text-primary" />
             {t("recommended_listener_title")}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("recommended_listener_hint")}
-          </p>
         </div>
         {content}
       </section>

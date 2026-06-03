@@ -49,15 +49,12 @@ export function TechniqueSupportCard({
     const stageTemplates = stageTemplateOptions();
 
     return (
-      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
+      <section className="space-y-4 rounded-lg border bg-muted/20 p-4">
         <div>
           <h3 className="flex items-center gap-2 text-sm font-medium">
             <Server className="h-4 w-4 text-primary" />
             {t("stage_file_title")}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("stage_file_hint")}
-          </p>
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">
@@ -117,15 +114,12 @@ export function TechniqueSupportCard({
     const serverCommand = hoaxShellServerCommand(safeConfig);
 
     return (
-      <section className="space-y-3 rounded-md border bg-muted/20 p-3">
+      <section className="space-y-4 rounded-lg border bg-muted/20 p-4">
         <div>
           <h3 className="flex items-center gap-2 text-sm font-medium">
             <Server className="h-4 w-4 text-primary" />
             {t("http_server_title")}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("http_server_hint")}
-          </p>
         </div>
         <p className="font-mono text-xs text-muted-foreground">
           {hoaxShellServerFileName()} · {t("http_server_command_title")}

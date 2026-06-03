@@ -44,6 +44,8 @@ const CLEANUP_RECIPE_IDS = new Set([
   "windows-codepage",
 ]);
 
+const TERMINAL_SIZE_COMMAND = "stty rows $(tput lines) columns $(tput cols)";
+
 interface NextStepCardProps {
   config: ReverseShellConfig;
   connectionMode: PayloadConnectionMode;
@@ -137,26 +139,26 @@ export function NextStepCard({
   if (!showUpgrade || !selectedUpgradeRecipe) return null;
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className="transition-colors hover:border-primary/40 focus-within:border-primary/40">
+      <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
           <TerminalSquare className="h-4 w-4 text-primary" />
           {t("next_step_title")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">{t("next_step_hint")}</p>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <section className="space-y-3 rounded-md border bg-muted/20 p-3">
+      <CardContent className="space-y-3 pt-0">
+        <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
           <div>
             <h3 className="flex items-center gap-2 text-sm font-medium">
               <TerminalSquare className="h-4 w-4 text-primary" />
               {t("tty_upgrade_title")}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {t("tty_upgrade_hint")}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {t("tty_upgrade_verified_note")}
+              {t("tty_upgrade_size_hint")}{" "}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground">
+                {TERMINAL_SIZE_COMMAND}
+              </code>
             </p>
           </div>
           <div className="space-y-3">
@@ -198,15 +200,12 @@ export function NextStepCard({
         </section>
 
         {selectedCleanupRecipe && (
-          <section className="space-y-3 rounded-md border bg-muted/20 p-3">
-            <div>
+          <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
+            <div className="space-y-1">
               <h3 className="flex items-center gap-2 text-sm font-medium">
                 <TerminalSquare className="h-4 w-4 text-primary" />
                 {t("session_cleanup_title")}
               </h3>
-              <p className="text-xs text-muted-foreground">
-                {t("session_cleanup_hint")}
-              </p>
             </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium">
