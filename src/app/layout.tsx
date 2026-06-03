@@ -56,7 +56,7 @@ export default async function RootLayout({
   const nonce = headersList.get("x-nonce") ?? undefined;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="bg-background">
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
         suppressHydrationWarning
