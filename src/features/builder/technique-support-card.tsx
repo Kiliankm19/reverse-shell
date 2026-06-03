@@ -49,19 +49,18 @@ export function TechniqueSupportCard({
     const stageTemplates = stageTemplateOptions();
 
     return (
-      <section className="space-y-4 rounded-lg border bg-muted/20 p-4">
-        <div>
-          <h3 className="flex items-center gap-2 text-sm font-medium">
-            <Server className="h-4 w-4 text-primary" />
-            {t("stage_file_title")}
-          </h3>
+      <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+        <div className="flex items-center gap-2">
+          <Server className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">{t("stage_file_title")}</h3>
         </div>
+
         <div className="space-y-2">
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-medium">
             {t("stage_template_label")}
           </label>
           <Select value={stageTemplateId} onValueChange={onStageTemplateChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9 border-border/50 bg-background/50">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -73,35 +72,40 @@ export function TechniqueSupportCard({
             </SelectContent>
           </Select>
         </div>
+
         <Textarea
           value={stageScript}
           readOnly
-          className="min-h-32 font-mono text-xs"
+          className="terminal-block min-h-32 font-mono text-xs border-0 text-primary/90 resize-none"
         />
         <Textarea
           value={serveCommand}
           readOnly
-          className="min-h-16 font-mono text-xs"
+          className="terminal-block min-h-16 font-mono text-xs border-0 text-primary/90 resize-none"
         />
+
         <div className="flex flex-wrap gap-2">
-          <Button className="w-fit gap-2" onClick={() => onCopy(stageScript)}>
-            <Copy className="h-4 w-4" />
+          <Button
+            className="gap-2 h-8 text-xs"
+            onClick={() => onCopy(stageScript)}
+          >
+            <Copy className="h-3.5 w-3.5" />
             {stageFileName(safeConfig)}
           </Button>
           <Button
             variant="outline"
-            className="w-fit gap-2"
+            className="gap-2 h-8 text-xs border-border/50"
             onClick={() => downloadText(stageFileName(safeConfig), stageScript)}
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" />
             {t("download_stage_button")}
           </Button>
           <Button
             variant="outline"
-            className="w-fit gap-2"
+            className="gap-2 h-8 text-xs border-border/50"
             onClick={() => onCopy(serveCommand)}
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="h-3.5 w-3.5" />
             {t("stage_serve_title")}
           </Button>
         </div>
@@ -114,47 +118,51 @@ export function TechniqueSupportCard({
     const serverCommand = hoaxShellServerCommand(safeConfig);
 
     return (
-      <section className="space-y-4 rounded-lg border bg-muted/20 p-4">
-        <div>
-          <h3 className="flex items-center gap-2 text-sm font-medium">
-            <Server className="h-4 w-4 text-primary" />
-            {t("http_server_title")}
-          </h3>
+      <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+        <div className="flex items-center gap-2">
+          <Server className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">{t("http_server_title")}</h3>
         </div>
-        <p className="font-mono text-xs text-muted-foreground">
+
+        <p className="rounded-full border border-border/50 bg-muted/30 px-3 py-1 text-[10px] font-mono text-muted-foreground w-fit">
           {hoaxShellServerFileName()} · {t("http_server_command_title")}
         </p>
+
         <Textarea
           value={serverScript}
           readOnly
-          className="min-h-48 font-mono text-xs"
+          className="terminal-block min-h-48 font-mono text-xs border-0 text-primary/90 resize-none"
         />
         <Textarea
           value={serverCommand}
           readOnly
-          className="min-h-16 font-mono text-xs"
+          className="terminal-block min-h-16 font-mono text-xs border-0 text-primary/90 resize-none"
         />
+
         <div className="flex flex-wrap gap-2">
-          <Button className="w-fit gap-2" onClick={() => onCopy(serverScript)}>
-            <Copy className="h-4 w-4" />
+          <Button
+            className="gap-2 h-8 text-xs"
+            onClick={() => onCopy(serverScript)}
+          >
+            <Copy className="h-3.5 w-3.5" />
             {hoaxShellServerFileName()}
           </Button>
           <Button
             variant="outline"
-            className="w-fit gap-2"
+            className="gap-2 h-8 text-xs border-border/50"
             onClick={() =>
               downloadText(hoaxShellServerFileName(), serverScript)
             }
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-3.5 w-3.5" />
             {t("download_server_button")}
           </Button>
           <Button
             variant="outline"
-            className="w-fit gap-2"
+            className="gap-2 h-8 text-xs border-border/50"
             onClick={() => onCopy(serverCommand)}
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="h-3.5 w-3.5" />
             {t("http_server_command_title")}
           </Button>
         </div>

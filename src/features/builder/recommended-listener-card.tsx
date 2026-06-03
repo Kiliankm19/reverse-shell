@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Copy, Headphones, Server } from "lucide-react";
+import { Copy, Headphones, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -54,9 +54,12 @@ export function RecommendedListenerCard({
 
   const command = buildListenerCommand(listenerId, config.lhost, config.lport);
   const content = (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Select value={listenerId} onValueChange={onListenerChange}>
-        <SelectTrigger className="w-full" aria-label={t("listener_type_label")}>
+        <SelectTrigger
+          className="w-full h-9 border-border/50 bg-background/50"
+          aria-label={t("listener_type_label")}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -73,17 +76,17 @@ export function RecommendedListenerCard({
         </SelectContent>
       </Select>
       {command ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p className="text-xs font-medium text-muted-foreground">
             {t("listener_command_label")}
           </p>
           <Textarea
             value={command}
             readOnly
-            className="min-h-24 font-mono text-xs"
+            className="terminal-block min-h-24 font-mono text-xs border-0 text-primary/90 resize-none"
           />
-          <Button className="w-fit gap-2" onClick={() => onCopy(command)}>
-            <Copy className="h-4 w-4" />
+          <Button className="gap-2 h-8 text-xs" onClick={() => onCopy(command)}>
+            <Copy className="h-3.5 w-3.5" />
             {t("copy_listener_button")}
           </Button>
         </div>
@@ -97,10 +100,10 @@ export function RecommendedListenerCard({
 
   if (embedded) {
     return (
-      <section className="space-y-3 rounded-lg border bg-muted/20 p-3">
-        <div className="space-y-1">
-          <h3 className="flex items-center gap-2 text-sm font-medium">
-            <Headphones className="h-4 w-4 text-primary" />
+      <section className="space-y-4 rounded-xl border border-border/50 bg-muted/5 p-4">
+        <div className="flex items-center gap-2">
+          <Radio className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">
             {t("recommended_listener_title")}
           </h3>
         </div>
@@ -110,26 +113,28 @@ export function RecommendedListenerCard({
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Headphones className="h-4 w-4 text-primary" />
+    <Card className="h-full overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardHeader className="pb-3 border-b border-border/50">
+        <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+            <Headphones className="h-4 w-4 text-primary" />
+          </div>
           {t("recommended_listener_title")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           {t("recommended_listener_hint")}
         </p>
       </CardHeader>
-      <CardContent>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Server className="h-4 w-4 text-primary" />
+      <CardContent className="pt-4">
+        <div className="rounded-xl border border-border/50 bg-muted/5 p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Radio className="h-4 w-4 text-primary" />
+            <h4 className="text-sm font-semibold">
               {t("listener_setup_title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>{content}</CardContent>
-        </Card>
+            </h4>
+          </div>
+          {content}
+        </div>
       </CardContent>
     </Card>
   );

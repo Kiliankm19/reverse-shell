@@ -24,15 +24,15 @@ function NavLink({ href, label, pathname, exact = false }: NavLinkProps) {
     <Link
       href={href}
       className={cn(
-        "relative px-3 py-1.5 text-sm font-medium transition-all duration-200",
+        "relative px-3 py-1.5 text-sm font-medium transition-all duration-200 rounded-md",
         isActive
-          ? "text-primary"
-          : "text-muted-foreground hover:text-foreground",
+          ? "text-primary bg-primary/5"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
       )}
     >
       {label}
       {isActive && (
-        <span className="absolute inset-x-0 -bottom-px h-px bg-primary" />
+        <span className="absolute inset-x-1 -bottom-1 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       )}
     </Link>
   );
@@ -46,7 +46,7 @@ function ThemeToggle({ label }: { label: string }) {
       size="icon"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label={label}
-      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+      className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg"
     >
       <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
       <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -79,17 +79,23 @@ export function Header() {
     pathname === "/" || pathname.startsWith("/builder");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur-2xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-2.5 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary/15 transition-colors">
-            <Terminal className="h-4 w-4 text-primary" />
+        <Link href="/" className="flex shrink-0 items-center gap-3 group">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 group-hover:border-primary/40 transition-all duration-300">
+            <Terminal className="h-4.5 w-4.5 text-primary" />
+            <div className="absolute inset-0 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
-          <span className="font-mono text-sm font-semibold tracking-tight">
-            <span className="text-primary">reverse</span>
-            <span className="text-foreground">shell</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="font-mono text-sm font-semibold tracking-tight leading-none">
+              <span className="text-primary">reverse</span>
+              <span className="text-foreground">shell</span>
+            </span>
+            <span className="text-[10px] text-muted-foreground/60 font-medium tracking-wider uppercase mt-0.5">
+              generator
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
@@ -107,11 +113,14 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           {/* Status Badge */}
-          <div className="hidden items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 lg:flex">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-medium uppercase tracking-wider text-primary">
+          <div className="hidden items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1.5 lg:flex">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-40" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-primary/90">
               {t("local_badge")}
             </span>
           </div>
@@ -121,7 +130,7 @@ export function Header() {
             <Button
               asChild
               size="sm"
-              className="hidden h-8 px-3 text-xs font-medium sm:inline-flex"
+              className="hidden h-9 px-4 text-xs font-semibold sm:inline-flex rounded-lg glow-neon-sm"
             >
               <Link href={cta.href}>{t(cta.labelKey)}</Link>
             </Button>
@@ -131,19 +140,21 @@ export function Header() {
               asChild
               size="sm"
               variant="outline"
-              className="hidden h-8 px-3 text-xs font-medium border-border/50 sm:inline-flex"
+              className="hidden h-9 px-4 text-xs font-semibold border-border bg-muted/30 hover:bg-muted/50 hover:border-primary/30 sm:inline-flex rounded-lg transition-all duration-200"
             >
               <Link href={cta.href}>{t(cta.labelKey)}</Link>
             </Button>
           )}
 
           {/* Keyboard Shortcut Hint */}
-          <div className="hidden items-center gap-1 rounded-md border border-border/50 bg-muted/50 px-1.5 py-1 xl:flex">
-            <Command className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[10px] font-medium text-muted-foreground">
+          <div className="hidden items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-2 py-1.5 xl:flex">
+            <Command className="h-3 w-3 text-muted-foreground/70" />
+            <span className="text-[10px] font-semibold text-muted-foreground/70">
               K
             </span>
           </div>
+
+          <div className="h-5 w-px bg-border hidden sm:block" />
 
           <MobileNav
             ctaHref={cta.href}
